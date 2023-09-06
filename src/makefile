@@ -25,7 +25,7 @@ EXE=$(BUILD)/tp1.exe
 exe : $(EXE)
 run : exe
 	$(EXE)
-$(EXE) : *.cpp 
+$(EXE) : *.cpp
 	mkdir -p $(BUILD)
 	$(CXX) $(CXXFLAGS) -o$@ *.cpp $(LDFLAGS)
 

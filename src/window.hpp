@@ -6,40 +6,40 @@
 
 
 class Window {
-    public:
-    enum Key {
-        ESC = SDLK_ESCAPE,
-        T = SDLK_t,
-    };
+	public:
+	enum Key {
+		ESC = SDLK_ESCAPE,
+		T = SDLK_t,
+	};
 
-    public:
-    Window();
-    ~Window();
+	public:
+	Window();
+	~Window();
 
-    bool init();
+	bool init();
 
-    void swap();
-    void pollEvent();
+	void swap();
+	void pollEvent();
 
-    bool getKey(Key k);
+	bool getKey(Key k);
 
-    unsigned int getTick();
+	unsigned int getTick();
 
-    bool shouldClose();
-    bool shouldResize();
+	bool shouldClose();
+	bool shouldResize();
 
-    int getWidth();
-    int getHeight();
+	int getWidth();
+	int getHeight();
 
-    private:
-    SDL_Window* m_window;
-    SDL_GLContext m_context;
+	private:
+	SDL_Window* m_window;
+	SDL_GLContext m_context;
 
-    bool m_shouldClose;
-    bool m_shouldResize;
-    int m_width, m_height;
+	bool m_shouldClose;
+	bool m_shouldResize;
+	int m_width, m_height;
 
-    std::unordered_map<Key, bool> m_keys;
+	std::unordered_map<Key, bool> m_keys;
 };
 
 #endif // WINDOW_H
