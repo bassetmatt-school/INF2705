@@ -3,54 +3,51 @@
 
 #include <GL/glew.h>
 
-class BasicShapeArrays
-{
-public:
-    BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize);    
+class BasicShapeArrays {
+    public:
+    BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize);
     ~BasicShapeArrays();
-    
+
     void enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);
     void draw(GLenum mode, GLsizei count);
-    
-private:
+
+    private:
     GLuint m_vao;
     GLuint m_vbo;
 };
 
 
-class BasicShapeMultipleArrays
-{
-public:
+class BasicShapeMultipleArrays {
+    public:
     BasicShapeMultipleArrays(const GLfloat* pos, GLsizeiptr posByteSize, const GLfloat* color, GLsizeiptr colorByteSize);
     ~BasicShapeMultipleArrays();
-    
-    void enablePosAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);    
+
+    void enablePosAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);
     void enableColorAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);
-    
+
     void updateColorData(const GLfloat* color, GLsizeiptr colorByteSize);
-    
-    GLfloat* mapPosData();    
+
+    GLfloat* mapPosData();
     void unmapPosData();
-    
+
     void draw(GLenum mode, GLsizei count);
-    
-private:
+
+    private:
     GLuint m_vao;
     GLuint m_posVbo;
     GLuint m_colorVbo;
 };
 
 
-class BasicShapeElements
-{
-public:
-    BasicShapeElements(const GLfloat* data, GLsizeiptr byteSize, const GLubyte* indexes, GLsizeiptr indexesByteSize);    
+class BasicShapeElements {
+    public:
+    BasicShapeElements(const GLfloat* data, GLsizeiptr byteSize, const GLubyte* indexes, GLsizeiptr indexesByteSize);
     ~BasicShapeElements();
-    
-    void enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);    
+
+    void enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);
     void draw(GLenum mode, GLsizei count);
-    
-private:
+
+    private:
     GLuint m_vao;
     GLuint m_vbo;
     GLuint m_ebo;

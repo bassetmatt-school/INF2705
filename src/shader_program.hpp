@@ -3,37 +3,35 @@
 
 #include <GL/glew.h>
 
-class Shader
-{
-public:
+class Shader {
+    public:
     Shader(GLenum type, const char* code);
     ~Shader();
-    
+
     GLuint id();
-    
-private:
+
+    private:
     void checkError();
-    
-private:
+
+    private:
     GLuint m_id;
 };
 
-class ShaderProgram
-{
-public:
+class ShaderProgram {
+    public:
     ShaderProgram();
     ~ShaderProgram();
-    
-    void use();    
-    void attachShader(Shader& s);    
+
+    void use();
+    void attachShader(Shader& s);
     void link();
-    
+
     GLint getUniformLoc(const char* name);
-    
-private:
+
+    private:
     void checkError();
 
-private:
+    private:
     GLuint m_id;
 };
 
