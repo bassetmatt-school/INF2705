@@ -75,6 +75,7 @@ int main() {
 
 	// TODO Partie 1: Instancier vos formes ici.
 	BasicShapeArrays triangle_unicolor(triVertices, sizeof(triVertices));
+	BasicShapeArrays square_unicolor(squareVertices, sizeof(squareVertices));
 
 	// TODO Partie 2: Instancier le cube ici.
 	// ...
@@ -132,6 +133,9 @@ int main() {
 				triangle_unicolor.enableAttribute(0, 3, 0, 0);
 				triangle_unicolor.draw(GL_TRIANGLES, 3);
 				break;
+			case 1:
+				square_unicolor.enableAttribute(0, 3, 0, 0);
+				square_unicolor.draw(GL_TRIANGLES, 6);
 			default:
 				break;
 		}
