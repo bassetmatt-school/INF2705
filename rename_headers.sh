@@ -1,4 +1,4 @@
-MOVE="mv"
+MOVE="git mv"
 
 to_hpp () {
 	for file in $(find . -name "*.h" -type f); do

@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -37,20 +36,22 @@ int main() {
 	}
 
 	// TODO Partie 1: Instancier les shader programs ici.
-	// ... basic;
-	{ // Les accolades vont permettre de détruire le code des shaders plus rapidement
-		// Vous devez lire le code des shaders dans "shaders/"
-		// avec la fonction "readFile".
-
-		// Vous pouvez par la suite instancier vos shaders, les attacher et les lier
-		// au programme.
+	// Basic
+	ShaderProgram basic;
+	{ // Les accolades permettent de détruire le code des shaders plus rapidement
+		std::string fragmentShaderCode = readFile("shaders/basic.fs.glsl");
+		std::string vertexShaderCode = readFile("shaders/basic.vs.glsl");
+		Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
+		Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
+		basic.attachShader(vertexShader);
+		basic.attachShader(fragmentShader);
+		basic.link();
 	}
 
 	// ... color;
 	{
 		// ...
 	}
-
 	// TODO Partie 2: Shader program de transformation.
 	// ... transform;
 	// ... location;
@@ -66,14 +67,14 @@ int main() {
 	float angleDeg = 0.0f;
 
 	// Tableau non constant de la couleur
-	GLfloat onlyColorTriVertices[] ={
-		// TODO Partie 1: Rempliser adéquatement le tableau.
-		// Vous pouvez expérimenter avec une couleur uniforme
-		// de votre choix ou plusieurs différentes en chaque points.
-	};
+	// GLfloat onlyColorTriVertices[] ={
+	// 	// TODO Partie 1: Rempliser adéquatement le tableau.
+	// 	// Vous pouvez expérimenter avec une couleur uniforme
+	// 	// de votre choix ou plusieurs différentes en chaque points.
+	// };
 
 	// TODO Partie 1: Instancier vos formes ici.
-	// ...
+	BasicShapeArrays triangle_unicolor(triVertices, sizeof(triVertices));
 
 	// TODO Partie 2: Instancier le cube ici.
 	// ...
@@ -86,6 +87,7 @@ int main() {
 	int selectShape = 0;
 	bool isRunning = true;
 	while (isRunning) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		if (w.shouldResize())
 			glViewport(0, 0, w.getWidth(), w.getHeight());
 
@@ -103,13 +105,18 @@ int main() {
 		changeRGB(&onlyColorTriVertices[6]);
 
 		changePos(posPtr, cx, cy, dx, dy);
-		//*/
+		*/
 
 
 		// TODO Partie 1: Utiliser le bon shader programme selon la forme.
 		// N'hésiter pas à utiliser le fallthrough du switch case.
 		switch (selectShape) {
-			// ...
+			case 0:
+			case 1:
+				basic.use();
+				break;
+			default:
+				break;
 		}
 
 		// TODO Partie 2: Calcul des matrices et envoyer une matrice résultante mvp au shader.
@@ -121,7 +128,12 @@ int main() {
 
 		// TODO Partie 1: Dessiner la forme sélectionnée.
 		switch (selectShape) {
-			// ...
+			case 0:
+				triangle_unicolor.enableAttribute(0, 3, 0, 0);
+				triangle_unicolor.draw(GL_TRIANGLES, 3);
+				break;
+			default:
+				break;
 		}
 
 		w.swap();
