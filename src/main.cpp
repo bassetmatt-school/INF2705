@@ -48,9 +48,16 @@ int main() {
 		basic.link();
 	}
 
-	// ... color;
+	// Color
+	ShaderProgram color;
 	{
-		// ...
+		std::string fragmentShaderCode = readFile("shaders/color.fs.glsl");
+		std::string vertexShaderCode = readFile("shaders/color.vs.glsl");
+		Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
+		Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
+		color.attachShader(vertexShader);
+		color.attachShader(fragmentShader);
+		color.link();
 	}
 	// TODO Partie 2: Shader program de transformation.
 	// ... transform;
@@ -76,6 +83,19 @@ int main() {
 	// TODO Partie 1: Instancier vos formes ici.
 	BasicShapeArrays triangle_unicolor(triVertices, sizeof(triVertices));
 	BasicShapeArrays square_unicolor(squareVertices, sizeof(squareVertices));
+
+	BasicShapeMultipleArrays triangle_rgb(
+		triVertices,
+		sizeof(triVertices),
+		colorTriVertices,
+		sizeof(colorTriVertices)
+	);
+	BasicShapeMultipleArrays square_rgb(
+		squareVertices,
+		sizeof(squareVertices),
+		colorSquareVertices,
+		sizeof(colorSquareVertices)
+	);
 
 	// TODO Partie 2: Instancier le cube ici.
 	// ...
@@ -116,6 +136,10 @@ int main() {
 			case 1:
 				basic.use();
 				break;
+			case 2:
+			case 3:
+				color.use();
+				break;
 			default:
 				break;
 		}
@@ -130,12 +154,23 @@ int main() {
 		// TODO Partie 1: Dessiner la forme sélectionnée.
 		switch (selectShape) {
 			case 0:
-				triangle_unicolor.enableAttribute(0, 3, 0, 0);
+				triangle_unicolor.enableAttribute(0, 3, 12, 0);
 				triangle_unicolor.draw(GL_TRIANGLES, 3);
 				break;
 			case 1:
-				square_unicolor.enableAttribute(0, 3, 0, 0);
+				square_unicolor.enableAttribute(0, 3, 12, 0);
 				square_unicolor.draw(GL_TRIANGLES, 6);
+				break;
+			case 2:
+				triangle_rgb.enablePosAttribute(0, 3, 12, 0);
+				triangle_rgb.enableColorAttribute(1, 3, 24, 12);
+				triangle_rgb.draw(GL_TRIANGLES, 3);
+				break;
+			case 3:
+				square_rgb.enablePosAttribute(0, 3, 12, 0);
+				square_rgb.enableColorAttribute(1, 3, 24, 12);
+				square_rgb.draw(GL_TRIANGLES, 6);
+				break;
 			default:
 				break;
 		}

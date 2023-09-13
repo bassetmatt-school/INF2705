@@ -20,17 +20,36 @@ const GLfloat squareVertices[] ={
 };
 
 // const GLfloat colorTriVertices[] ={
-// 	// TODO Partie 1: Définir les coordonnées d'un triangle
-// 	// avec les attributs de position et couleur entrelacés
-// 	// en fonction de l'entré du vertex shader.
+// 	1.0f, 0.0f, 0.0f,
+// 	0.0f, 1.0f, 0.0f,
+// 	0.0f, 0.0f, 1.0f,
 // };
 
+const GLfloat colorTriVertices[] ={
+	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+	 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+};
+
 // const GLfloat colorSquareVertices[] ={
-// 	// TODO Partie 1: Définir les coordonnées d'un carré
-// 	// fait de deux triangles avec les attributs de
-// 	// position et couleur entrelacés en fonction de
-// 	// l'entré du vertex shader.
+// 	1.0f, 0.0f, 0.0f,
+// 	0.0f, 1.0f, 0.0f,
+// 	0.0f, 0.0f, 1.0f,
+
+// 	0.0f, 0.0f, 1.0f,
+// 	0.0f, 1.0f, 0.0f,
+// 	1.0f, 0.0f, 0.0f,
 // };
+
+const GLfloat colorSquareVertices[] ={
+	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+	-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+
+	-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+};
 
 
 // const GLfloat colorSquareVerticesReduced[] ={
