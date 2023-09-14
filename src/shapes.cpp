@@ -10,7 +10,7 @@ BasicShapeArrays::BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize) {
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER, byteSize, data, GL_STATIC_DRAW);
 
-	// Unselect VAO
+	// Unselects VAO
 	glBindVertexArray(0);
 }
 
@@ -26,8 +26,7 @@ void BasicShapeArrays::enableAttribute(GLuint index, GLint size, GLsizei stride,
 	// Enables the attribute
 	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
 	glEnableVertexArrayAttrib(m_vao, index);
-
-	// Unselect VAO
+	// Unselects VAO
 	glBindVertexArray(0);
 
 }
@@ -46,16 +45,16 @@ BasicShapeMultipleArrays::BasicShapeMultipleArrays(const GLfloat* pos, GLsizeipt
 	glGenBuffers(1, &m_posVbo);
 	glGenBuffers(1, &m_colorVbo);
 
-	// Select VAO
+	// Selects VAO
 	glBindVertexArray(m_vao);
-	// VBO pos data
+	// position VBO allocating and initializing
 	glBindBuffer(GL_ARRAY_BUFFER, m_posVbo);
 	glBufferData(GL_ARRAY_BUFFER, posByteSize, pos, GL_STATIC_DRAW);
-	// VBO color data
+	// color VBO allocating and initializing
 	glBindBuffer(GL_ARRAY_BUFFER, m_colorVbo);
 	glBufferData(GL_ARRAY_BUFFER, colorByteSize, color, GL_STATIC_DRAW);
 
-	// Unselect VAO
+	// Unselects VAO
 	glBindVertexArray(0);
 }
 
@@ -68,33 +67,36 @@ BasicShapeMultipleArrays::~BasicShapeMultipleArrays() {
 void BasicShapeMultipleArrays::enablePosAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset) {
 	// Selects VAO and VBO
 	glBindVertexArray(m_vao);
-	glBindBuffer(GL_ARRAY_BUFFER, m_posVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, m_posVbo); // position
 	// Enables the attribute
 	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
 	glEnableVertexArrayAttrib(m_vao, index);
-
-	// Unselect VAO
+	// Unselects VAO
 	glBindVertexArray(0);
 }
 
 void BasicShapeMultipleArrays::enableColorAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset) {
 	// Selects VAO and VBO
 	glBindVertexArray(m_vao);
-	glBindBuffer(GL_ARRAY_BUFFER, m_colorVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, m_colorVbo); // color
 	// Enables the attribute
 	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
 	glEnableVertexArrayAttrib(m_vao, index);
-
-	// Unselect VAO
+	// Unselects VAO
 	glBindVertexArray(0);
 }
 
 void BasicShapeMultipleArrays::updateColorData(const GLfloat* color, GLsizeiptr colorByteSize) {
-	// TODO Partie 1: Modifier la totalité des données de couleur
+	// Selects VAO and VBO
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_colorVbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat), colorByteSize, color);
+	// Unselects VAO
+	glBindVertexArray(0);
 }
 
 GLfloat* BasicShapeMultipleArrays::mapPosData() {
-	// TODO Partie 1: Activer le mapping des données de position
+	return nullptr;
 }
 
 void BasicShapeMultipleArrays::unmapPosData() {

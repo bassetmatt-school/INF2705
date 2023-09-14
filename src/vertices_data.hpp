@@ -19,27 +19,11 @@ const GLfloat squareVertices[] ={
 	0.5f, 0.5f, 0.0f
 };
 
-// const GLfloat colorTriVertices[] ={
-// 	1.0f, 0.0f, 0.0f,
-// 	0.0f, 1.0f, 0.0f,
-// 	0.0f, 0.0f, 1.0f,
-// };
-
 const GLfloat colorTriVertices[] ={
 	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
 	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
 	 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
 };
-
-// const GLfloat colorSquareVertices[] ={
-// 	1.0f, 0.0f, 0.0f,
-// 	0.0f, 1.0f, 0.0f,
-// 	0.0f, 0.0f, 1.0f,
-
-// 	0.0f, 0.0f, 1.0f,
-// 	0.0f, 1.0f, 0.0f,
-// 	1.0f, 0.0f, 0.0f,
-// };
 
 const GLfloat colorSquareVertices[] ={
 	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,

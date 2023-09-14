@@ -34,11 +34,11 @@ int main() {
 		std::cout << "Could not initialize glew! GLEW_Error: " << glewGetErrorString(rev) << std::endl;
 		return -2;
 	}
+	printGLInfo();
 
-	// TODO Partie 1: Instancier les shader programs ici.
-	// Basic
+	// Basic shader
 	ShaderProgram basic;
-	{ // Les accolades permettent de détruire le code des shaders plus rapidement
+	{
 		std::string fragmentShaderCode = readFile("shaders/basic.fs.glsl");
 		std::string vertexShaderCode = readFile("shaders/basic.vs.glsl");
 		Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
@@ -48,7 +48,7 @@ int main() {
 		basic.link();
 	}
 
-	// Color
+	// Color shader
 	ShaderProgram color;
 	{
 		std::string fragmentShaderCode = readFile("shaders/color.fs.glsl");
@@ -67,35 +67,33 @@ int main() {
 	}
 
 	// Variables pour la mise à jour, ne pas modifier.
-	float cx = 0, cy = 0;
-	float dx = 0.019;
-	float dy = 0.0128;
+	// float cx = 0, cy = 0;
+	// float dx = 0.019;
+	// float dy = 0.0128;
 
 	float angleDeg = 0.0f;
 
 	// Tableau non constant de la couleur
-	// GLfloat onlyColorTriVertices[] ={
-	// 	// TODO Partie 1: Rempliser adéquatement le tableau.
-	// 	// Vous pouvez expérimenter avec une couleur uniforme
-	// 	// de votre choix ou plusieurs différentes en chaque points.
-	// };
+	GLfloat onlyColorTriVertices[] ={
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f,
+	};
 
-	// TODO Partie 1: Instancier vos formes ici.
+	// Create shapes
 	BasicShapeArrays triangle_unicolor(triVertices, sizeof(triVertices));
 	BasicShapeArrays square_unicolor(squareVertices, sizeof(squareVertices));
 
-	BasicShapeMultipleArrays triangle_rgb(
-		triVertices,
-		sizeof(triVertices),
+	BasicShapeArrays triangle_rgb(colorTriVertices, sizeof(colorTriVertices));
+	BasicShapeArrays square_rgb(colorSquareVertices, sizeof(colorSquareVertices));
+
+	BasicShapeMultipleArrays triangle_updated(
+		colorTriVertices,
+		sizeof(colorTriVertices),
 		colorTriVertices,
 		sizeof(colorTriVertices)
 	);
-	BasicShapeMultipleArrays square_rgb(
-		squareVertices,
-		sizeof(squareVertices),
-		colorSquareVertices,
-		sizeof(colorSquareVertices)
-	);
+
 
 	// TODO Partie 2: Instancier le cube ici.
 	// ...
@@ -109,28 +107,30 @@ int main() {
 	bool isRunning = true;
 	while (isRunning) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// Background Color
+		glClearColor(0.11f, 0.12f, 0.13f, 1.0f);
+
 		if (w.shouldResize())
 			glViewport(0, 0, w.getWidth(), w.getHeight());
 
 		// TODO Partie 1: Nettoyer les tampons appropriées.
 
 		if (w.getKey(Window::Key::T)) {
-			selectShape = ++selectShape < 7 ? selectShape : 0;
+			++selectShape %= 7;
 			std::cout << "Selected shape: " << selectShape << std::endl;
 		}
 
 		// TODO Partie 1: Mise à jour des données du triangle
-		/*
+
 		changeRGB(&onlyColorTriVertices[0]);
 		changeRGB(&onlyColorTriVertices[3]);
 		changeRGB(&onlyColorTriVertices[6]);
+		triangle_updated.updateColorData(onlyColorTriVertices, 3 * 3 * sizeof(GLfloat));
+		// changePos(posPtr, cx, cy, dx, dy);
 
-		changePos(posPtr, cx, cy, dx, dy);
-		*/
 
 
-		// TODO Partie 1: Utiliser le bon shader programme selon la forme.
-		// N'hésiter pas à utiliser le fallthrough du switch case.
+		// Shader selection
 		switch (selectShape) {
 			case 0:
 			case 1:
@@ -138,6 +138,7 @@ int main() {
 				break;
 			case 2:
 			case 3:
+			case 4:
 				color.use();
 				break;
 			default:
@@ -151,7 +152,7 @@ int main() {
 			// glm::mat4 matrix;
 		}
 
-		// TODO Partie 1: Dessiner la forme sélectionnée.
+		// Drawing
 		switch (selectShape) {
 			case 0:
 				triangle_unicolor.enableAttribute(0, 3, 12, 0);
@@ -162,14 +163,19 @@ int main() {
 				square_unicolor.draw(GL_TRIANGLES, 6);
 				break;
 			case 2:
-				triangle_rgb.enablePosAttribute(0, 3, 12, 0);
-				triangle_rgb.enableColorAttribute(1, 3, 24, 12);
+				triangle_rgb.enableAttribute(0, 3, 24, 0);
+				triangle_rgb.enableAttribute(1, 3, 24, 12);
 				triangle_rgb.draw(GL_TRIANGLES, 3);
 				break;
 			case 3:
-				square_rgb.enablePosAttribute(0, 3, 12, 0);
-				square_rgb.enableColorAttribute(1, 3, 24, 12);
+				square_rgb.enableAttribute(0, 3, 24, 0);
+				square_rgb.enableAttribute(1, 3, 24, 12);
 				square_rgb.draw(GL_TRIANGLES, 6);
+				break;
+			case 4:
+				triangle_updated.enablePosAttribute(0, 3, 24, 0);
+				triangle_updated.enableColorAttribute(1, 3, 12, 12);
+				triangle_updated.draw(GL_TRIANGLES, 3);
 				break;
 			default:
 				break;
