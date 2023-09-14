@@ -67,9 +67,9 @@ int main() {
 	}
 
 	// Variables pour la mise à jour, ne pas modifier.
-	// float cx = 0, cy = 0;
-	// float dx = 0.019;
-	// float dy = 0.0128;
+	float cx = 0, cy = 0;
+	float dx = 0.019;
+	float dy = 0.0128;
 
 	float angleDeg = 0.0f;
 
@@ -120,14 +120,15 @@ int main() {
 			std::cout << "Selected shape: " << selectShape << std::endl;
 		}
 
-		// TODO Partie 1: Mise à jour des données du triangle
-
+		// Position udpate for case 4
+		GLfloat* posPtr = triangle_updated.mapPosData();
+		changePos(posPtr, cx, cy, dx, dy);
+		triangle_updated.unmapPosData();
+		// Color update for case 4
 		changeRGB(&onlyColorTriVertices[0]);
 		changeRGB(&onlyColorTriVertices[3]);
 		changeRGB(&onlyColorTriVertices[6]);
 		triangle_updated.updateColorData(onlyColorTriVertices, 3 * 3 * sizeof(GLfloat));
-		// changePos(posPtr, cx, cy, dx, dy);
-
 
 
 		// Shader selection

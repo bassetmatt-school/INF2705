@@ -96,11 +96,24 @@ void BasicShapeMultipleArrays::updateColorData(const GLfloat* color, GLsizeiptr 
 }
 
 GLfloat* BasicShapeMultipleArrays::mapPosData() {
-	return nullptr;
+	// Selects VAO and VBO
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_posVbo);
+	// Maps the buffer
+	GLfloat* pos = (GLfloat*) glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
+	// Unselects VAO
+	glBindVertexArray(0);
+	return pos;
 }
 
 void BasicShapeMultipleArrays::unmapPosData() {
-	// TODO Partie 1: Désactiver le mapping des données de position
+	// Selects VAO and VBO
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_posVbo);
+	// Unmaps the buffer
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+	// Unselects VAO
+	glBindVertexArray(0);
 }
 
 void BasicShapeMultipleArrays::draw(GLenum mode, GLsizei count) {
