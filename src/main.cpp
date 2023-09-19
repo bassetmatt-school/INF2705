@@ -104,11 +104,17 @@ int main() {
 	triangle_updated.enablePosAttribute(0, 3, 24, 0);
 	triangle_updated.enableColorAttribute(1, 3, 12, 12);
 
+	BasicShapeElements square_reduced(
+		colorSquareVerticesReduced,
+		sizeof(colorSquareVerticesReduced),
+		indexes,
+		sizeof(indexes)
+	);
+	square_reduced.enableAttribute(0, 3, 24, 0);
+	square_reduced.enableAttribute(1, 3, 24, 12);
 
-	// TODO Partie 2: Instancier le cube ici.
-	// ...
-
-	// TODO Partie 1: Donner une couleur de remplissage aux fonds.
+	// Background color
+	glm::vec4 clearColor(0.11f, 0.12f, 0.13f, 1.0f);
 
 	// TODO Partie 2: Activer le depth test.
 
@@ -118,7 +124,7 @@ int main() {
 	while (isRunning) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Background Color
-		glClearColor(0.11f, 0.12f, 0.13f, 1.0f);
+		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
 		if (w.shouldResize())
 			glViewport(0, 0, w.getWidth(), w.getHeight());
@@ -150,6 +156,10 @@ int main() {
 			case 2:
 			case 3:
 			case 4:
+			case 5:
+				color.use();
+				break;
+			case 6:
 				color.use();
 				break;
 			default:
@@ -179,6 +189,9 @@ int main() {
 				break;
 			case 4:
 				triangle_updated.draw(GL_TRIANGLES, 3);
+				break;
+			case 5:
+				square_reduced.draw(GL_TRIANGLES, 6);
 				break;
 			default:
 				break;

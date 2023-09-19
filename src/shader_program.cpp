@@ -9,7 +9,6 @@ Shader::Shader(GLenum type, const char* code) {
 	// Il est toujours bonne pratique de vérifier s'il y a
 	// des erreurs à la fin.
 	checkError();
-
 }
 
 Shader::~Shader() {

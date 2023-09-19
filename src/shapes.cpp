@@ -15,6 +15,9 @@ BasicShapeArrays::BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize) {
 }
 
 BasicShapeArrays::~BasicShapeArrays() {
+	// Unselects shader
+	glUseProgram(0);
+	// Deletes data
 	glDeleteBuffers(1, &m_vbo);
 	glDeleteVertexArrays(1, &m_vao);
 }
@@ -59,6 +62,9 @@ BasicShapeMultipleArrays::BasicShapeMultipleArrays(const GLfloat* pos, GLsizeipt
 }
 
 BasicShapeMultipleArrays::~BasicShapeMultipleArrays() {
+	// Unselects shader
+	glUseProgram(0);
+	// Deletes data
 	glDeleteBuffers(1, &m_posVbo);
 	glDeleteBuffers(1, &m_colorVbo);
 	glDeleteVertexArrays(1, &m_vao);
@@ -125,23 +131,46 @@ void BasicShapeMultipleArrays::draw(GLenum mode, GLsizei count) {
 
 
 BasicShapeElements::BasicShapeElements(const GLfloat* data, GLsizeiptr byteSize, const GLubyte* indexes, GLsizeiptr indexesByteSize) {
-	// TODO Partie 1: Générer et bind le vao de la forme.
+	// Creates objects
+	glGenVertexArrays(1, &m_vao);
+	glGenBuffers(1, &m_vbo);
+	glGenBuffers(1, &m_ebo);
 
-	// TODO Partie 1: Générer et bind le vbo et ebo de la forme.
-	// Allouer l'espace nécessaire dans le mode approprié
-	// et envoyer les données au gpu.
+	// Selects VAO
+	glBindVertexArray(m_vao);
+	// Shape VBO
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBufferData(GL_ARRAY_BUFFER, byteSize, data, GL_STATIC_DRAW);
+	// Connection Array VBO (EBO)
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexesByteSize, indexes, GL_STATIC_DRAW);
+
+	// Unselects VAO
+	glBindVertexArray(0);
 }
 
 BasicShapeElements::~BasicShapeElements() {
-	// TODO Partie 1: Supprimer la mémoire de l'objet.
-	// Assurez-vous que les ressources ne soient pas utilisées
-	// pendant la suppression.
+	// Unselects shader
+	glUseProgram(0);
+	// Deletes data
+	glDeleteBuffers(1, &m_vbo);
+	glDeleteBuffers(1, &m_ebo);
+	glDeleteVertexArrays(1, &m_vao);
 }
 
 void BasicShapeElements::enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset) {
-	// TODO Partie 1: Activer un attribut et l'attacher correctement au state du vao.
+	// Selects VAO and VBO
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	// Enables the attribute
+	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
+	glEnableVertexArrayAttrib(m_vao, index);
+	// Unselects VAO
+	glBindVertexArray(0);
 }
 
 void BasicShapeElements::draw(GLenum mode, GLsizei count) {
-	// TODO Partie 1: Dessiner la forme avec le ebo.
+	glBindVertexArray(m_vao);
+	glDrawElements(mode, count, GL_UNSIGNED_BYTE, 0);
+	glBindVertexArray(0);
 }
