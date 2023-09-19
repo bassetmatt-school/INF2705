@@ -97,7 +97,7 @@ void BasicShapeMultipleArrays::updateColorData(const GLfloat* color, GLsizeiptr 
 	// Selects VAO and VBO
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, m_colorVbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 3 * sizeof(GLfloat), colorByteSize, color);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, colorByteSize, color);
 	// Unselects VAO
 	glBindVertexArray(0);
 }

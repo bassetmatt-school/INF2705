@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "window.hpp"
 #include "shader_program.hpp"
@@ -131,9 +132,9 @@ int main() {
 	square_reduced.enableAttribute(locColor, 3, 24, 12);
 
 	// Third shader
-	locVertex = transform.getAttribLoc("aPos");
+	locVertex = transform.getAttribLoc("scenePosition");
 	locColor = transform.getAttribLoc("color");
-	locMVP = transform.getUniformLoc("MVP");
+	locMVP = transform.getUniformLoc("pvmMatrix");
 	// Part 2 cube
 	BasicShapeElements cube(
 		cubeVertices,
@@ -175,8 +176,7 @@ int main() {
 		changeRGB(&onlyColorTriVertices[0]);
 		changeRGB(&onlyColorTriVertices[3]);
 		changeRGB(&onlyColorTriVertices[6]);
-		// TODO: Fix color not updating
-		triangle_updated.updateColorData(onlyColorTriVertices, 3 * 3 * sizeof(GLfloat));
+		triangle_updated.updateColorData(onlyColorTriVertices, sizeof(onlyColorTriVertices));
 
 
 		// Shader selection
@@ -201,8 +201,28 @@ int main() {
 		// TODO Partie 2: Calcul des matrices et envoyer une matrice résultante mvp au shader.
 		if (selectShape == 6) {
 			angleDeg += 0.5f;
-			// Utiliser glm pour les calculs de matrices.
-			// glm::mat4 matrix;
+
+			// Projection matrix
+			// FOV: 70°, near plane at 0.1, far plane at 10
+			float aspect = w.getWidth() / (float) w.getHeight();
+			glm::mat4 proj = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 10.0f);
+
+			// View matrix
+			// At (0, 0.5, 2), looking at the origin, with y as up vector
+			glm::mat4 view = glm::lookAt(
+				glm::vec3(0., 1., 2.),
+				glm::vec3(0., 0., 0.),
+				glm::vec3(0., 1., 0.)
+			);
+
+			// Model matrix
+			glm::mat4 model = glm::mat4(1.0f);
+
+			// MVP matrix assembly
+			glm::mat4 mvp = proj * view * model;
+
+			// Send to shader
+			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 		}
 
 		// Drawing

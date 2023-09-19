@@ -58,13 +58,16 @@ void ShaderProgram::link() {
 GLint ShaderProgram::getAttribLoc(const char* name) {
 	GLint attrib = glGetAttribLocation(m_id, name);
 	if (attrib == -1)
-		std::cout << "Could not bind attribute " << name << std::endl;
+		std::cerr << "Could not find attribute " << name << std::endl;
 	return attrib;
 }
 // End of personnal additions
 
 GLint ShaderProgram::getUniformLoc(const char* name) {
-	return glGetUniformLocation(m_id, name);
+	GLint loc = glGetUniformLocation(m_id, name);
+	if (loc == -1)
+		std::cerr << "Could not find attribute " << name << std::endl;
+	return loc;
 }
 
 void ShaderProgram::checkError() {
