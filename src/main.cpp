@@ -175,6 +175,7 @@ int main() {
 		changeRGB(&onlyColorTriVertices[0]);
 		changeRGB(&onlyColorTriVertices[3]);
 		changeRGB(&onlyColorTriVertices[6]);
+		// TODO: Fix color not updating
 		triangle_updated.updateColorData(onlyColorTriVertices, 3 * 3 * sizeof(GLfloat));
 
 
