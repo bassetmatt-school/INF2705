@@ -35,7 +35,7 @@ int main() {
 		std::cout << "Could not initialize glew! GLEW_Error: " << glewGetErrorString(rev) << std::endl;
 		return -2;
 	}
-	printGLInfo();
+	// printGLInfo();
 
 	// Basic shader
 	ShaderProgram basic;
@@ -198,7 +198,7 @@ int main() {
 				break;
 		}
 
-		// TODO Partie 2: Calcul des matrices et envoyer une matrice résultante mvp au shader.
+		// MVP matrix update for case 6
 		if (selectShape == 6) {
 			angleDeg += 0.5f;
 
@@ -210,18 +210,24 @@ int main() {
 			// View matrix
 			// At (0, 0.5, 2), looking at the origin, with y as up vector
 			glm::mat4 view = glm::lookAt(
-				glm::vec3(0., 1., 2.),
+				glm::vec3(0., 0.5, 2.),
 				glm::vec3(0., 0., 0.),
 				glm::vec3(0., 1., 0.)
 			);
 
 			// Model matrix
-			glm::mat4 model = glm::mat4(1.0f);
+			// Rotates around this axis (normalized), with an angle of angleDeg
+			glm::vec3 axis(0.1, 1., 0.1);
+			glm::mat4 model = glm::rotate(
+				glm::mat4(1.0f), // Base matrix, identity here
+				glm::radians(angleDeg),
+				glm::normalize(axis)
+			);
 
 			// MVP matrix assembly
 			glm::mat4 mvp = proj * view * model;
 
-			// Send to shader
+			// Send matrix to shader
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 		}
 
