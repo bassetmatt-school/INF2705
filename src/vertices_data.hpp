@@ -5,18 +5,18 @@
 
 const GLfloat triVertices[] ={
 	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	0.0f, 0.5f, 0.0f
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
 };
 
 const GLfloat squareVertices[] ={
 	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	-0.5f, 0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	-0.5f,  0.5f, 0.0f,
 
-	-0.5f, 0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	0.5f, 0.5f, 0.0f
+	-0.5f,  0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.5f,  0.5f, 0.0f
 };
 
 const GLfloat colorTriVertices[] ={
@@ -36,17 +36,17 @@ const GLfloat colorSquareVertices[] ={
 };
 
 
-// const GLfloat colorSquareVerticesReduced[] ={
-// 	// TODO Partie 1: Définir les coordonnées d'un carré
-// 	// fait de deux triangles avec les attributs de
-// 	// position et couleur entrelacés en fonction de
-// 	// l'entré du vertex shader. Il devrait y avoir
-// 	// moins de données dans ce tableau.
-// };
-// const GLubyte indexes[] ={
-// 	// TODO Partie 1: Définir les indexes pour générer les
-// 	// primitives du carré en réutilisant certaines vertices.
-// };
+const GLfloat colorSquareVerticesReduced[] ={
+	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+	-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+};
+
+const GLubyte indexes[] ={
+	0, 1, 2,
+	2, 1, 3,
+};
 
 
 // Partie 2: On vous donne les vertices et indexes du cube.
