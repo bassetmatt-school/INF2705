@@ -59,11 +59,17 @@ int main() {
 		color.attachShader(fragmentShader);
 		color.link();
 	}
-	// TODO Partie 2: Shader program de transformation.
-	// ... transform;
-	// ... location;
+
+	// Transform shader
+	ShaderProgram transform;
 	{
-		// ...
+		std::string fragmentShaderCode = readFile("shaders/transform.fs.glsl");
+		std::string vertexShaderCode = readFile("shaders/transform.vs.glsl");
+		Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
+		Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
+		transform.attachShader(vertexShader);
+		transform.attachShader(fragmentShader);
+		transform.link();
 	}
 
 	// Variables pour la mise à jour, ne pas modifier.
@@ -95,6 +101,7 @@ int main() {
 	square_rgb.enableAttribute(0, 3, 24, 0);
 	square_rgb.enableAttribute(1, 3, 24, 12);
 
+	// Shape 4: Triangle that moves and changes color
 	BasicShapeMultipleArrays triangle_updated(
 		colorTriVertices,
 		sizeof(colorTriVertices),
@@ -104,6 +111,7 @@ int main() {
 	triangle_updated.enablePosAttribute(0, 3, 24, 0);
 	triangle_updated.enableColorAttribute(1, 3, 12, 12);
 
+	// Shape 5: Square with less vertices specified
 	BasicShapeElements square_reduced(
 		colorSquareVerticesReduced,
 		sizeof(colorSquareVerticesReduced),
@@ -113,23 +121,33 @@ int main() {
 	square_reduced.enableAttribute(0, 3, 24, 0);
 	square_reduced.enableAttribute(1, 3, 24, 12);
 
+	// Part 2 cube
+	BasicShapeElements cube(
+		cubeVertices,
+		sizeof(cubeVertices),
+		cubeIndexes,
+		sizeof(cubeIndexes)
+	);
+	cube.enableAttribute(0, 3, 24, 0);
+	cube.enableAttribute(1, 3, 24, 12);
+
 	// Background color
 	glm::vec4 clearColor(0.11f, 0.12f, 0.13f, 1.0f);
 
-	// TODO Partie 2: Activer le depth test.
-
+	// Enables depth test
+	glEnable(GL_DEPTH_TEST);
 
 	int selectShape = 0;
 	bool isRunning = true;
 	while (isRunning) {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Background Color
 		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
 		if (w.shouldResize())
 			glViewport(0, 0, w.getWidth(), w.getHeight());
 
-		// TODO Partie 1: Nettoyer les tampons appropriées.
+		// Clears buffers
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (w.getKey(Window::Key::T)) {
 			++selectShape %= 7;
@@ -160,7 +178,7 @@ int main() {
 				color.use();
 				break;
 			case 6:
-				color.use();
+				transform.use();
 				break;
 			default:
 				break;
@@ -192,6 +210,9 @@ int main() {
 				break;
 			case 5:
 				square_reduced.draw(GL_TRIANGLES, 6);
+				break;
+			case 6:
+				cube.draw(GL_TRIANGLES, 36);
 				break;
 			default:
 				break;
