@@ -87,6 +87,7 @@ void BasicShapeMultipleArrays::enableColorAttribute(GLuint index, GLint size, GL
 	glBindBuffer(GL_ARRAY_BUFFER, m_colorVbo); // color
 	// Enables the attribute
 	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
+	// TODO: Demander si c'est ok d'utiliser ça et pas `glEnableVertexAttribArray`
 	glEnableVertexArrayAttrib(m_vao, index);
 	// Unselects VAO
 	glBindVertexArray(0);

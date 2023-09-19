@@ -103,13 +103,13 @@ int main() {
 
 	// Shape 4: Triangle that moves and changes color
 	BasicShapeMultipleArrays triangle_updated(
-		colorTriVertices,
-		sizeof(colorTriVertices),
-		colorTriVertices,
-		sizeof(colorTriVertices)
+		triVertices,
+		sizeof(triVertices),
+		onlyColorTriVertices,
+		sizeof(onlyColorTriVertices)
 	);
-	triangle_updated.enablePosAttribute(0, 3, 24, 0);
-	triangle_updated.enableColorAttribute(1, 3, 12, 12);
+	triangle_updated.enablePosAttribute(0, 3, 12, 0);
+	triangle_updated.enableColorAttribute(1, 3, 12, 0);
 
 	// Shape 5: Square with less vertices specified
 	BasicShapeElements square_reduced(
