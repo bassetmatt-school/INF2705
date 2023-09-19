@@ -82,10 +82,18 @@ int main() {
 
 	// Create shapes
 	BasicShapeArrays triangle_unicolor(triVertices, sizeof(triVertices));
+	triangle_unicolor.enableAttribute(0, 3, 12, 0);
+
 	BasicShapeArrays square_unicolor(squareVertices, sizeof(squareVertices));
+	square_unicolor.enableAttribute(0, 3, 12, 0);
 
 	BasicShapeArrays triangle_rgb(colorTriVertices, sizeof(colorTriVertices));
+	triangle_rgb.enableAttribute(0, 3, 24, 0);
+	triangle_rgb.enableAttribute(1, 3, 24, 12);
+
 	BasicShapeArrays square_rgb(colorSquareVertices, sizeof(colorSquareVertices));
+	square_rgb.enableAttribute(0, 3, 24, 0);
+	square_rgb.enableAttribute(1, 3, 24, 12);
 
 	BasicShapeMultipleArrays triangle_updated(
 		colorTriVertices,
@@ -93,6 +101,8 @@ int main() {
 		colorTriVertices,
 		sizeof(colorTriVertices)
 	);
+	triangle_updated.enablePosAttribute(0, 3, 24, 0);
+	triangle_updated.enableColorAttribute(1, 3, 12, 12);
 
 
 	// TODO Partie 2: Instancier le cube ici.
@@ -156,26 +166,18 @@ int main() {
 		// Drawing
 		switch (selectShape) {
 			case 0:
-				triangle_unicolor.enableAttribute(0, 3, 12, 0);
 				triangle_unicolor.draw(GL_TRIANGLES, 3);
 				break;
 			case 1:
-				square_unicolor.enableAttribute(0, 3, 12, 0);
 				square_unicolor.draw(GL_TRIANGLES, 6);
 				break;
 			case 2:
-				triangle_rgb.enableAttribute(0, 3, 24, 0);
-				triangle_rgb.enableAttribute(1, 3, 24, 12);
 				triangle_rgb.draw(GL_TRIANGLES, 3);
 				break;
 			case 3:
-				square_rgb.enableAttribute(0, 3, 24, 0);
-				square_rgb.enableAttribute(1, 3, 24, 12);
 				square_rgb.draw(GL_TRIANGLES, 6);
 				break;
 			case 4:
-				triangle_updated.enablePosAttribute(0, 3, 24, 0);
-				triangle_updated.enableColorAttribute(1, 3, 12, 12);
 				triangle_updated.draw(GL_TRIANGLES, 3);
 				break;
 			default:
