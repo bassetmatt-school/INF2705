@@ -54,6 +54,15 @@ void ShaderProgram::link() {
 	checkError();
 }
 
+// Personnal additions, to use the location of the attribute, not just 0 or 1
+GLint ShaderProgram::getAttribLoc(const char* name) {
+	GLint attrib = glGetAttribLocation(m_id, name);
+	if (attrib == -1)
+		std::cout << "Could not bind attribute " << name << std::endl;
+	return attrib;
+}
+// End of personnal additions
+
 GLint ShaderProgram::getUniformLoc(const char* name) {
 	return glGetUniformLocation(m_id, name);
 }
