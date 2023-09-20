@@ -1,4 +1,4 @@
-#include "shapes.hpp"
+#include "shapes.h"
 
 BasicShapeArrays::BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize) {
 	// Creates objects

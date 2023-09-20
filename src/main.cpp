@@ -8,10 +8,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "window.hpp"
-#include "shader_program.hpp"
-#include "vertices_data.hpp"
-#include "shapes.hpp"
+#include "window.h"
+#include "shader_program.h"
+#include "vertices_data.h"
+#include "shapes.h"
 
 
 void printGLInfo();
