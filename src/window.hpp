@@ -10,6 +10,10 @@ class Window {
 	enum Key {
 		ESC = SDLK_ESCAPE,
 		T = SDLK_t,
+		W = SDLK_w,
+		S = SDLK_s,
+		A = SDLK_a,
+		D = SDLK_d,
 	};
 
 	public:

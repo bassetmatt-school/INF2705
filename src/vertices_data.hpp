@@ -3,52 +3,6 @@
 
 #include <GL/glew.h>
 
-const GLfloat triVertices[] ={
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
-};
-
-const GLfloat squareVertices[] ={
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	-0.5f,  0.5f, 0.0f,
-
-	-0.5f,  0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.5f,  0.5f, 0.0f
-};
-
-const GLfloat colorTriVertices[] ={
-	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-	 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-};
-
-const GLfloat colorSquareVertices[] ={
-	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-	-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-
-	-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-};
-
-
-const GLfloat colorSquareVerticesReduced[] ={
-	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-	-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-};
-
-const GLubyte indexes[] ={
-	0, 1, 2,
-	2, 1, 3,
-};
-
-
 // Partie 2: On vous donne les vertices et indexes du cube.
 // Inspirez-vous en pour les tableaux au-dessus au besoin.
 const GLfloat cubeVertices[] ={

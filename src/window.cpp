@@ -8,7 +8,7 @@ Window::Window()
 	, m_context(nullptr)
 	, m_shouldClose(false)
 	, m_shouldResize(false)
-	, m_width(0), m_height(0) {
+	, m_width(800), m_height(800) {
 
 }
 
