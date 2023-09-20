@@ -41,9 +41,10 @@ class BasicShapeMultipleArrays {
 
 class BasicShapeElements {
 	public:
-	BasicShapeElements(const GLfloat* data, GLsizeiptr byteSize, const GLubyte* indexes, GLsizeiptr indexesByteSize);
+	BasicShapeElements();
 	~BasicShapeElements();
 
+	void setData(const GLfloat* data, GLsizeiptr byteSize, const GLuint* indexes, GLsizeiptr indexesByteSize);
 	void enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);
 	void draw(GLenum mode, GLsizei count);
 

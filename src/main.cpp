@@ -8,6 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "camera.hpp"
 #include "window.hpp"
 #include "shader_program.hpp"
 #include "vertices_data.hpp"
@@ -34,16 +35,16 @@ int main() {
 	}
 	// printGLInfo();
 
-	// Transform shader
-	ShaderProgram transform;
+	// Shader Program
+	ShaderProgram modelShader;
 	{
-		std::string fragmentShaderCode = readFile("shaders/transform.fs.glsl");
-		std::string vertexShaderCode = readFile("shaders/transform.vs.glsl");
+		std::string fragmentShaderCode = readFile("shaders/model.fs.glsl");
+		std::string vertexShaderCode = readFile("shaders/model.vs.glsl");
 		Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
 		Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
-		transform.attachShader(vertexShader);
-		transform.attachShader(fragmentShader);
-		transform.link();
+		modelShader.attachShader(vertexShader);
+		modelShader.attachShader(fragmentShader);
+		modelShader.link();
 	}
 	float angleDeg = 0.0f;
 
@@ -52,19 +53,22 @@ int main() {
 	* Create shapes *
 	*****************/
 
-	// Shape 6: Part 2 cube
-	BasicShapeElements cube(
+	// TODO Remove for model
+	// Cube instanciation
+	BasicShapeElements cube;
+	cube.setData(
 		cubeVertices,
 		sizeof(cubeVertices),
 		cubeIndexes,
 		sizeof(cubeIndexes)
 	);
-	// Third shader attributes
+
+	// Shader attributes
 	GLint locMVP;
 	{
-		GLint locVertex = transform.getAttribLoc("scenePosition");
-		GLint locColor = transform.getAttribLoc("color");
-		locMVP = transform.getUniformLoc("pvmMatrix");
+		GLint locVertex = modelShader.getAttribLoc("scenePosition");
+		GLint locColor = modelShader.getAttribLoc("color");
+		locMVP = modelShader.getUniformLoc("pvmMatrix");
 		cube.enableAttribute(locVertex, 3, 24, 0);
 		cube.enableAttribute(locColor, 3, 24, 12);
 	}
@@ -86,10 +90,9 @@ int main() {
 		// Clears buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		transform.use();
+		modelShader.use();
 
-		// MVP matrix update for case 6
-
+		// MVP matrix update
 		angleDeg += 0.5f;
 
 		// Projection matrix
@@ -124,10 +127,9 @@ int main() {
 		// Drawing
 
 		cube.draw(GL_TRIANGLES, 36);
-
 		w.swap();
 		w.pollEvent();
-		isRunning = !w.shouldClose() && !w.getKey(Window::Key::ESC);
+		isRunning = !w.shouldClose() && !w.getKeyPress(Window::Key::ESC);
 	}
 
 	return 0;

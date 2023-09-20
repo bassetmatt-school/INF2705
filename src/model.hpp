@@ -1,0 +1,22 @@
+#ifndef MODEL_H
+#define MODEL_H
+
+#include "shapes.hpp"
+#include <vector>
+
+class Model {
+	public:
+	Model(const char* path);
+	void draw();
+
+	private:
+
+	void loadObj(const char* path, std::vector<GLfloat>& pos, std::vector<GLuint>& indices);
+
+	private:
+	BasicShapeElements m_shape;
+	GLsizei m_count;
+};
+
+
+#endif // MODEL_H
