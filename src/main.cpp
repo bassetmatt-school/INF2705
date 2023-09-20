@@ -73,6 +73,11 @@ int main() {
 		cube.enableAttribute(locColor, 3, 24, 12);
 	}
 
+	// Camera
+	glm::vec3 playerPos(0.);
+	glm::vec2 playerOrientation(0.);
+	Camera camera(playerPos, playerOrientation);
+
 	// Background color, sort of dark gray
 	glm::vec4 clearColor(0.11f, 0.12f, 0.13f, 1.0f);
 
@@ -102,18 +107,35 @@ int main() {
 
 		// View matrix
 		// At (0, 0.5, 2), looking at the origin, with y as up vector
-		glm::mat4 view = glm::lookAt(
-			glm::vec3(0., 0.5, 2.),
-			glm::vec3(0., 0., 0.),
+		glm::mat4 view = glm::translate(
+			glm::mat4(1.0f),
+			-playerPos
+		);
+		view *= glm::rotate(
+			glm::mat4(1.0f),
+			glm::radians(-playerOrientation.x),
 			glm::vec3(0., 1., 0.)
 		);
+		view *= glm::rotate(
+			glm::mat4(1.0f),
+			glm::radians(playerOrientation.y),
+			glm::vec3(1., 0., 0.)
+		);
 
+		if (w.getKeyHold(Window::Key::W)) playerPos.z -= 0.08;
+		if (w.getKeyHold(Window::Key::S)) playerPos.z += 0.08;
+		if (w.getKeyHold(Window::Key::A)) playerPos.x -= 0.08;
+		if (w.getKeyHold(Window::Key::D)) playerPos.x += 0.08;
+		int x, y;
+		w.getMouseMotion(x, y);
+		playerOrientation.x += x * 0.1;
+		playerOrientation.y += y * 0.1;
 		// Model matrix
 		// Rotates around this axis (normalized), with an angle of angleDeg
 		glm::vec3 axis(0.1, 1., 0.1);
 		glm::mat4 model = glm::rotate(
 			glm::mat4(1.0f), // Base matrix, identity here
-			glm::radians(angleDeg),
+			glm::radians(150.0f),
 			glm::normalize(axis)
 		);
 
