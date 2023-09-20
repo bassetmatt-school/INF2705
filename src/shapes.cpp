@@ -5,7 +5,7 @@ BasicShapeArrays::BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize) {
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
 
-	// VBO data bound with VAO
+	// VBO data bound and loaded with VAO
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER, byteSize, data, GL_STATIC_DRAW);
@@ -28,6 +28,9 @@ void BasicShapeArrays::enableAttribute(GLuint index, GLint size, GLsizei stride,
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	// Enables the attribute
 	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
+	// Using instead `glEnableVertexArrayAttrib` of `glEnableVertexAttribArray`
+	// They have the same behaviour (?) but with this one, there is an extra safety by
+	// specifying the VAO to use
 	glEnableVertexArrayAttrib(m_vao, index);
 	// Unselects VAO
 	glBindVertexArray(0);
@@ -87,7 +90,6 @@ void BasicShapeMultipleArrays::enableColorAttribute(GLuint index, GLint size, GL
 	glBindBuffer(GL_ARRAY_BUFFER, m_colorVbo); // color
 	// Enables the attribute
 	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
-	// TODO: Demander si c'est ok d'utiliser ça et pas `glEnableVertexAttribArray`
 	glEnableVertexArrayAttrib(m_vao, index);
 	// Unselects VAO
 	glBindVertexArray(0);
@@ -142,7 +144,7 @@ BasicShapeElements::BasicShapeElements(const GLfloat* data, GLsizeiptr byteSize,
 	// Shape VBO
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER, byteSize, data, GL_STATIC_DRAW);
-	// Connection Array VBO (EBO)
+	// Connection Array VBO (EBO), using the correct enum variant
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexesByteSize, indexes, GL_STATIC_DRAW);
 

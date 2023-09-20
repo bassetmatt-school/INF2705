@@ -87,29 +87,28 @@ int main() {
 		0.0f, 0.0f, 1.0f,
 	};
 
-	// Create shapes
-	GLint locVertex, locColor, locMVP;
-	locVertex = basic.getAttribLoc("aPos");
+	/****************
+	* Create shapes *
+	*****************/
+
 	// Shape 0: Simple triangle
 	BasicShapeArrays triangle_unicolor(triVertices, sizeof(triVertices));
-	triangle_unicolor.enableAttribute(locVertex, 3, 12, 0);
 
 	// Shape 1: Simple square
 	BasicShapeArrays square_unicolor(squareVertices, sizeof(squareVertices));
-	square_unicolor.enableAttribute(locVertex, 3, 12, 0);
 
-	// Second shader
-	locVertex = color.getAttribLoc("aPos");
-	locColor = color.getAttribLoc("color");
+	// First shader attributes
+	{
+		GLint locVertex = basic.getAttribLoc("aPos");
+		triangle_unicolor.enableAttribute(locVertex, 3, 12, 0);
+		square_unicolor.enableAttribute(locVertex, 3, 12, 0);
+	}
+
 	// Shape 2: RGB Triangle
 	BasicShapeArrays triangle_rgb(colorTriVertices, sizeof(colorTriVertices));
-	triangle_rgb.enableAttribute(locVertex, 3, 24, 0);
-	triangle_rgb.enableAttribute(locColor, 3, 24, 12);
 
 	// Shape 3: RGB Square
 	BasicShapeArrays square_rgb(colorSquareVertices, sizeof(colorSquareVertices));
-	square_rgb.enableAttribute(locVertex, 3, 24, 0);
-	square_rgb.enableAttribute(locColor, 3, 24, 12);
 
 	// Shape 4: Triangle that moves and changes color
 	BasicShapeMultipleArrays triangle_updated(
@@ -118,8 +117,6 @@ int main() {
 		onlyColorTriVertices,
 		sizeof(onlyColorTriVertices)
 	);
-	triangle_updated.enablePosAttribute(locVertex, 3, 12, 0);
-	triangle_updated.enableColorAttribute(locColor, 3, 12, 0);
 
 	// Shape 5: Square with less vertices specified
 	BasicShapeElements square_reduced(
@@ -128,24 +125,39 @@ int main() {
 		indexes,
 		sizeof(indexes)
 	);
-	square_reduced.enableAttribute(locVertex, 3, 24, 0);
-	square_reduced.enableAttribute(locColor, 3, 24, 12);
 
-	// Third shader
-	locVertex = transform.getAttribLoc("scenePosition");
-	locColor = transform.getAttribLoc("color");
-	locMVP = transform.getUniformLoc("pvmMatrix");
-	// Part 2 cube
+	// Second shader attributes
+	{
+		GLint locVertex = color.getAttribLoc("aPos");
+		GLint locColor = color.getAttribLoc("color");
+		triangle_rgb.enableAttribute(locVertex, 3, 24, 0);
+		triangle_rgb.enableAttribute(locColor, 3, 24, 12);
+		square_rgb.enableAttribute(locVertex, 3, 24, 0);
+		square_rgb.enableAttribute(locColor, 3, 24, 12);
+		triangle_updated.enablePosAttribute(locVertex, 3, 12, 0);
+		triangle_updated.enableColorAttribute(locColor, 3, 12, 0);
+		square_reduced.enableAttribute(locVertex, 3, 24, 0);
+		square_reduced.enableAttribute(locColor, 3, 24, 12);
+	}
+
+	// Shape 6: Part 2 cube
 	BasicShapeElements cube(
 		cubeVertices,
 		sizeof(cubeVertices),
 		cubeIndexes,
 		sizeof(cubeIndexes)
 	);
-	cube.enableAttribute(locVertex, 3, 24, 0);
-	cube.enableAttribute(locColor, 3, 24, 12);
+	// Third shader attributes
+	GLint locMVP;
+	{
+		GLint locVertex = transform.getAttribLoc("scenePosition");
+		GLint locColor = transform.getAttribLoc("color");
+		locMVP = transform.getUniformLoc("pvmMatrix");
+		cube.enableAttribute(locVertex, 3, 24, 0);
+		cube.enableAttribute(locColor, 3, 24, 12);
+	}
 
-	// Background color
+	// Background color, sort of dark gray
 	glm::vec4 clearColor(0.11f, 0.12f, 0.13f, 1.0f);
 
 	// Enables depth test
