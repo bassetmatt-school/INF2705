@@ -19,9 +19,6 @@ void printGLInfo();
 #define GL_CHECK_ERROR checkGLError(__LINE__)
 void checkGLError(int line);
 
-void changeRGB(GLfloat* color);
-void changePos(GLfloat* pos, float& cx, float& cy, float& dx, float& dy);
-
 std::string readFile(const char* path);
 
 
@@ -36,30 +33,6 @@ int main() {
 		return -2;
 	}
 	// printGLInfo();
-
-	// Basic shader
-	ShaderProgram basic;
-	{
-		std::string fragmentShaderCode = readFile("shaders/basic.fs.glsl");
-		std::string vertexShaderCode = readFile("shaders/basic.vs.glsl");
-		Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
-		Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
-		basic.attachShader(vertexShader);
-		basic.attachShader(fragmentShader);
-		basic.link();
-	}
-
-	// Color shader
-	ShaderProgram color;
-	{
-		std::string fragmentShaderCode = readFile("shaders/color.fs.glsl");
-		std::string vertexShaderCode = readFile("shaders/color.vs.glsl");
-		Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
-		Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
-		color.attachShader(vertexShader);
-		color.attachShader(fragmentShader);
-		color.link();
-	}
 
 	// Transform shader
 	ShaderProgram transform;
@@ -90,55 +63,6 @@ int main() {
 	/****************
 	* Create shapes *
 	*****************/
-
-	// Shape 0: Simple triangle
-	BasicShapeArrays triangle_unicolor(triVertices, sizeof(triVertices));
-
-	// Shape 1: Simple square
-	BasicShapeArrays square_unicolor(squareVertices, sizeof(squareVertices));
-
-	// First shader attributes
-	{
-		GLint locVertex = basic.getAttribLoc("aPos");
-		triangle_unicolor.enableAttribute(locVertex, 3, 12, 0);
-		square_unicolor.enableAttribute(locVertex, 3, 12, 0);
-	}
-
-	// Shape 2: RGB Triangle
-	BasicShapeArrays triangle_rgb(colorTriVertices, sizeof(colorTriVertices));
-
-	// Shape 3: RGB Square
-	BasicShapeArrays square_rgb(colorSquareVertices, sizeof(colorSquareVertices));
-
-	// Shape 4: Triangle that moves and changes color
-	BasicShapeMultipleArrays triangle_updated(
-		triVertices,
-		sizeof(triVertices),
-		onlyColorTriVertices,
-		sizeof(onlyColorTriVertices)
-	);
-
-	// Shape 5: Square with less vertices specified
-	BasicShapeElements square_reduced(
-		colorSquareVerticesReduced,
-		sizeof(colorSquareVerticesReduced),
-		indexes,
-		sizeof(indexes)
-	);
-
-	// Second shader attributes
-	{
-		GLint locVertex = color.getAttribLoc("aPos");
-		GLint locColor = color.getAttribLoc("color");
-		triangle_rgb.enableAttribute(locVertex, 3, 24, 0);
-		triangle_rgb.enableAttribute(locColor, 3, 24, 12);
-		square_rgb.enableAttribute(locVertex, 3, 24, 0);
-		square_rgb.enableAttribute(locColor, 3, 24, 12);
-		triangle_updated.enablePosAttribute(locVertex, 3, 12, 0);
-		triangle_updated.enableColorAttribute(locColor, 3, 12, 0);
-		square_reduced.enableAttribute(locVertex, 3, 24, 0);
-		square_reduced.enableAttribute(locColor, 3, 24, 12);
-	}
 
 	// Shape 6: Part 2 cube
 	BasicShapeElements cube(
@@ -175,42 +99,15 @@ int main() {
 		// Clears buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if (w.getKey(Window::Key::T)) {
-			++selectShape %= 7;
-			std::cout << "Selected shape: " << selectShape << std::endl;
-		}
-
-		// Position udpate for case 4
-		GLfloat* posPtr = triangle_updated.mapPosData();
-		changePos(posPtr, cx, cy, dx, dy);
-		triangle_updated.unmapPosData();
-		// Color update for case 4
-		changeRGB(&onlyColorTriVertices[0]);
-		changeRGB(&onlyColorTriVertices[3]);
-		changeRGB(&onlyColorTriVertices[6]);
-		triangle_updated.updateColorData(onlyColorTriVertices, sizeof(onlyColorTriVertices));
-
+		// if (w.getKey(Window::Key::T)) {
+		// 	++selectShape %= 7;
+		// 	std::cout << "Selected shape: " << selectShape << std::endl;
+		// }
 
 		// Shader selection
-		switch (selectShape) {
-			case 0:
-			case 1:
-				basic.use();
-				break;
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-				color.use();
-				break;
-			case 6:
-				transform.use();
-				break;
-			default:
-				break;
-		}
+		transform.use();
 
-		// MVP matrix update for case 6
+		// MVP matrix update
 		if (selectShape == 6) {
 			angleDeg += 0.5f;
 
@@ -244,31 +141,7 @@ int main() {
 		}
 
 		// Drawing
-		switch (selectShape) {
-			case 0:
-				triangle_unicolor.draw(GL_TRIANGLES, 3);
-				break;
-			case 1:
-				square_unicolor.draw(GL_TRIANGLES, 6);
-				break;
-			case 2:
-				triangle_rgb.draw(GL_TRIANGLES, 3);
-				break;
-			case 3:
-				square_rgb.draw(GL_TRIANGLES, 6);
-				break;
-			case 4:
-				triangle_updated.draw(GL_TRIANGLES, 3);
-				break;
-			case 5:
-				square_reduced.draw(GL_TRIANGLES, 6);
-				break;
-			case 6:
-				cube.draw(GL_TRIANGLES, 36);
-				break;
-			default:
-				break;
-		}
+		cube.draw(GL_TRIANGLES, 36);
 
 		w.swap();
 		w.pollEvent();
@@ -321,45 +194,6 @@ void printGLInfo() {
 	std::cout << "    Version: " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "    Shading version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 }
-
-
-void changeRGB(GLfloat* color) {
-	unsigned char r = color[0]*255;
-	unsigned char g = color[1]*255;
-	unsigned char b = color[2]*255;
-
-	if (r > 0 && b == 0) {
-		r--;
-		g++;
-	}
-	if (g > 0 && r == 0) {
-		g--;
-		b++;
-	}
-	if (b > 0 && g == 0) {
-		r++;
-		b--;
-	}
-	color[0] = r/255.0f;
-	color[1] = g/255.0f;
-	color[2] = b/255.0f;
-}
-
-void changePos(GLfloat* pos, float& cx, float& cy, float& dx, float& dy) {
-	if ((cx < -1 && dx < 0) || (cx > 1 && dx > 0))
-		dx = -dx;
-	pos[0] += dx;
-	pos[3] += dx;
-	pos[6] += dx;
-	cx += dx;
-	if ((cy < -1 && dy < 0) || (cy > 1 && dy > 0))
-		dy = -dy;
-	pos[1] += dy;
-	pos[4] += dy;
-	pos[7] += dy;
-	cy += dy;
-}
-
 
 std::string readFile(const char* path) {
 	std::ifstream file(path);
