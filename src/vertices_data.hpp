@@ -15,6 +15,20 @@ const GLuint groundIndexes[] ={
 	1,  3,  2,
 };
 
+
+const GLfloat riverVertices[] ={
+	-30.f, 0.f, -30.f, 0.22f, 0.34f, 0.83f,
+	 30.f, 0.f, -30.f, 0.22f, 0.34f, 0.83f,
+	-30.f, 0.f, -50.f, 0.22f, 0.34f, 0.83f,
+	 30.f, 0.f, -50.f, 0.22f, 0.34f, 0.83f,
+};
+
+const GLuint riverIndexes[] ={
+	0,  1,  2,
+	1,  3,  2,
+};
+
+
 const GLfloat cubeVertices[] ={
 	// +z
 	-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,

@@ -71,6 +71,14 @@ int main() {
 		sizeof(groundIndexes)
 	);
 
+	BasicShapeElements river;
+	river.setData(
+		riverVertices,
+		sizeof(riverVertices),
+		riverIndexes,
+		sizeof(riverIndexes)
+	);
+
 	// Shader attributes
 	GLint locMVP;
 	{
@@ -81,6 +89,8 @@ int main() {
 		cube.enableAttribute(locColor, 3, 24, 12);
 		ground.enableAttribute(locVertex, 3, 24, 0);
 		ground.enableAttribute(locColor, 3, 24, 12);
+		river.enableAttribute(locVertex, 3, 24, 0);
+		river.enableAttribute(locColor, 3, 24, 12);
 	}
 
 	// Camera
@@ -95,6 +105,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	bool isRunning = true;
+	int mouseX, mouseY;
 	while (isRunning) {
 		// Background Color
 		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
@@ -114,19 +125,23 @@ int main() {
 		// FOV: 70°, near plane at 0.1, far plane at 10
 		float aspect = w.getWidth() / (float) w.getHeight();
 		glm::mat4 proj = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 100.0f);
-		int x, y;
-		w.getMouseMotion(x, y);
-		playerOrientation.x += x * 0.1;
-		playerOrientation.y += y * 0.1;
+
+		w.getMouseMotion(mouseX, mouseY);
+		playerOrientation.x += mouseX * 0.1;
+		playerOrientation.y += mouseY * 0.1;
+		// Prevents camera from going upside down
+		playerOrientation.y = glm::clamp(playerOrientation.y, -90.f, 90.f);
 		float theta = glm::radians(playerOrientation.x);
+
+		glm::vec3 up(0., 1., 0.);
 		glm::vec3 forward(glm::sin(theta), 0., -glm::cos(theta));
-		glm::vec3 right = glm::cross(forward, glm::vec3(0., 1., 0.));
+		glm::vec3 right = glm::cross(forward, up);
 		if (w.getKeyHold(Window::Key::W)) playerPos += 0.08f * forward;
 		if (w.getKeyHold(Window::Key::S)) playerPos -= 0.08f * forward;
 		if (w.getKeyHold(Window::Key::A)) playerPos -= 0.08f * right;
 		if (w.getKeyHold(Window::Key::D)) playerPos += 0.08f * right;
-		if (w.getKeyHold(Window::Key::Q)) playerPos.y += 0.08f;
-		if (w.getKeyHold(Window::Key::E)) playerPos.y -= 0.08f;
+		if (w.getKeyHold(Window::Key::Q)) playerPos += 0.08f * up;
+		if (w.getKeyHold(Window::Key::E)) playerPos -= 0.08f * up;
 
 		// View matrix
 		// At (0, 0.5, 2), looking at the origin, with y as up vector
@@ -146,6 +161,7 @@ int main() {
 
 		cube.draw(GL_TRIANGLES, 36);
 		ground.draw(GL_TRIANGLES, 6);
+		river.draw(GL_TRIANGLES, 6);
 		w.swap();
 		w.pollEvent();
 		isRunning = !w.shouldClose() && !w.getKeyPress(Window::Key::ESC);
