@@ -1,7 +1,7 @@
-#include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstdio>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -38,8 +38,8 @@ int main() {
 	// Shader Program
 	ShaderProgram modelShader;
 	{
-		std::string fragmentShaderCode = readFile("shaders/model.fs.glsl");
-		std::string vertexShaderCode = readFile("shaders/model.vs.glsl");
+		std::string fragmentShaderCode = readFile("./shaders/model.fs.glsl");
+		std::string vertexShaderCode   = readFile("./shaders/model.vs.glsl");
 		Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
 		Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
 		modelShader.attachShader(vertexShader);
@@ -63,6 +63,14 @@ int main() {
 		sizeof(cubeIndexes)
 	);
 
+	BasicShapeElements ground;
+	ground.setData(
+		groundVertices,
+		sizeof(groundVertices),
+		groundIndexes,
+		sizeof(groundIndexes)
+	);
+
 	// Shader attributes
 	GLint locMVP;
 	{
@@ -71,10 +79,12 @@ int main() {
 		locMVP = modelShader.getUniformLoc("pvmMatrix");
 		cube.enableAttribute(locVertex, 3, 24, 0);
 		cube.enableAttribute(locColor, 3, 24, 12);
+		ground.enableAttribute(locVertex, 3, 24, 0);
+		ground.enableAttribute(locColor, 3, 24, 12);
 	}
 
 	// Camera
-	glm::vec3 playerPos(0.);
+	glm::vec3 playerPos(0., 1., 0.);
 	glm::vec2 playerOrientation(0.);
 	Camera camera(playerPos, playerOrientation);
 
@@ -103,41 +113,27 @@ int main() {
 		// Projection matrix
 		// FOV: 70°, near plane at 0.1, far plane at 10
 		float aspect = w.getWidth() / (float) w.getHeight();
-		glm::mat4 proj = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 10.0f);
-
-		// View matrix
-		// At (0, 0.5, 2), looking at the origin, with y as up vector
-		glm::mat4 view = glm::translate(
-			glm::mat4(1.0f),
-			-playerPos
-		);
-		view *= glm::rotate(
-			glm::mat4(1.0f),
-			glm::radians(-playerOrientation.x),
-			glm::vec3(0., 1., 0.)
-		);
-		view *= glm::rotate(
-			glm::mat4(1.0f),
-			glm::radians(playerOrientation.y),
-			glm::vec3(1., 0., 0.)
-		);
-
-		if (w.getKeyHold(Window::Key::W)) playerPos.z -= 0.08;
-		if (w.getKeyHold(Window::Key::S)) playerPos.z += 0.08;
-		if (w.getKeyHold(Window::Key::A)) playerPos.x -= 0.08;
-		if (w.getKeyHold(Window::Key::D)) playerPos.x += 0.08;
+		glm::mat4 proj = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 100.0f);
 		int x, y;
 		w.getMouseMotion(x, y);
 		playerOrientation.x += x * 0.1;
 		playerOrientation.y += y * 0.1;
+		float theta = glm::radians(playerOrientation.x);
+		glm::vec3 forward(glm::sin(theta), 0., -glm::cos(theta));
+		glm::vec3 right = glm::cross(forward, glm::vec3(0., 1., 0.));
+		if (w.getKeyHold(Window::Key::W)) playerPos += 0.08f * forward;
+		if (w.getKeyHold(Window::Key::S)) playerPos -= 0.08f * forward;
+		if (w.getKeyHold(Window::Key::A)) playerPos -= 0.08f * right;
+		if (w.getKeyHold(Window::Key::D)) playerPos += 0.08f * right;
+		if (w.getKeyHold(Window::Key::Q)) playerPos.y += 0.08f;
+		if (w.getKeyHold(Window::Key::E)) playerPos.y -= 0.08f;
+
+		// View matrix
+		// At (0, 0.5, 2), looking at the origin, with y as up vector
+		glm::mat4 view = camera.getFirstPersonViewMatrix();
+
 		// Model matrix
-		// Rotates around this axis (normalized), with an angle of angleDeg
-		glm::vec3 axis(0.1, 1., 0.1);
-		glm::mat4 model = glm::rotate(
-			glm::mat4(1.0f), // Base matrix, identity here
-			glm::radians(150.0f),
-			glm::normalize(axis)
-		);
+		glm::mat4 model = glm::mat4(1.0f);
 
 		// MVP matrix assembly
 		glm::mat4 mvp = proj * view * model;
@@ -149,6 +145,7 @@ int main() {
 		// Drawing
 
 		cube.draw(GL_TRIANGLES, 36);
+		ground.draw(GL_TRIANGLES, 6);
 		w.swap();
 		w.pollEvent();
 		isRunning = !w.shouldClose() && !w.getKeyPress(Window::Key::ESC);

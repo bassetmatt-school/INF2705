@@ -14,6 +14,9 @@ class Window {
 		A = SDLK_a,
 		S = SDLK_s,
 		D = SDLK_d,
+		//TODO: Remove if unused
+		Q = SDLK_q,
+		E = SDLK_e,
 	};
 
 	public:

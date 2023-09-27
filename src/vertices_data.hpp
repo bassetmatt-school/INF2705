@@ -3,8 +3,18 @@
 
 #include <GL/glew.h>
 
-// Partie 2: On vous donne les vertices et indexes du cube.
-// Inspirez-vous en pour les tableaux au-dessus au besoin.
+const GLfloat groundVertices[] ={
+	-30.f, 0.f, -30.f, 0.14f, 0.60f, 0.11f,
+	-30.f, 0.f,  30.f, 0.14f, 0.60f, 0.11f,
+	 30.f, 0.f, -30.f, 0.14f, 0.60f, 0.11f,
+	 30.f, 0.f,  30.f, 0.14f, 0.60f, 0.11f,
+};
+
+const GLuint groundIndexes[] ={
+	0,  1,  2,
+	1,  3,  2,
+};
+
 const GLfloat cubeVertices[] ={
 	// +z
 	-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
