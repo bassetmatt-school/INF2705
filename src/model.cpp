@@ -4,7 +4,17 @@
 #include <iostream>
 
 Model::Model(const char* path) {
-	// TODO: Initalisation du modèle et des attibuts de la classe
+	std::vector<GLfloat> pos;
+	std::vector<GLuint> indices;
+	loadObj(path, pos, indices);
+	m_count = indices.size();
+	m_shape.setData(
+		pos.data(),
+		pos.size() * sizeof(GLfloat),
+		indices.data(),
+		indices.size() * sizeof(GLuint)
+	);
+	m_shape.enableAttribute(0, 3, 0, 0);
 }
 
 void Model::loadObj(const char* path, std::vector<GLfloat>& pos, std::vector<GLuint>& indices) {
@@ -29,5 +39,5 @@ void Model::loadObj(const char* path, std::vector<GLfloat>& pos, std::vector<GLu
 }
 
 void Model::draw() {
-	// TODO: Dessine le modèle en triangle
+	m_shape.draw(GL_TRIANGLES, m_count);
 }

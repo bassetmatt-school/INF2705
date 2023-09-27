@@ -9,10 +9,11 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "camera.hpp"
-#include "window.hpp"
+#include "model.hpp"
 #include "shader_program.hpp"
-#include "vertices_data.hpp"
 #include "shapes.hpp"
+#include "vertices_data.hpp"
+#include "window.hpp"
 
 
 void printGLInfo();
@@ -79,6 +80,7 @@ int main() {
 		sizeof(riverIndexes)
 	);
 
+	Model suzanne("../models/suzanne.obj");
 	// Shader attributes
 	GLint locMVP;
 	{
@@ -94,7 +96,7 @@ int main() {
 	}
 
 	// Camera
-	glm::vec3 playerPos(0., 1., 0.);
+	glm::vec3 playerPos(0.);
 	glm::vec2 playerOrientation(0.);
 	Camera camera(playerPos, playerOrientation);
 
@@ -117,9 +119,6 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		modelShader.use();
-
-		// MVP matrix update
-		angleDeg += 0.5f;
 
 		// Projection matrix
 		// FOV: 70°, near plane at 0.1, far plane at 10
@@ -144,24 +143,35 @@ int main() {
 		if (w.getKeyHold(Window::Key::E)) playerPos -= 0.08f * up;
 
 		// View matrix
-		// At (0, 0.5, 2), looking at the origin, with y as up vector
 		glm::mat4 view = camera.getFirstPersonViewMatrix();
 
 		// Model matrix
 		glm::mat4 model = glm::mat4(1.0f);
 
+		glm::mat4 display = proj * view;
 		// MVP matrix assembly
-		glm::mat4 mvp = proj * view * model;
+		glm::mat4 mvp = display * model;
 
 		// Send matrix to shader
 		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 
 
 		// Drawing
-
-		cube.draw(GL_TRIANGLES, 36);
+		// cube.draw(GL_TRIANGLES, 36);
 		ground.draw(GL_TRIANGLES, 6);
 		river.draw(GL_TRIANGLES, 6);
+
+		model = glm::translate(
+			glm::mat4(1.0f),
+			glm::vec3(10., 0., 10.)
+		);
+		// MVP matrix assembly
+		mvp = display * model;
+
+		// Send matrix to shader
+		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+		suzanne.draw();
+
 		w.swap();
 		w.pollEvent();
 		isRunning = !w.shouldClose() && !w.getKeyPress(Window::Key::ESC);
