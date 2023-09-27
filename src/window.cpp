@@ -10,7 +10,8 @@ Window::Window()
 	, m_shouldResize(false)
 	, m_width(0), m_height(0)
 	, m_mouseX(0)
-	, m_mouseY(0) {
+	, m_mouseY(0)
+	, m_scroll(0) {
 
 }
 
@@ -57,7 +58,8 @@ bool Window::init() {
 		return false;
 	}
 
-	SDL_GL_SetSwapInterval(1);
+	const int VSYNC = 1; // 1 on, 0 off, -1 adaptive
+	SDL_GL_SetSwapInterval(VSYNC);
 
 	return true;
 }
