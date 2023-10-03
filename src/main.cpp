@@ -1,17 +1,19 @@
-#include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstdio>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "window.hpp"
+#include "camera.hpp"
+#include "model.hpp"
 #include "shader_program.hpp"
-#include "vertices_data.hpp"
 #include "shapes.hpp"
+#include "vertices_data.hpp"
+#include "window.hpp"
 
 
 void printGLInfo();
@@ -34,52 +36,69 @@ int main() {
 	}
 	// printGLInfo();
 
-	// Transform shader
-	ShaderProgram transform;
+	// Shader Program
+	ShaderProgram modelShader;
 	{
-		std::string fragmentShaderCode = readFile("shaders/transform.fs.glsl");
-		std::string vertexShaderCode = readFile("shaders/transform.vs.glsl");
+		std::string fragmentShaderCode = readFile("./shaders/model.fs.glsl");
+		std::string vertexShaderCode   = readFile("./shaders/model.vs.glsl");
 		Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
 		Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
-		transform.attachShader(vertexShader);
-		transform.attachShader(fragmentShader);
-		transform.link();
+		modelShader.attachShader(vertexShader);
+		modelShader.attachShader(fragmentShader);
+		modelShader.link();
 	}
 
-	// Variables pour la mise à jour, ne pas modifier.
-	float cx = 0, cy = 0;
-	float dx = 0.019;
-	float dy = 0.0128;
-
-	float angleDeg = 0.0f;
-
-	// Tableau non constant de la couleur
-	GLfloat onlyColorTriVertices[] ={
-		1.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-	};
 
 	/****************
 	* Create shapes *
 	*****************/
 
-	// Shape 6: Part 2 cube
-	BasicShapeElements cube(
+
+	// TODO Remove for model
+	// Cube instanciation
+	BasicShapeElements cube;
+	cube.setData(
 		cubeVertices,
 		sizeof(cubeVertices),
 		cubeIndexes,
 		sizeof(cubeIndexes)
 	);
-	// Third shader attributes
+
+	BasicShapeElements ground;
+	ground.setData(
+		groundVertices,
+		sizeof(groundVertices),
+		groundIndexes,
+		sizeof(groundIndexes)
+	);
+
+	BasicShapeElements river;
+	river.setData(
+		riverVertices,
+		sizeof(riverVertices),
+		riverIndexes,
+		sizeof(riverIndexes)
+	);
+
+	Model suzanne("../models/suzanne.obj");
+	// Shader attributes
 	GLint locMVP;
 	{
-		GLint locVertex = transform.getAttribLoc("scenePosition");
-		GLint locColor = transform.getAttribLoc("color");
-		locMVP = transform.getUniformLoc("pvmMatrix");
+		GLint locVertex = modelShader.getAttribLoc("scenePosition");
+		GLint locColor = modelShader.getAttribLoc("color");
+		locMVP = modelShader.getUniformLoc("pvmMatrix");
 		cube.enableAttribute(locVertex, 3, 24, 0);
 		cube.enableAttribute(locColor, 3, 24, 12);
+		ground.enableAttribute(locVertex, 3, 24, 0);
+		ground.enableAttribute(locColor, 3, 24, 12);
+		river.enableAttribute(locVertex, 3, 24, 0);
+		river.enableAttribute(locColor, 3, 24, 12);
 	}
+
+	// Camera
+	glm::vec3 playerPos(0.);
+	glm::vec2 playerOrientation(0.);
+	Camera camera(playerPos, playerOrientation);
 
 	// Background color, sort of dark gray
 	glm::vec4 clearColor(0.11f, 0.12f, 0.13f, 1.0f);
@@ -87,8 +106,8 @@ int main() {
 	// Enables depth test
 	glEnable(GL_DEPTH_TEST);
 
-	int selectShape = 0;
 	bool isRunning = true;
+	int mouseX, mouseY;
 	while (isRunning) {
 		// Background Color
 		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
@@ -99,53 +118,69 @@ int main() {
 		// Clears buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// if (w.getKey(Window::Key::T)) {
-		// 	++selectShape %= 7;
-		// 	std::cout << "Selected shape: " << selectShape << std::endl;
-		// }
+		modelShader.use();
 
-		// Shader selection
-		transform.use();
+		// Projection matrix
+		// FOV: 70°, near plane at 0.1, far plane at 10
+		float aspect = w.getWidth() / (float) w.getHeight();
+		glm::mat4 proj = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 100.0f);
 
-		// MVP matrix update
-		if (selectShape == 6) {
-			angleDeg += 0.5f;
+		w.getMouseMotion(mouseX, mouseY);
+		playerOrientation.x += mouseX * 0.1;
+		playerOrientation.y += mouseY * 0.1;
+		// Prevents camera from going upside down
+		playerOrientation.y = glm::clamp(playerOrientation.y, -90.f, 90.f);
+		float theta = glm::radians(playerOrientation.x);
 
-			// Projection matrix
-			// FOV: 70°, near plane at 0.1, far plane at 10
-			float aspect = w.getWidth() / (float) w.getHeight();
-			glm::mat4 proj = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 10.0f);
+		glm::vec3 up(0., 1., 0.);
+		glm::vec3 forward(glm::sin(theta), 0., -glm::cos(theta));
+		glm::vec3 right = glm::cross(forward, up);
+		if (w.getKeyHold(Window::Key::W)) playerPos += 0.08f * forward;
+		if (w.getKeyHold(Window::Key::S)) playerPos -= 0.08f * forward;
+		if (w.getKeyHold(Window::Key::A)) playerPos -= 0.08f * right;
+		if (w.getKeyHold(Window::Key::D)) playerPos += 0.08f * right;
+		//TODO: Remove
+		if (w.getKeyHold(Window::Key::Q)) playerPos += 0.08f * up;
+		if (w.getKeyHold(Window::Key::E)) playerPos -= 0.08f * up;
 
-			// View matrix
-			// At (0, 0.5, 2), looking at the origin, with y as up vector
-			glm::mat4 view = glm::lookAt(
-				glm::vec3(0., 0.5, 2.),
-				glm::vec3(0., 0., 0.),
-				glm::vec3(0., 1., 0.)
-			);
+		// View matrix
+		glm::mat4 view = camera.getFirstPersonViewMatrix();
 
-			// Model matrix
-			// Rotates around this axis (normalized), with an angle of angleDeg
-			glm::vec3 axis(0.1, 1., 0.1);
-			glm::mat4 model = glm::rotate(
-				glm::mat4(1.0f), // Base matrix, identity here
-				glm::radians(angleDeg),
-				glm::normalize(axis)
-			);
+		// Model matrix
+		glm::mat4 model = glm::mat4(1.0f);
 
-			// MVP matrix assembly
-			glm::mat4 mvp = proj * view * model;
+		glm::mat4 display = proj * view;
+		// MVP matrix assembly
+		glm::mat4 mvp = display * model;
 
-			// Send matrix to shader
-			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-		}
+		// Send matrix to shader
+		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+
 
 		// Drawing
-		cube.draw(GL_TRIANGLES, 36);
+
+			// cube.draw(GL_TRIANGLES, 36);
+		ground.draw(GL_TRIANGLES, 6);
+		river.draw(GL_TRIANGLES, 6);
+
+		model = glm::translate(
+			glm::mat4(1.0f),
+			glm::vec3(10., 0., 10.)
+		);
+		model *= glm::scale(
+			glm::mat4(1.0f),
+			glm::vec3(0.5f)
+		);
+		// MVP matrix assembly
+		mvp = display * model;
+
+		// Send matrix to shader
+		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+		suzanne.draw();
 
 		w.swap();
 		w.pollEvent();
-		isRunning = !w.shouldClose() && !w.getKey(Window::Key::ESC);
+		isRunning = !w.shouldClose() && !w.getKeyPress(Window::Key::ESC);
 	}
 
 	return 0;
