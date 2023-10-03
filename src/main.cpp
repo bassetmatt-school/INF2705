@@ -47,6 +47,7 @@ int main() {
 		modelShader.attachShader(fragmentShader);
 		modelShader.link();
 	}
+	modelShader.use();
 
 
 	/****************
@@ -118,7 +119,6 @@ int main() {
 		// Clears buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		modelShader.use();
 
 		// Projection matrix
 		// FOV: 70°, near plane at 0.1, far plane at 10
@@ -135,31 +135,45 @@ int main() {
 		glm::vec3 up(0., 1., 0.);
 		glm::vec3 forward(glm::sin(theta), 0., -glm::cos(theta));
 		glm::vec3 right = glm::cross(forward, up);
-		if (w.getKeyHold(Window::Key::W)) playerPos += 0.08f * forward;
-		if (w.getKeyHold(Window::Key::S)) playerPos -= 0.08f * forward;
-		if (w.getKeyHold(Window::Key::A)) playerPos -= 0.08f * right;
-		if (w.getKeyHold(Window::Key::D)) playerPos += 0.08f * right;
+		if (w.getKeyHold(Window::Key::W)) playerPos += 0.07f * forward;
+		if (w.getKeyHold(Window::Key::S)) playerPos -= 0.07f * forward;
+		if (w.getKeyHold(Window::Key::A)) playerPos -= 0.07f * right;
+		if (w.getKeyHold(Window::Key::D)) playerPos += 0.07f * right;
 		//TODO: Remove
-		if (w.getKeyHold(Window::Key::Q)) playerPos += 0.08f * up;
-		if (w.getKeyHold(Window::Key::E)) playerPos -= 0.08f * up;
+		if (w.getKeyHold(Window::Key::Q)) playerPos += 0.07f * up;
+		if (w.getKeyHold(Window::Key::E)) playerPos -= 0.07f * up;
+		// Switch Camera mode when wheel event
+		switch (w.getMouseScrollDirection()) {
+			case 1:
+				camera.m_mode = Camera::Mode::FIRST_PERSON;
+				break;
+			case -1:
+				camera.m_mode = Camera::Mode::THIRD_PERSON;
+				break;
+			default:	break;
+		}
 
+		glm::mat4 view = glm::mat4(1.0f);
 		// View matrix
-		glm::mat4 view = camera.getFirstPersonViewMatrix();
+		switch (camera.m_mode) {
+			case Camera::Mode::FIRST_PERSON:
+				view = camera.getFirstPersonViewMatrix();
+				break;
+			case Camera::Mode::THIRD_PERSON:
+				view = camera.getThirdPersonViewMatrix();
+				break;
+		}
+		glm::mat4 display = proj * view;
+
 
 		// Model matrix
 		glm::mat4 model = glm::mat4(1.0f);
-
-		glm::mat4 display = proj * view;
 		// MVP matrix assembly
 		glm::mat4 mvp = display * model;
-
 		// Send matrix to shader
 		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 
-
 		// Drawing
-
-			// cube.draw(GL_TRIANGLES, 36);
 		ground.draw(GL_TRIANGLES, 6);
 		river.draw(GL_TRIANGLES, 6);
 
@@ -177,6 +191,28 @@ int main() {
 		// Send matrix to shader
 		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 		suzanne.draw();
+
+		if (camera.m_mode == Camera::Mode::THIRD_PERSON) {
+			model = glm::translate(
+				glm::mat4(1.0f),
+				playerPos - glm::vec3(0., 1, 0.)
+			);
+			model *= glm::scale(
+				glm::mat4(1.0f),
+				glm::vec3(0.5f)
+			);
+			model *= glm::rotate(
+				glm::mat4(1.0f),
+				glm::radians(-playerOrientation.x + 180.f),
+				glm::vec3(0., 1., 0.)
+			);
+			// MVP matrix assembly
+			mvp = display * model;
+
+			// Send matrix to shader
+			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			suzanne.draw();
+		}
 
 		w.swap();
 		w.pollEvent();

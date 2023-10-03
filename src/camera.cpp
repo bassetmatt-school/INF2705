@@ -5,7 +5,9 @@
 
 Camera::Camera(glm::vec3 const& position, glm::vec2 const& orientation) :
 	m_position(position),
-	m_orientation(orientation) {}
+	m_orientation(orientation) {
+	m_mode = Camera::Mode::FIRST_PERSON;
+}
 
 glm::mat4 Camera::getFirstPersonViewMatrix() {
 	glm::mat4 view = glm::mat4(1.0f);
@@ -29,6 +31,18 @@ glm::mat4 Camera::getFirstPersonViewMatrix() {
 }
 
 glm::mat4 Camera::getThirdPersonViewMatrix() {
-	//TODO Better
-	return glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	float theta = glm::radians(m_orientation.x);
+	float phi = glm::radians(m_orientation.y);
+	glm::vec3 forward(
+		glm::sin(theta) * glm::cos(phi),
+		-glm::sin(phi),
+		-glm::cos(theta) * glm::cos(phi)
+	);
+	view = glm::lookAt(
+		m_position - 6.0f * forward,
+		m_position,
+		glm::vec3(0., 1., 0.)
+	);
+	return view;
 }
