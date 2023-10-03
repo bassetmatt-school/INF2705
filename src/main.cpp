@@ -16,6 +16,8 @@
 #include "vertices_data.hpp"
 #include "window.hpp"
 
+constexpr int N_ROWS = 7;
+constexpr int N_GROUPS = N_ROWS * N_ROWS;
 
 void printGLInfo();
 
@@ -23,6 +25,8 @@ void printGLInfo();
 void checkGLError(int line);
 
 std::string readFile(const char* path);
+
+void groupInstanciation(glm::mat4* treeTransform, glm::mat4* rockTransform, glm::mat4* shroomTransform);
 
 
 int main() {
@@ -55,7 +59,6 @@ int main() {
 	* Create shapes *
 	*****************/
 
-
 	// TODO Remove for model
 	// Cube instanciation
 
@@ -81,40 +84,11 @@ int main() {
 	Model rock("../models/rock.obj");
 
 	// Groups
-	const int N_ROWS = 7;
-	const int N_GROUPS = N_ROWS * N_ROWS;
-
-	glm::mat4 groupsTransform[N_GROUPS];
-	for (int i = 0; i < N_GROUPS; ++i) {
-		float x, z;
-		getGroupRandomPos(i, N_ROWS, x, z);
-		glm::mat4 model = glm::translate(
-			glm::mat4(1.0f),
-			glm::vec3(x, -1., z)
-		);
-		float scale = rand01() * 0.6 + 0.7;
-		model = glm::scale(
-			model,
-			glm::vec3(scale)
-		);
-		float rotation = rand01() * 360.f;
-		model = glm::rotate(
-			model,
-			glm::radians(rotation),
-			glm::vec3(0., 1., 0.)
-		);
-		groupsTransform[i] = model;
-	}
 	glm::mat4 treeTransform[N_GROUPS];
-	for (int i = 0; i < N_GROUPS; ++i) {
-		float scale = rand01() * 0.6 + 0.7;
-		treeTransform[i] = glm::scale(
-			groupsTransform[i],
-			glm::vec3(scale)
-		);
-	}
 	glm::mat4 rockTransform[N_GROUPS];
 	glm::mat4 shroomTransform[N_GROUPS];
+
+	groupInstanciation(treeTransform, rockTransform, shroomTransform);
 
 	// Shader attributes
 	GLint locMVP;
@@ -152,16 +126,13 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		// Projection matrix
-		// FOV: 70°, near plane at 0.1, far plane at 10
-		float aspect = w.getWidth() / (float) w.getHeight();
-		glm::mat4 proj = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 100.0f);
-
+		// Player inputs
 		w.getMouseMotion(mouseX, mouseY);
 		playerOrientation.x += mouseX * 0.1;
 		playerOrientation.y += mouseY * 0.1;
 		// Prevents camera from going upside down
-		playerOrientation.y = glm::clamp(playerOrientation.y, -90.f, 90.f);
+		// Limited to 89.99° to avoid bug with 3rd person camera
+		playerOrientation.y = glm::clamp(playerOrientation.y, -89.99f, 89.99f);
 		float theta = glm::radians(playerOrientation.x);
 
 		glm::vec3 up(0., 1., 0.);
@@ -185,7 +156,12 @@ int main() {
 			default:	break;
 		}
 
+		// Projection matrix
+		// FOV: 70°, near plane at 0.1, far plane at 10
+		float aspect = w.getWidth() / (float) w.getHeight();
+		glm::mat4 proj = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 100.0f);
 		glm::mat4 view = glm::mat4(1.0f);
+
 		// View matrix
 		switch (camera.m_mode) {
 			case Camera::Mode::FIRST_PERSON:
@@ -198,53 +174,46 @@ int main() {
 		glm::mat4 display = proj * view;
 
 
-		// Model matrix
-		glm::mat4 model = glm::mat4(1.0f);
-		// MVP matrix assembly
-		glm::mat4 mvp = display * model;
-		// Send matrix to shader
-		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 
-		// Drawing
+		// Drawing ground and river
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 mvp = display * model;
+		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 		ground.draw(GL_TRIANGLES, 6);
 		river.draw(GL_TRIANGLES, 6);
 
-		{ // Draw test
-
-			model = glm::translate(
-				glm::mat4(1.0f),
-				glm::vec3(10., 0., 10.)
-			);
-			model *= glm::scale(
-				glm::mat4(1.0f),
-				glm::vec3(0.5f)
-			);
-			// MVP matrix assembly
-			mvp = display * model;
-
-			// Send matrix to shader
+		// Drawing groups
+		for (int i = 0; i < N_GROUPS; ++i) {
+			// Trees
+			mvp = display * treeTransform[i];
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-			suzanne.draw();
+			tree.draw();
+			// Rocks
+			mvp = display * rockTransform[i];
+			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			rock.draw();
+			// Mushrooms
+			mvp = display * shroomTransform[i];
+			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			mushroom.draw();
 		}
 
+		// Drawing Suzanne if in third person
 		if (camera.m_mode == Camera::Mode::THIRD_PERSON) {
 			model = glm::translate(
 				glm::mat4(1.0f),
 				playerPos - glm::vec3(0., playerPos.y + 1, 0.)
 			);
-			model *= glm::scale(
-				glm::mat4(1.0f),
+			model = glm::scale(
+				model,
 				glm::vec3(0.5f)
 			);
-			model *= glm::rotate(
-				glm::mat4(1.0f),
+			model = glm::rotate(
+				model,
 				glm::radians(-playerOrientation.x + 180.f),
 				glm::vec3(0., 1., 0.)
 			);
-			// MVP matrix assembly
 			mvp = display * model;
-
-			// Send matrix to shader
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 			suzanne.draw();
 		}
@@ -257,7 +226,66 @@ int main() {
 	return 0;
 }
 
+void groupInstanciation(glm::mat4* treeTransform, glm::mat4* rockTransform, glm::mat4* shroomTransform) {
+	glm::mat4 groupsTransform[N_GROUPS];
+	for (int i = 0; i < N_GROUPS; ++i) {
+		// Group transform
+		float x, z;
+		getGroupRandomPos(i, N_ROWS, x, z);
+		float groupScale = rand01() * 0.6 + 0.7;
+		float groupRotation = rand01() * 360.f;
+		glm::mat4 model = glm::translate(
+			glm::mat4(1.0f),
+			glm::vec3(x, -1., z)
+		);
+		model = glm::scale(
+			model,
+			glm::vec3(groupScale)
+		);
+		model = glm::rotate(
+			model,
+			glm::radians(groupRotation),
+			glm::vec3(0., 1., 0.)
+		);
+		groupsTransform[i] = model;
 
+		// Tree transform
+		float treeScale = rand01() * 0.6 + 0.7;
+		treeTransform[i] = glm::scale(
+			model,
+			glm::vec3(treeScale)
+		);
+
+		// Rock Transform
+		float rockRotation = rand01() * 360.f;
+		float rockDistance = rand01() + 1.f;
+		model = glm::rotate(
+			model,
+			glm::radians(rockRotation),
+			glm::vec3(0., 1., 0.)
+		);
+		model = glm::translate(
+			model,
+			glm::vec3(0., 0.2, rockDistance)
+		);
+		model = glm::scale(
+			model,
+			glm::vec3(0.3)
+		);
+		rockTransform[i] = model;
+
+		// Scaling already applied in tree transform,
+		model = glm::translate(
+			treeTransform[i],
+			glm::vec3(0.3, 0.0, 0.3)
+		);
+		// We still rescale because otherwise the mushroom is too big
+		shroomTransform[i] = glm::scale(
+			model,
+			glm::vec3(0.1)
+		);
+	}
+}
 
 void checkGLError(int line) {
 	GLenum error;
