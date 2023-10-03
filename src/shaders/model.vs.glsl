@@ -1,9 +1,9 @@
 #version 450 core
 
 uniform mat4 pvmMatrix;
+uniform vec3 color;
 
 layout (location = 0) in vec3 scenePosition;
-layout (location = 1) in vec3 color;
 
 out vec3 vColor;
 

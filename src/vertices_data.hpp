@@ -4,10 +4,10 @@
 #include <GL/glew.h>
 
 const GLfloat groundVertices[] ={
-	-30.f, -1.f, -30.f, 0.14f, 0.60f, 0.11f,
-	-30.f, -1.f,  30.f, 0.14f, 0.60f, 0.11f,
-	 30.f, -1.f, -30.f, 0.14f, 0.60f, 0.11f,
-	 30.f, -1.f,  30.f, 0.14f, 0.60f, 0.11f,
+	-30.f, -1.f, -30.f,
+	-30.f, -1.f,  30.f,
+	 30.f, -1.f, -30.f,
+	 30.f, -1.f,  30.f,
 };
 
 const GLuint groundIndexes[] ={
@@ -17,10 +17,10 @@ const GLuint groundIndexes[] ={
 
 
 const GLfloat riverVertices[] ={
-	-30.f, -1.f, -30.f, 0.22f, 0.34f, 0.83f,
-	 30.f, -1.f, -30.f, 0.22f, 0.34f, 0.83f,
-	-30.f, -1.f, -50.f, 0.22f, 0.34f, 0.83f,
-	 30.f, -1.f, -50.f, 0.22f, 0.34f, 0.83f,
+	-30.f, -1.f, -30.f,
+	 30.f, -1.f, -30.f,
+	-30.f, -1.f, -50.f,
+	 30.f, -1.f, -50.f,
 };
 
 const GLuint riverIndexes[] ={

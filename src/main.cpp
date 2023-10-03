@@ -91,15 +91,13 @@ int main() {
 	groupInstanciation(treeTransform, rockTransform, shroomTransform);
 
 	// Shader attributes
-	GLint locMVP;
+	GLint locMVP, locColor;
 	{
 		GLint locVertex = modelShader.getAttribLoc("scenePosition");
-		GLint locColor = modelShader.getAttribLoc("color");
+		ground.enableAttribute(locVertex, 3, 12, 0);
+		river.enableAttribute(locVertex, 3, 12, 0);
+		locColor = modelShader.getUniformLoc("color");
 		locMVP = modelShader.getUniformLoc("pvmMatrix");
-		ground.enableAttribute(locVertex, 3, 24, 0);
-		ground.enableAttribute(locColor, 3, 24, 12);
-		river.enableAttribute(locVertex, 3, 24, 0);
-		river.enableAttribute(locColor, 3, 24, 12);
 	}
 
 	// Camera
@@ -110,8 +108,11 @@ int main() {
 	// Background color, sort of dark gray
 	glm::vec4 clearColor(0.11f, 0.12f, 0.13f, 1.0f);
 
-	// Enables depth test
+	// Enables depth test & Face culling
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+	glFrontFace(GL_CW);
 
 	bool isRunning = true;
 	int mouseX, mouseY;
@@ -174,26 +175,30 @@ int main() {
 		glm::mat4 display = proj * view;
 
 
-
 		// Drawing ground and river
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 mvp = display * model;
 		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+		glUniform3f(locColor, 0.14f, 0.60f, 0.11f);
 		ground.draw(GL_TRIANGLES, 6);
+		glUniform3f(locColor, 0.22f, 0.34f, 0.83f);
 		river.draw(GL_TRIANGLES, 6);
 
 		// Drawing groups
 		for (int i = 0; i < N_GROUPS; ++i) {
 			// Trees
 			mvp = display * treeTransform[i];
+			glUniform3f(locColor, 0.47f, 0.32f, 0.03f);
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 			tree.draw();
 			// Rocks
 			mvp = display * rockTransform[i];
+			glUniform3f(locColor, 0.5f, 0.5f, 0.5f);
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 			rock.draw();
 			// Mushrooms
 			mvp = display * shroomTransform[i];
+			glUniform3f(locColor, 0.61f, 0.18f, 0.18f);
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 			mushroom.draw();
 		}
@@ -252,7 +257,7 @@ void groupInstanciation(glm::mat4* treeTransform, glm::mat4* rockTransform, glm:
 		// Tree transform
 		float treeScale = rand01() * 0.6 + 0.7;
 		treeTransform[i] = glm::scale(
-			model,
+			groupsTransform[i],
 			glm::vec3(treeScale)
 		);
 
@@ -260,7 +265,7 @@ void groupInstanciation(glm::mat4* treeTransform, glm::mat4* rockTransform, glm:
 		float rockRotation = rand01() * 360.f;
 		float rockDistance = rand01() + 1.f;
 		model = glm::rotate(
-			model,
+			groupsTransform[i],
 			glm::radians(rockRotation),
 			glm::vec3(0., 1., 0.)
 		);
