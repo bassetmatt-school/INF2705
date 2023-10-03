@@ -12,6 +12,7 @@
 #include "model.hpp"
 #include "shader_program.hpp"
 #include "shapes.hpp"
+#include "utils.hpp"
 #include "vertices_data.hpp"
 #include "window.hpp"
 
@@ -57,13 +58,6 @@ int main() {
 
 	// TODO Remove for model
 	// Cube instanciation
-	BasicShapeElements cube;
-	cube.setData(
-		cubeVertices,
-		sizeof(cubeVertices),
-		cubeIndexes,
-		sizeof(cubeIndexes)
-	);
 
 	BasicShapeElements ground;
 	ground.setData(
@@ -91,18 +85,43 @@ int main() {
 	const int N_GROUPS = N_ROWS * N_ROWS;
 
 	glm::mat4 groupsTransform[N_GROUPS];
-
+	for (int i = 0; i < N_GROUPS; ++i) {
+		float x, z;
+		getGroupRandomPos(i, N_ROWS, x, z);
+		glm::mat4 model = glm::translate(
+			glm::mat4(1.0f),
+			glm::vec3(x, -1., z)
+		);
+		float scale = rand01() * 0.6 + 0.7;
+		model = glm::scale(
+			model,
+			glm::vec3(scale)
+		);
+		float rotation = rand01() * 360.f;
+		model = glm::rotate(
+			model,
+			glm::radians(rotation),
+			glm::vec3(0., 1., 0.)
+		);
+		groupsTransform[i] = model;
+	}
 	glm::mat4 treeTransform[N_GROUPS];
+	for (int i = 0; i < N_GROUPS; ++i) {
+		float scale = rand01() * 0.6 + 0.7;
+		treeTransform[i] = glm::scale(
+			groupsTransform[i],
+			glm::vec3(scale)
+		);
+	}
 	glm::mat4 rockTransform[N_GROUPS];
 	glm::mat4 shroomTransform[N_GROUPS];
+
 	// Shader attributes
 	GLint locMVP;
 	{
 		GLint locVertex = modelShader.getAttribLoc("scenePosition");
 		GLint locColor = modelShader.getAttribLoc("color");
 		locMVP = modelShader.getUniformLoc("pvmMatrix");
-		cube.enableAttribute(locVertex, 3, 24, 0);
-		cube.enableAttribute(locColor, 3, 24, 12);
 		ground.enableAttribute(locVertex, 3, 24, 0);
 		ground.enableAttribute(locColor, 3, 24, 12);
 		river.enableAttribute(locVertex, 3, 24, 0);
@@ -190,25 +209,28 @@ int main() {
 		ground.draw(GL_TRIANGLES, 6);
 		river.draw(GL_TRIANGLES, 6);
 
-		model = glm::translate(
-			glm::mat4(1.0f),
-			glm::vec3(10., 0., 10.)
-		);
-		model *= glm::scale(
-			glm::mat4(1.0f),
-			glm::vec3(0.5f)
-		);
-		// MVP matrix assembly
-		mvp = display * model;
+		{ // Draw test
 
-		// Send matrix to shader
-		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-		suzanne.draw();
+			model = glm::translate(
+				glm::mat4(1.0f),
+				glm::vec3(10., 0., 10.)
+			);
+			model *= glm::scale(
+				glm::mat4(1.0f),
+				glm::vec3(0.5f)
+			);
+			// MVP matrix assembly
+			mvp = display * model;
+
+			// Send matrix to shader
+			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			suzanne.draw();
+		}
 
 		if (camera.m_mode == Camera::Mode::THIRD_PERSON) {
 			model = glm::translate(
 				glm::mat4(1.0f),
-				playerPos - glm::vec3(0., 1, 0.)
+				playerPos - glm::vec3(0., playerPos.y + 1, 0.)
 			);
 			model *= glm::scale(
 				glm::mat4(1.0f),
