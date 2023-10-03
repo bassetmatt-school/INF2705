@@ -139,6 +139,7 @@ int main() {
 		if (w.getKeyHold(Window::Key::S)) playerPos -= 0.08f * forward;
 		if (w.getKeyHold(Window::Key::A)) playerPos -= 0.08f * right;
 		if (w.getKeyHold(Window::Key::D)) playerPos += 0.08f * right;
+		//TODO: Remove
 		if (w.getKeyHold(Window::Key::Q)) playerPos += 0.08f * up;
 		if (w.getKeyHold(Window::Key::E)) playerPos -= 0.08f * up;
 
@@ -164,6 +165,10 @@ int main() {
 		model = glm::translate(
 			glm::mat4(1.0f),
 			glm::vec3(10., 0., 10.)
+		);
+		model *= glm::scale(
+			glm::mat4(1.0f),
+			glm::vec3(0.5f)
 		);
 		// MVP matrix assembly
 		mvp = display * model;
