@@ -64,7 +64,7 @@ const char* pathes[] = {
 // Gazon      - partie 3
 // Personnage (si besoin)
 // Sol
-// Modèles (autant que possible tous ensembles, tous les arbres, tous les rochés, tous les champignons)
+// Modèles (autant que possible tous ensembles, tous les arbres, tous les rochers, tous les champignons)
 // HUD (carré/coeur dans l'écran)
 // Skybox - partie 2
 

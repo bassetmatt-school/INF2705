@@ -82,6 +82,19 @@ int main() {
 	);
 
 	Model suzanne("../models/suzanne.obj");
+	Model tree("../models/tree.obj");
+	Model mushroom("../models/mushroom.obj");
+	Model rock("../models/rock.obj");
+
+	// Groups
+	const int N_ROWS = 7;
+	const int N_GROUPS = N_ROWS * N_ROWS;
+
+	glm::mat4 groupsTransform[N_GROUPS];
+
+	glm::mat4 treeTransform[N_GROUPS];
+	glm::mat4 rockTransform[N_GROUPS];
+	glm::mat4 shroomTransform[N_GROUPS];
 	// Shader attributes
 	GLint locMVP;
 	{
