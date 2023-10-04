@@ -5,9 +5,9 @@
 
 const GLfloat groundVertices[] ={
 	-30.f, -1.f, -30.f, 0.f, 0.f,
-	-30.f, -1.f,  30.f, 0.f, 5.f,
-	 30.f, -1.f, -30.f, 5.f, 0.f,
-	 30.f, -1.f,  30.f, 5.f, 5.f,
+	-30.f, -1.f,  30.f, 0.f, 20.f,
+	 30.f, -1.f, -30.f, 20.f, 0.f,
+	 30.f, -1.f,  30.f, 20.f, 20.f,
 };
 
 const GLuint groundIndexes[] ={
@@ -38,6 +38,15 @@ const GLfloat hudVertices[] ={
 const GLuint hudIndexes[] ={
 	0,  1,  2,
 	1,  3,  2,
+};
+
+const char* skyboxPaths[] ={
+	"../textures/skybox/Daylight Box_Left.bmp",
+	"../textures/skybox/Daylight Box_Right.bmp",
+	"../textures/skybox/Daylight Box_Top.bmp",
+	"../textures/skybox/Daylight Box_Bottom.bmp",
+	"../textures/skybox/Daylight Box_Back.bmp",
+	"../textures/skybox/Daylight Box_Front.bmp",
 };
 
 const GLfloat skyboxVertices[] ={

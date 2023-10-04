@@ -13,17 +13,7 @@ Texture2D::Texture2D(const char* path, GLenum wrapMode) {
 	if (data == NULL)
 		std::cout << "Error loading texture \"" << path << "\": " << stbi_failure_reason() << std::endl;
 
-	int format;
-	switch (nChannels) {
-		case 3:
-			format = GL_RGB;
-			break;
-		case 4:
-			format = GL_RGBA;
-			break;
-		default:
-			break;
-	}
+	int format = (nChannels == 3) ? GL_RGB : GL_RGBA;
 	glGenTextures(1, &m_id);
 	glBindTexture(GL_TEXTURE_2D, m_id);
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
@@ -31,7 +21,6 @@ Texture2D::Texture2D(const char* path, GLenum wrapMode) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	glBindTexture(GL_TEXTURE_2D, 0);
 	stbi_image_free(data);
 }
@@ -75,6 +64,14 @@ TextureCubeMap::TextureCubeMap(const char** pathes) {
 
 
 	for (unsigned int i = 0; i < 6; i++) {
+		int format = (nChannels[i] == 3) ? GL_RGB : GL_RGBA;
+		glGenTextures(1, &m_id);
+		int target = GL_TEXTURE_CUBE_MAP_POSITIVE_X + i;
+		glBindTexture(target, m_id);
+		glTexImage2D(target, 0, format, widths[i], heights[i], 0, format, GL_UNSIGNED_BYTE, datas[i]);
+		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(target, 0);
 		stbi_image_free(datas[i]);
 	}
 
@@ -82,9 +79,11 @@ TextureCubeMap::TextureCubeMap(const char** pathes) {
 }
 
 TextureCubeMap::~TextureCubeMap() {
-	// TODO: Supprimer la mémoire de l'objet
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDeleteTextures(1, &m_id);
 }
 
 void TextureCubeMap::use() {
-	// TODO: Utilise la texture du cubemap
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_id);
 }

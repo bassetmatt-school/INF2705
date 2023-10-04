@@ -103,6 +103,12 @@ int main() {
 	Texture2D riverTex("../textures/waterSeamless.jpg", GL_REPEAT);
 	Texture2D hudTex("../textures/heart.png", GL_CLAMP_TO_BORDER);
 
+	TextureCubeMap skybox(skyboxPaths);
+
+	// Mipmap for repeated textures
+	groundTex.enableMipmap();
+	riverTex.enableMipmap();
+
 	// Groups
 	glm::mat4 treeTransform[N_GROUPS];
 	glm::mat4 rockTransform[N_GROUPS];
