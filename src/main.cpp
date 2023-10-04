@@ -86,6 +86,7 @@ int main() {
 		sizeof(hudIndexes)
 	);
 
+	// TODO: Comment on leur fout des textures à eux ????
 	Model suzanne("../models/suzanne.obj");
 	Model tree("../models/tree.obj");
 	Model mushroom("../models/mushroom.obj");
@@ -99,9 +100,10 @@ int main() {
 	groupInstanciation(treeTransform, rockTransform, shroomTransform);
 
 	// Shader attributes
-	GLint locMVP, locColor;
+	GLint locMVP, locColor, locTexture;
 	{
 		GLint locVertex = modelShader.getAttribLoc("scenePosition");
+		locTexture = modelShader.getUniformLoc("tex");
 		ground.enableAttribute(locVertex, 3, 12, 0);
 		river.enableAttribute(locVertex, 3, 12, 0);
 		hud.enableAttribute(locVertex, 3, 12, 0);
