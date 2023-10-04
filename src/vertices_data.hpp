@@ -28,6 +28,17 @@ const GLuint riverIndexes[] ={
 	1,  3,  2,
 };
 
+const GLfloat hudVertices[] ={
+	-1.f, -1.f, 0.f,
+	 1.f, -1.f, 0.f,
+	-1.f,  1.f, 0.f,
+	 1.f,  1.f, 0.f,
+};
+
+const GLuint hudIndexes[] ={
+	0,  1,  2,
+	1,  3,  2,
+};
 
 const GLfloat cubeVertices[] ={
 	// +z

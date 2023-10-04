@@ -11,7 +11,8 @@ Window::Window()
 	, m_width(0), m_height(0)
 	, m_mouseX(0)
 	, m_mouseY(0)
-	, m_scroll(0) {
+	, m_scroll(0)
+	, m_mouseLock(true) {
 
 }
 
@@ -49,7 +50,7 @@ bool Window::init() {
 	}
 
 	SDL_GetWindowSize(m_window, &m_width, &m_height);
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	SDL_SetRelativeMouseMode(m_mouseLock ? SDL_TRUE : SDL_FALSE);
 
 	m_context = SDL_GL_CreateContext(m_window);
 	if (!m_context) {
@@ -88,6 +89,11 @@ void Window::pollEvent() {
 				break;
 			case SDL_KEYDOWN:
 				if (e.key.repeat) break; // disable key hold for now
+				// If the user presses L, we toggle the mouse lock
+				if (e.key.keysym.sym == SDLK_l) {
+					m_mouseLock = !m_mouseLock;
+					SDL_SetRelativeMouseMode(m_mouseLock ? SDL_TRUE : SDL_FALSE);
+				}
 				m_keys[(Key) e.key.keysym.sym] = true;
 				break;
 			case SDL_KEYUP:

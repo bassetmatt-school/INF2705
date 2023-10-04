@@ -17,7 +17,14 @@
   - [x] 49 objets
     - [x] Les transformations
 - [x] Face culling
-- [ ] Carré de couleur en bas de l'écran
-	- Taille 100
-	- Position 3/4 de sa taille pas rapport au bord
+- [x] Carré de couleur en bas de l'écran
+
+## Partie 2
 - [ ] Textures
+  - [ ] Singe
+  - [ ] Arbre, Mushroom, Rock
+  - [ ] Sol
+  - [ ] Eau
+    - [ ] Animé?
+  - [ ] HUD
+  - [ ] Skybox

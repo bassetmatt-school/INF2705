@@ -14,7 +14,7 @@ class Window {
 		A = SDLK_a,
 		S = SDLK_s,
 		D = SDLK_d,
-		//TODO: Remove if unused
+		//TODO: Remove if unused, ask if should be removed
 		Q = SDLK_q,
 		E = SDLK_e,
 	};
@@ -52,6 +52,8 @@ class Window {
 
 	std::unordered_map<Key, bool> m_keys;
 	int m_mouseX, m_mouseY, m_scroll;
+
+	bool m_mouseLock;
 };
 
 #endif // WINDOW_H

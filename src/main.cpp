@@ -78,6 +78,14 @@ int main() {
 		sizeof(riverIndexes)
 	);
 
+	BasicShapeElements hud;
+	hud.setData(
+		hudVertices,
+		sizeof(hudVertices),
+		hudIndexes,
+		sizeof(hudIndexes)
+	);
+
 	Model suzanne("../models/suzanne.obj");
 	Model tree("../models/tree.obj");
 	Model mushroom("../models/mushroom.obj");
@@ -96,6 +104,7 @@ int main() {
 		GLint locVertex = modelShader.getAttribLoc("scenePosition");
 		ground.enableAttribute(locVertex, 3, 12, 0);
 		river.enableAttribute(locVertex, 3, 12, 0);
+		hud.enableAttribute(locVertex, 3, 12, 0);
 		locColor = modelShader.getUniformLoc("color");
 		locMVP = modelShader.getUniformLoc("pvmMatrix");
 	}
@@ -109,14 +118,14 @@ int main() {
 	glm::vec4 clearColor(0.11f, 0.12f, 0.13f, 1.0f);
 
 	// Enables depth test & Face culling
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	glFrontFace(GL_CW);
 
 	bool isRunning = true;
 	int mouseX, mouseY;
 	while (isRunning) {
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
 		// Background Color
 		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
@@ -219,9 +228,28 @@ int main() {
 				glm::vec3(0., 1., 0.)
 			);
 			mvp = display * model;
+			glUniform3f(locColor, 0.71f, 0.31f, 0.74f);
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 			suzanne.draw();
 		}
+
+		// Disables Depth test for HUD
+		// TODO: Ask if ok?
+		glDisable(GL_DEPTH_TEST);
+		// Drawing HUD
+		float winWidth = w.getWidth();
+		float winHeight = w.getHeight();
+		model = glm::translate(
+			glm::mat4(1.0f),
+			glm::vec3((200. - winWidth) / winWidth, (200. - winHeight)/winHeight, 0.f)
+		);
+		model = glm::scale(
+			model,
+			glm::vec3(100.f / w.getWidth(), 100.f / w.getHeight(), 1.f)
+		);
+		glUniform3f(locColor, 1.f, 1.f, 0.f);
+		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(model));
+		hud.draw(GL_TRIANGLES, 6);
 
 		w.swap();
 		w.pollEvent();
