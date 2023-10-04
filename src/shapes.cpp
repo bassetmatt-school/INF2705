@@ -41,3 +41,11 @@ void BasicShapeElements::draw(GLenum mode, GLsizei count) {
 	glDrawElements(mode, count, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
+
+void BasicShapeElements::drawTexture(GLenum mode, GLsizei count, Texture2D& texture) {
+	glBindVertexArray(m_vao);
+	texture.use();
+	glDrawElements(mode, count, GL_UNSIGNED_INT, 0);
+	texture.unuse();
+	glBindVertexArray(0);
+}

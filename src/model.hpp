@@ -8,10 +8,11 @@ class Model {
 	public:
 	Model(const char* path);
 	void draw();
+	void drawTexture(Texture2D& texture);
 
 	private:
 
-	void loadObj(const char* path, std::vector<GLfloat>& pos, std::vector<GLuint>& indices);
+	void loadObj(const char* path, std::vector<GLfloat>& vertexData, std::vector<GLuint>& indices);
 
 	private:
 	BasicShapeElements m_shape;

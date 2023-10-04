@@ -1,18 +1,15 @@
 #version 450 core
 
-uniform vec3 color;
-uniform mat4 pvmMatrix;
-
-uniform sampler2D tex;
+uniform mat4 MVP;
 
 layout (location = 0) in vec3 scenePosition;
+layout (location = 1) in vec2 texCoord;
 
-out vec3 vColor;
+out Attribs {
+    vec2 texCoord;
+} AttribsOut;
 
-void main(void)
-{
-    gl_Position = pvmMatrix * vec4(scenePosition, 1.0);
-    vColor = color;
-	//  vColor = texture(tex, vec2(0.5, 0.5)).rgb;
-
+void main(void) {
+    gl_Position = MVP * vec4(scenePosition, 1.0);
+	 AttribsOut.texCoord = texCoord.st;
 }

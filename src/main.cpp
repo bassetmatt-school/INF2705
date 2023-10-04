@@ -12,6 +12,7 @@
 #include "model.hpp"
 #include "shader_program.hpp"
 #include "shapes.hpp"
+#include "textures.hpp"
 #include "utils.hpp"
 #include "vertices_data.hpp"
 #include "window.hpp"
@@ -59,38 +60,48 @@ int main() {
 	* Create shapes *
 	*****************/
 
-	// TODO Remove for model
-	// Cube instanciation
-
+	// Shape elements
 	BasicShapeElements ground;
-	ground.setData(
-		groundVertices,
-		sizeof(groundVertices),
-		groundIndexes,
-		sizeof(groundIndexes)
-	);
+	ground.setData(groundVertices, sizeof(groundVertices), groundIndexes, sizeof(groundIndexes));
 
 	BasicShapeElements river;
-	river.setData(
-		riverVertices,
-		sizeof(riverVertices),
-		riverIndexes,
-		sizeof(riverIndexes)
-	);
+	river.setData(riverVertices, sizeof(riverVertices), riverIndexes, sizeof(riverIndexes));
 
 	BasicShapeElements hud;
-	hud.setData(
-		hudVertices,
-		sizeof(hudVertices),
-		hudIndexes,
-		sizeof(hudIndexes)
-	);
+	hud.setData(hudVertices, sizeof(hudVertices), hudIndexes, sizeof(hudIndexes));
 
-	// TODO: Comment on leur fout des textures à eux ????
+	// Shader attributes
+	{
+		GLint locVertex = modelShader.getAttribLoc("scenePosition");
+		GLint locTexCoord = modelShader.getAttribLoc("texCoord");
+		int stride = 5 * sizeof(GLfloat);
+		int offset = 3 * sizeof(GLfloat);
+		ground.enableAttribute(locVertex, 3, stride, 0);
+		ground.enableAttribute(locTexCoord, 2, stride, offset);
+		river.enableAttribute(locVertex, 3, stride, 0);
+		river.enableAttribute(locTexCoord, 2, stride, offset);
+		hud.enableAttribute(locVertex, 3, stride, 0);
+		hud.enableAttribute(locTexCoord, 2, stride, offset);
+		// We always use GL_TEXTURE0 anyway, so no need to modify it in the loop
+		GLint locTexture = modelShader.getUniformLoc("tex");
+		glUniform1i(locTexture, 0);
+	}
+	GLint locMVP = modelShader.getUniformLoc("MVP");
+
+
+	// Models
 	Model suzanne("../models/suzanne.obj");
 	Model tree("../models/tree.obj");
 	Model mushroom("../models/mushroom.obj");
 	Model rock("../models/rock.obj");
+
+	Texture2D suzanneTex("../models/suzanneTexture.png", GL_CLAMP_TO_BORDER);
+	Texture2D treeTex("../models/treeTexture.png", GL_CLAMP_TO_BORDER);
+	Texture2D mushroomTex("../models/mushroomTexture.png", GL_CLAMP_TO_BORDER);
+	Texture2D rockTex("../models/rockTexture.png", GL_CLAMP_TO_BORDER);
+	Texture2D groundTex("../textures/groundSeamless.jpg", GL_REPEAT);
+	Texture2D riverTex("../textures/waterSeamless.jpg", GL_REPEAT);
+	Texture2D hudTex("../textures/heart.png", GL_CLAMP_TO_BORDER);
 
 	// Groups
 	glm::mat4 treeTransform[N_GROUPS];
@@ -99,25 +110,14 @@ int main() {
 
 	groupInstanciation(treeTransform, rockTransform, shroomTransform);
 
-	// Shader attributes
-	GLint locMVP, locColor, locTexture;
-	{
-		GLint locVertex = modelShader.getAttribLoc("scenePosition");
-		locTexture = modelShader.getUniformLoc("tex");
-		ground.enableAttribute(locVertex, 3, 12, 0);
-		river.enableAttribute(locVertex, 3, 12, 0);
-		hud.enableAttribute(locVertex, 3, 12, 0);
-		locColor = modelShader.getUniformLoc("color");
-		locMVP = modelShader.getUniformLoc("pvmMatrix");
-	}
-
 	// Camera
 	glm::vec3 playerPos(0.);
 	glm::vec2 playerOrientation(0.);
 	Camera camera(playerPos, playerOrientation);
 
-	// Background color, sort of dark gray
-	glm::vec4 clearColor(0.11f, 0.12f, 0.13f, 1.0f);
+	// Background color, sky blue
+	// TODO: Remove
+	glm::vec4 clearColor(0.f, 0.60f, 1.0f, 1.0f);
 
 	// Enables depth test & Face culling
 	glCullFace(GL_FRONT);
@@ -150,13 +150,19 @@ int main() {
 		glm::vec3 up(0., 1., 0.);
 		glm::vec3 forward(glm::sin(theta), 0., -glm::cos(theta));
 		glm::vec3 right = glm::cross(forward, up);
-		if (w.getKeyHold(Window::Key::W)) playerPos += 0.07f * forward;
-		if (w.getKeyHold(Window::Key::S)) playerPos -= 0.07f * forward;
-		if (w.getKeyHold(Window::Key::A)) playerPos -= 0.07f * right;
-		if (w.getKeyHold(Window::Key::D)) playerPos += 0.07f * right;
-		//TODO: Remove
-		if (w.getKeyHold(Window::Key::Q)) playerPos += 0.07f * up;
-		if (w.getKeyHold(Window::Key::E)) playerPos -= 0.07f * up;
+		float speed = 0.1f;
+
+		// Sprint feature, can be useful to navigate the terrain
+		if (w.getKeyHold(Window::Key::SHIFT)) speed *= 1.8;
+		if (w.getKeyHold(Window::Key::W)) playerPos += speed * forward;
+		if (w.getKeyHold(Window::Key::S)) playerPos -= speed * forward;
+		if (w.getKeyHold(Window::Key::A)) playerPos -= speed * right;
+		if (w.getKeyHold(Window::Key::D)) playerPos += speed * right;
+		// Upward and downward movement to check from above to have a global
+		// view or below to check face culling
+		if (w.getKeyHold(Window::Key::Q)) playerPos += speed * up;
+		if (w.getKeyHold(Window::Key::E)) playerPos -= speed * up;
+
 		// Switch Camera mode when wheel event
 		switch (w.getMouseScrollDirection()) {
 			case 1:
@@ -186,34 +192,12 @@ int main() {
 		glm::mat4 display = proj * view;
 
 
-		// Drawing ground and river
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 mvp = display * model;
+		// Drawing River, no model it doesn't move and its coordinates are absolute
+		glm::mat4 mvp = display;
 		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-		glUniform3f(locColor, 0.14f, 0.60f, 0.11f);
-		ground.draw(GL_TRIANGLES, 6);
-		glUniform3f(locColor, 0.22f, 0.34f, 0.83f);
-		river.draw(GL_TRIANGLES, 6);
+		river.drawTexture(GL_TRIANGLES, 6, riverTex);
 
-		// Drawing groups
-		for (int i = 0; i < N_GROUPS; ++i) {
-			// Trees
-			mvp = display * treeTransform[i];
-			glUniform3f(locColor, 0.47f, 0.32f, 0.03f);
-			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-			tree.draw();
-			// Rocks
-			mvp = display * rockTransform[i];
-			glUniform3f(locColor, 0.5f, 0.5f, 0.5f);
-			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-			rock.draw();
-			// Mushrooms
-			mvp = display * shroomTransform[i];
-			glUniform3f(locColor, 0.61f, 0.18f, 0.18f);
-			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-			mushroom.draw();
-		}
-
+		glm::mat4 model = glm::mat4(1.0f);
 		// Drawing Suzanne if in third person
 		if (camera.m_mode == Camera::Mode::THIRD_PERSON) {
 			model = glm::translate(
@@ -230,15 +214,35 @@ int main() {
 				glm::vec3(0., 1., 0.)
 			);
 			mvp = display * model;
-			glUniform3f(locColor, 0.71f, 0.31f, 0.74f);
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-			suzanne.draw();
+			suzanne.drawTexture(suzanneTex);
+		}
+
+		// Drawing Ground, same as river, no need for a model matrix
+		mvp = display;
+		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+		ground.drawTexture(GL_TRIANGLES, 6, groundTex);
+
+		// Drawing Groups
+		for (int i = 0; i < N_GROUPS; ++i) {
+			// Trees
+			mvp = display * treeTransform[i];
+			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			tree.drawTexture(treeTex);
+			// Rocks
+			mvp = display * rockTransform[i];
+			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			rock.drawTexture(rockTex);
+			// Mushrooms
+			mvp = display * shroomTransform[i];
+			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			mushroom.drawTexture(mushroomTex);
 		}
 
 		// Disables Depth test for HUD
-		// TODO: Ask if ok?
 		glDisable(GL_DEPTH_TEST);
-		// Drawing HUD
+		// Drawing HUD, not using an orthographic projection, I find this way more "intuitive"
+		// Is drawn without the display matrix to follow the camera automatically
 		float winWidth = w.getWidth();
 		float winHeight = w.getHeight();
 		model = glm::translate(
@@ -249,9 +253,8 @@ int main() {
 			model,
 			glm::vec3(100.f / w.getWidth(), 100.f / w.getHeight(), 1.f)
 		);
-		glUniform3f(locColor, 1.f, 1.f, 0.f);
 		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(model));
-		hud.draw(GL_TRIANGLES, 6);
+		hud.drawTexture(GL_TRIANGLES, 6, hudTex);
 
 		w.swap();
 		w.pollEvent();

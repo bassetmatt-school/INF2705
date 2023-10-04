@@ -1,10 +1,14 @@
 #version 450 core
 
-in vec3 vColor;
+uniform sampler2D tex;
+
+in Attribs {
+    vec2 texCoord;
+} AttribsIn;
 
 out vec4 FragColor;
 
-void main()
-{
-    FragColor = vec4(vColor.rgb, 1.0);
+void main() {
+	FragColor = texture(tex, AttribsIn.texCoord);
+	if (FragColor.a < 0.3) discard;
 }
