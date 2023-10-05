@@ -20,11 +20,17 @@
 - [x] Carré de couleur en bas de l'écran
 
 ## Partie 2
-- [ ] Textures
-  - [ ] Singe
-  - [ ] Arbre, Mushroom, Rock
-  - [ ] Sol
-  - [ ] Eau
+- [ x] Textures
+  - [x] Singe
+  - [x] Arbre, Mushroom, Rock
+  - [x] Sol
+  - [x] Eau
     - [ ] Animé?
-  - [ ] HUD
-  - [ ] Skybox
+  - [x] HUD
+  - [x] Skybox
+
+## Partie 3
+- [ ] LOD
+  - [ ] Billboard
+- [ ] Grass
+  - [ ] Animé?
