@@ -1,9 +1,9 @@
 #version 450 core
 
-uniform sampler2D tex;
+uniform samplerCube tex;
 
 in Attribs {
-    vec2 texCoord;
+    vec3 texCoord;
 } AttribsIn;
 
 out vec4 FragColor;

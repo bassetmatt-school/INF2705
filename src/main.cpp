@@ -49,38 +49,29 @@ int main() {
 	skyboxShader.init("./shaders/skybox.vs.glsl", "./shaders/skybox.fs.glsl");
 	// skyboxShader.use();
 
-
-	/****************
-	* Create shapes *
-	*****************/
-
+	// Instanciation of elements
 	// Shape elements
 	BasicShapeElements ground;
 	ground.setData(groundVertices, sizeof(groundVertices), groundIndexes, sizeof(groundIndexes));
+	ground.enablePosTex(modelShader);
 
 	BasicShapeElements river;
 	river.setData(riverVertices, sizeof(riverVertices), riverIndexes, sizeof(riverIndexes));
+	river.enablePosTex(modelShader);
 
 	BasicShapeElements hud;
 	hud.setData(hudVertices, sizeof(hudVertices), hudIndexes, sizeof(hudIndexes));
+	hud.enablePosTex(modelShader);
 
+	// Skybox is a BasicShapeArrays
 	BasicShapeArrays skybox(skyboxVertices, sizeof(skyboxVertices));
+	skybox.enableAttribute(skyboxShader.getAttribLoc("scenePosition"), 3, 3 * sizeof(GLfloat), 0);
+
 	// Shader attributes
-	{
-		GLint locVertex = modelShader.getAttribLoc("scenePosition");
-		GLint locTexCoord = modelShader.getAttribLoc("texCoord");
-		int stride = 5 * sizeof(GLfloat);
-		int offset = 3 * sizeof(GLfloat);
-		// Small loop to avoid strange errors by copying and pasting code
-		for (BasicShapeElements* shape :{ &ground, &river, &hud }) {
-			shape->enableAttribute(locVertex, 3, stride, 0);
-			shape->enableAttribute(locTexCoord, 2, stride, offset);
-		}
-		// We always use GL_TEXTURE0 anyway, so no need to modify it in the loop
-		GLint locTexture = modelShader.getUniformLoc("tex");
-		glUniform1i(locTexture, 0);
-	}
+	// We always use GL_TEXTURE0 anyway, so no need to modify it in the loop
+	glUniform1i(modelShader.getUniformLoc("tex"), 0);
 	GLint locMVP = modelShader.getUniformLoc("MVP");
+	GLint locMVPSkybox = skyboxShader.getUniformLoc("MVP");
 
 
 	// Models
@@ -94,6 +85,7 @@ int main() {
 	Texture2D mushroomTex("../models/mushroomTexture.png", GL_CLAMP_TO_BORDER);
 	Texture2D rockTex("../models/rockTexture.png", GL_CLAMP_TO_BORDER);
 	Texture2D groundTex("../textures/groundSeamless.jpg", GL_REPEAT);
+	// Texture2D groundTex("../textures/holyhell.bmp", GL_REPEAT);
 	Texture2D riverTex("../textures/waterSeamless.jpg", GL_REPEAT);
 	Texture2D hudTex("../textures/heart.png", GL_CLAMP_TO_BORDER);
 
@@ -153,7 +145,8 @@ int main() {
 		float speed = 0.1f;
 
 		// Sprint feature, can be useful to navigate the terrain
-		if (w.getKeyHold(Window::Key::SHIFT)) speed *= 1.8;
+		if (w.getKeyHold(Window::Key::SHIFT) || w.getKeyHold(Window::Key::BUTTON5)) speed *= 1.8;
+		// Regular movement
 		if (w.getKeyHold(Window::Key::W)) playerPos += speed * forward;
 		if (w.getKeyHold(Window::Key::S)) playerPos -= speed * forward;
 		if (w.getKeyHold(Window::Key::A)) playerPos -= speed * right;
@@ -174,8 +167,6 @@ int main() {
 			default:	break;
 		}
 
-		// Selects main shader for almost all drawings
-		modelShader.use();
 
 		// Projection matrix
 		// FOV: 70°, near plane at 0.1, far plane at 10
@@ -194,7 +185,8 @@ int main() {
 		}
 		glm::mat4 display = proj * view;
 
-
+		// Selects main shader for almost all drawings
+		modelShader.use();
 		// Drawing River, no model it doesn't move and its coordinates are absolute
 		glm::mat4 mvp = display;
 		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
@@ -258,6 +250,18 @@ int main() {
 		);
 		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(model));
 		hud.drawTexture(GL_TRIANGLES, 6, hudTex);
+		glEnable(GL_DEPTH_TEST);
+
+		// Skybox
+		glDepthFunc(GL_LEQUAL);
+		skyboxShader.use();
+
+		// Removes translation from view matrix
+		mvp = proj * glm::mat4(glm::mat3(view));
+		glUniformMatrix4fv(skyboxShader.getUniformLoc("MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
+		skyboxTex.use();
+		skybox.draw(GL_TRIANGLES, 36);
+		glDepthFunc(GL_LESS);
 
 		w.swap();
 		w.pollEvent();
@@ -323,7 +327,7 @@ void groupInstanciation(glm::mat4* treeTransform, glm::mat4* rockTransform, glm:
 		// We still rescale because otherwise the mushroom is too big
 		shroomTransform[i] = glm::scale(
 			model,
-			glm::vec3(0.1)
+			glm::vec3(0.05)
 		);
 	}
 }

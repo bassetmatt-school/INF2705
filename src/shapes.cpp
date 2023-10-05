@@ -29,10 +29,17 @@ void BasicShapeElements::enableAttribute(GLuint index, GLint size, GLsizei strid
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
-	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
 	glEnableVertexArrayAttrib(m_vao, index);
+	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
 
 	glBindVertexArray(0);
+}
+
+void BasicShapeElements::enablePosTex(ShaderProgram& s) {
+	GLint locPos = s.getAttribLoc("scenePosition");
+	GLint locTex = s.getAttribLoc("texCoord");
+	this->enableAttribute(locPos, 3, 5 * sizeof(GLfloat), 0);
+	this->enableAttribute(locTex, 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat));
 }
 
 void BasicShapeElements::draw(GLenum mode, GLsizei count) {
@@ -67,21 +74,13 @@ BasicShapeArrays::~BasicShapeArrays() {
 void BasicShapeArrays::enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset) {
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
 	glEnableVertexArrayAttrib(m_vao, index);
+	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
 	glBindVertexArray(0);
 }
 
 void BasicShapeArrays::draw(GLenum mode, GLsizei count) {
 	glBindVertexArray(m_vao);
 	glDrawArrays(mode, 0, count);
-	glBindVertexArray(0);
-}
-
-void BasicShapeArrays::drawTexture(GLenum mode, GLsizei count, Texture2D& texture) {
-	glBindVertexArray(m_vao);
-	texture.use();
-	glDrawArrays(mode, 0, count);
-	texture.unuse();
 	glBindVertexArray(0);
 }

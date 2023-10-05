@@ -17,6 +17,7 @@ class Window {
 		Q = SDLK_q,
 		E = SDLK_e,
 		SHIFT = SDLK_LSHIFT,
+		BUTTON5 = SDL_BUTTON_X2
 	};
 
 	public:
