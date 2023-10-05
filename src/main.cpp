@@ -219,20 +219,28 @@ int main() {
 		ground.drawTexture(GL_TRIANGLES, 6, groundTex);
 
 		// Drawing Groups
+		// Trees
+		treeTex.use();
 		for (int i = 0; i < N_GROUPS; ++i) {
-			// Trees
 			mvp = display * treeTransform[i];
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-			tree.drawTexture(treeTex);
-			// Rocks
+			tree.draw();
+		}
+		// Rocks
+		rockTex.use();
+		for (int i = 0; i < N_GROUPS; ++i) {
 			mvp = display * rockTransform[i];
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-			rock.drawTexture(rockTex);
-			// Mushrooms
+			rock.draw();
+		}
+		// Mushrooms
+		mushroomTex.use();
+		for (int i = 0; i < N_GROUPS; ++i) {
 			mvp = display * shroomTransform[i];
 			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
-			mushroom.drawTexture(mushroomTex);
+			mushroom.draw();
 		}
+		mushroomTex.unuse();
 
 		// Disables Depth test for HUD
 		glDisable(GL_DEPTH_TEST);
@@ -257,11 +265,7 @@ int main() {
 		skyboxShader.use();
 
 		// Removes translation from view matrix
-		model = glm::scale(
-			glm::mat4(1.0f),
-			glm::vec3(70.f)
-		);
-		mvp = proj * glm::mat4(glm::mat3(view)) * model;
+		mvp = proj * glm::mat4(glm::mat3(view));
 		glUniformMatrix4fv(skyboxShader.getUniformLoc("MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
 		skyboxTex.use();
 		skybox.draw(GL_TRIANGLES, 36);

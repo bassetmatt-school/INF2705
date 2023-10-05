@@ -9,6 +9,7 @@ out Attribs {
 } AttribsOut;
 
 void main(void) {
-    gl_Position = MVP * vec4(scenePosition, 1.0);
+	 vec4 pos = MVP * vec4(scenePosition, 1.0);
+    gl_Position = pos.xyww;
 	 AttribsOut.texCoord = scenePosition;
 }
