@@ -242,8 +242,10 @@ int main() {
 		}
 		mushroomTex.unuse();
 
-		// Disables Depth test for HUD
-		glDisable(GL_DEPTH_TEST);
+		// Disabling depth test makes the heart disappear behind the skybox, so instead I
+		// use the GL_ALWAYS function
+		glDepthFunc(GL_ALWAYS);
+
 		// Drawing HUD, not using an orthographic projection, I find this way more "intuitive"
 		// Is drawn without the display matrix to follow the camera automatically
 		float winWidth = w.getWidth();
@@ -258,13 +260,11 @@ int main() {
 		);
 		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(model));
 		hud.drawTexture(GL_TRIANGLES, 6, hudTex);
-		glEnable(GL_DEPTH_TEST);
 
-		// Skybox
+		// Skybox, changing depth function to `GL_LEQUAL` because its value is exactly the limit
 		glDepthFunc(GL_LEQUAL);
 		skyboxShader.use();
-
-		// Removes translation from view matrix
+		// Removes translation from view matrix, so the skybox is always centered on the camera
 		mvp = proj * glm::mat4(glm::mat3(view));
 		glUniformMatrix4fv(skyboxShader.getUniformLoc("MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
 		skyboxTex.use();
