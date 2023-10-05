@@ -257,7 +257,11 @@ int main() {
 		skyboxShader.use();
 
 		// Removes translation from view matrix
-		mvp = proj * glm::mat4(glm::mat3(view));
+		model = glm::scale(
+			glm::mat4(1.0f),
+			glm::vec3(70.f)
+		);
+		mvp = proj * glm::mat4(glm::mat3(view)) * model;
 		glUniformMatrix4fv(skyboxShader.getUniformLoc("MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
 		skyboxTex.use();
 		skybox.draw(GL_TRIANGLES, 36);
