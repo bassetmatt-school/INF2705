@@ -22,6 +22,7 @@ class ShaderProgram {
 	ShaderProgram();
 	~ShaderProgram();
 
+	void init(const char* vsPath, const char* fsPath);
 	void use();
 	void attachShader(Shader& s);
 	void link();

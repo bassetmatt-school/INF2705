@@ -1,6 +1,11 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <sstream>
+
 #include "shader_program.hpp"
 
-#include <iostream>
+std::string readFile(const char* path);
 
 Shader::Shader(GLenum type, const char* code) {
 	m_id = glCreateShader(type);
@@ -39,6 +44,16 @@ ShaderProgram::ShaderProgram() {
 
 ShaderProgram::~ShaderProgram() {
 	glDeleteProgram(m_id);
+}
+
+void ShaderProgram::init(const char* vsPath, const char* fsPath) {
+	std::string vertexShaderCode   = readFile(vsPath);
+	std::string fragmentShaderCode = readFile(fsPath);
+	Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
+	Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
+	this->attachShader(vertexShader);
+	this->attachShader(fragmentShader);
+	this->link();
 }
 
 void ShaderProgram::use() {
@@ -80,4 +95,11 @@ void ShaderProgram::checkError() {
 		glDeleteProgram(m_id);
 		std::cout << "Program linking error: " << infoLog << std::endl;
 	}
+}
+
+std::string readFile(const char* path) {
+	std::ifstream file(path);
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	return buffer.str();
 }

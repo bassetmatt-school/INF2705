@@ -1,6 +1,4 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <cstdio>
 
 #include <GL/glew.h>
@@ -44,16 +42,12 @@ int main() {
 
 	// Shader Program
 	ShaderProgram modelShader;
-	{
-		std::string fragmentShaderCode = readFile("./shaders/model.fs.glsl");
-		std::string vertexShaderCode   = readFile("./shaders/model.vs.glsl");
-		Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
-		Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
-		modelShader.attachShader(vertexShader);
-		modelShader.attachShader(fragmentShader);
-		modelShader.link();
-	}
-	modelShader.use();
+	modelShader.init("./shaders/model.vs.glsl", "./shaders/model.fs.glsl");
+
+
+	ShaderProgram skyboxShader;
+	skyboxShader.init("./shaders/skybox.vs.glsl", "./shaders/skybox.fs.glsl");
+	// skyboxShader.use();
 
 
 	/****************
@@ -70,18 +64,18 @@ int main() {
 	BasicShapeElements hud;
 	hud.setData(hudVertices, sizeof(hudVertices), hudIndexes, sizeof(hudIndexes));
 
+	BasicShapeArrays skybox(skyboxVertices, sizeof(skyboxVertices));
 	// Shader attributes
 	{
 		GLint locVertex = modelShader.getAttribLoc("scenePosition");
 		GLint locTexCoord = modelShader.getAttribLoc("texCoord");
 		int stride = 5 * sizeof(GLfloat);
 		int offset = 3 * sizeof(GLfloat);
-		ground.enableAttribute(locVertex, 3, stride, 0);
-		ground.enableAttribute(locTexCoord, 2, stride, offset);
-		river.enableAttribute(locVertex, 3, stride, 0);
-		river.enableAttribute(locTexCoord, 2, stride, offset);
-		hud.enableAttribute(locVertex, 3, stride, 0);
-		hud.enableAttribute(locTexCoord, 2, stride, offset);
+		// Small loop to avoid strange errors by copying and pasting code
+		for (BasicShapeElements* shape :{ &ground, &river, &hud }) {
+			shape->enableAttribute(locVertex, 3, stride, 0);
+			shape->enableAttribute(locTexCoord, 2, stride, offset);
+		}
 		// We always use GL_TEXTURE0 anyway, so no need to modify it in the loop
 		GLint locTexture = modelShader.getUniformLoc("tex");
 		glUniform1i(locTexture, 0);
@@ -103,7 +97,7 @@ int main() {
 	Texture2D riverTex("../textures/waterSeamless.jpg", GL_REPEAT);
 	Texture2D hudTex("../textures/heart.png", GL_CLAMP_TO_BORDER);
 
-	TextureCubeMap skybox(skyboxPaths);
+	TextureCubeMap skyboxTex(skyboxPaths);
 
 	// Mipmap for repeated textures
 	groundTex.enableMipmap();
@@ -179,6 +173,9 @@ int main() {
 				break;
 			default:	break;
 		}
+
+		// Selects main shader for almost all drawings
+		modelShader.use();
 
 		// Projection matrix
 		// FOV: 70°, near plane at 0.1, far plane at 10
@@ -371,11 +368,4 @@ void printGLInfo() {
 	std::cout << "    Renderer: " << glGetString(GL_RENDERER) << std::endl;
 	std::cout << "    Version: " << glGetString(GL_VERSION) << std::endl;
 	std::cout << "    Shading version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-}
-
-std::string readFile(const char* path) {
-	std::ifstream file(path);
-	std::stringstream buffer;
-	buffer << file.rdbuf();
-	return buffer.str();
 }
