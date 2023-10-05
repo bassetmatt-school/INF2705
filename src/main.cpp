@@ -266,7 +266,7 @@ int main() {
 		skyboxShader.use();
 		// Removes translation from view matrix, so the skybox is always centered on the camera
 		mvp = proj * glm::mat4(glm::mat3(view));
-		glUniformMatrix4fv(skyboxShader.getUniformLoc("MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
+		glUniformMatrix4fv(locMVPSkybox, 1, GL_FALSE, glm::value_ptr(mvp));
 		skyboxTex.use();
 		skybox.draw(GL_TRIANGLES, 36);
 		glDepthFunc(GL_LESS);

@@ -12,7 +12,6 @@ Camera::Camera(glm::vec3 const& position, glm::vec2 const& orientation) :
 glm::mat4 Camera::getFirstPersonViewMatrix() {
 	glm::mat4 view = glm::mat4(1.0f);
 	float theta = glm::radians(m_orientation.x);
-	float phi = glm::radians(m_orientation.y);
 	view = glm::rotate(
 		view,
 		glm::radians(m_orientation.x),
