@@ -1,7 +1,6 @@
 #include "shapes.hpp"
 
 BasicShapeElements::BasicShapeElements() {
-	// Creates objects
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
 	glGenBuffers(1, &m_ebo);
@@ -46,6 +45,43 @@ void BasicShapeElements::drawTexture(GLenum mode, GLsizei count, Texture2D& text
 	glBindVertexArray(m_vao);
 	texture.use();
 	glDrawElements(mode, count, GL_UNSIGNED_INT, 0);
+	texture.unuse();
+	glBindVertexArray(0);
+}
+
+BasicShapeArrays::BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize) {
+	glGenVertexArrays(1, &m_vao);
+	glGenBuffers(1, &m_vbo);
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBufferData(GL_ARRAY_BUFFER, byteSize, data, GL_STATIC_DRAW);
+	glBindVertexArray(0);
+}
+
+BasicShapeArrays::~BasicShapeArrays() {
+	glUseProgram(0);
+	glDeleteBuffers(1, &m_vbo);
+	glDeleteVertexArrays(1, &m_vao);
+}
+
+void BasicShapeArrays::enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset) {
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, (void*) offset);
+	glEnableVertexArrayAttrib(m_vao, index);
+	glBindVertexArray(0);
+}
+
+void BasicShapeArrays::draw(GLenum mode, GLsizei count) {
+	glBindVertexArray(m_vao);
+	glDrawArrays(mode, 0, count);
+	glBindVertexArray(0);
+}
+
+void BasicShapeArrays::drawTexture(GLenum mode, GLsizei count, Texture2D& texture) {
+	glBindVertexArray(m_vao);
+	texture.use();
+	glDrawArrays(mode, 0, count);
 	texture.unuse();
 	glBindVertexArray(0);
 }

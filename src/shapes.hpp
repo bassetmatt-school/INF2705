@@ -20,4 +20,18 @@ class BasicShapeElements {
 	GLuint m_ebo;
 };
 
+class BasicShapeArrays {
+	public:
+	BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize);
+	~BasicShapeArrays();
+
+	void enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);
+	void draw(GLenum mode, GLsizei count);
+	void drawTexture(GLenum mode, GLsizei count, Texture2D& texture);
+
+	private:
+	GLuint m_vao;
+	GLuint m_vbo;
+};
+
 #endif // SHAPES_H
