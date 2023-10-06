@@ -19,8 +19,8 @@ const GLuint groundIndexes[] ={
 const GLfloat riverVertices[] ={
 	-30.f, -1.f, -50.f, 0.f, 0.f,
 	-30.f, -1.f, -30.f, 0.f, 2.f,
-	 30.f, -1.f, -50.f, 6.f, 0.f,
-	 30.f, -1.f, -30.f, 6.f, 2.f,
+	 30.f, -1.f, -50.f, 5.f, 0.f,
+	 30.f, -1.f, -30.f, 5.f, 2.f,
 };
 
 const GLuint riverIndexes[] ={

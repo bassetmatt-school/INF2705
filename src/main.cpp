@@ -47,7 +47,16 @@ int main() {
 
 	ShaderProgram skyboxShader;
 	skyboxShader.init("./shaders/skybox.vs.glsl", "./shaders/skybox.fs.glsl");
-	// skyboxShader.use();
+
+	ShaderProgram riverShader;
+	riverShader.init("./shaders/river.vs.glsl", "./shaders/river.fs.glsl");
+
+	// Shader attributes
+	// We always use GL_TEXTURE0 anyway, so no need to modify it in the loop
+	glUniform1i(modelShader.getUniformLoc("tex"), 0);
+	GLint locMVP = modelShader.getUniformLoc("MVP");
+	GLint locMVPSkybox = skyboxShader.getUniformLoc("MVP");
+	GLint locTime = riverShader.getUniformLoc("time");
 
 	// Instanciation of elements
 	// Shape elements
@@ -57,7 +66,7 @@ int main() {
 
 	BasicShapeElements river;
 	river.setData(riverVertices, sizeof(riverVertices), riverIndexes, sizeof(riverIndexes));
-	river.enablePosTex(modelShader);
+	river.enablePosTex(riverShader);
 
 	BasicShapeElements hud;
 	hud.setData(hudVertices, sizeof(hudVertices), hudIndexes, sizeof(hudIndexes));
@@ -66,12 +75,6 @@ int main() {
 	// Skybox is a BasicShapeArrays
 	BasicShapeArrays skybox(skyboxVertices, sizeof(skyboxVertices));
 	skybox.enableAttribute(skyboxShader.getAttribLoc("scenePosition"), 3, 3 * sizeof(GLfloat), 0);
-
-	// Shader attributes
-	// We always use GL_TEXTURE0 anyway, so no need to modify it in the loop
-	glUniform1i(modelShader.getUniformLoc("tex"), 0);
-	GLint locMVP = modelShader.getUniformLoc("MVP");
-	GLint locMVPSkybox = skyboxShader.getUniformLoc("MVP");
 
 
 	// Models
@@ -107,11 +110,7 @@ int main() {
 	glm::vec2 playerOrientation(0.);
 	Camera camera(playerPos, playerOrientation);
 
-	// Background color, sky blue
-	// TODO: Remove
-	glm::vec4 clearColor(0.f, 0.60f, 1.0f, 1.0f);
-
-	// Enables depth test & Face culling
+	// Enables choses the correct face culling method
 	glCullFace(GL_FRONT);
 	glFrontFace(GL_CW);
 
@@ -120,8 +119,6 @@ int main() {
 	while (isRunning) {
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
-		// Background Color
-		glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
 		if (w.shouldResize())
 			glViewport(0, 0, w.getWidth(), w.getHeight());
@@ -135,7 +132,7 @@ int main() {
 		playerOrientation.x += mouseX * 0.1;
 		playerOrientation.y += mouseY * 0.1;
 		// Prevents camera from going upside down
-		// Limited to 89.99° to avoid bug with 3rd person camera
+		// Limited to 89.99° intead of 90 to avoid bug with 3rd person camera
 		playerOrientation.y = glm::clamp(playerOrientation.y, -89.99f, 89.99f);
 		float theta = glm::radians(playerOrientation.x);
 
@@ -186,12 +183,14 @@ int main() {
 		glm::mat4 display = proj * view;
 
 		// Selects main shader for almost all drawings
-		modelShader.use();
+		riverShader.use();
 		// Drawing River, no model it doesn't move and its coordinates are absolute
 		glm::mat4 mvp = display;
+		glUniform1f(locTime, (float) w.getTick() / 1000.f);
 		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 		river.drawTexture(GL_TRIANGLES, 6, riverTex);
 
+		modelShader.use();
 		glm::mat4 model = glm::mat4(1.0f);
 		// Drawing Suzanne if in third person
 		if (camera.m_mode == Camera::Mode::THIRD_PERSON) {

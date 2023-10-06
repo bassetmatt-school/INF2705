@@ -2,12 +2,10 @@
 
 uniform samplerCube tex;
 
-in Attribs {
-    vec3 texCoord;
-} AttribsIn;
+in vec3 texCoord;
 
 out vec4 FragColor;
 
 void main() {
-	FragColor = texture(tex, AttribsIn.texCoord);
+	FragColor = texture(tex, texCoord);
 }
