@@ -1,5 +1,5 @@
-# INF2705 - TP1
-Project to be introduced to OpenGL by displaying simple primitives.
+# INF2705
+Project to be introduced to OpenGL.
 
 ## Requirements
 - `make`
@@ -14,13 +14,9 @@ make run
 ```
 
 ## Usage
-- `T` key to change shape between
-  - Unicolor triangle, square
-  - RGB triangle, square
-  - RGB triangle that moves and changes color
-  - The same RGB square, but optimized
-  - A very cool moving cube
-- `Esc` to quit
-
-## Questions
-- Version vraiment 330 pour les shaders?
+- Move with WASD
+- Look around with mouse
+- Use mouse scroll to switch between 1st and 3rd person POV
+- Use left shift or mouse button 5 to sprint
+- Use `Q` to go up and `E` to go down
+- `L` to unlock mouse
