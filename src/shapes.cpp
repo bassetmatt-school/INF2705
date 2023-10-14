@@ -36,7 +36,7 @@ void BasicShapeElements::enableAttribute(GLuint index, GLint size, GLsizei strid
 }
 
 void BasicShapeElements::enablePosTex(ShaderProgram& s) {
-	GLint locPos = s.getAttribLoc("scenePosition");
+	GLint locPos = s.getAttribLoc("pos");
 	GLint locTex = s.getAttribLoc("inTexCoord");
 	this->enableAttribute(locPos, 3, 5 * sizeof(GLfloat), 0);
 	this->enableAttribute(locTex, 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat));

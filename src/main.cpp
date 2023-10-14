@@ -74,7 +74,7 @@ int main() {
 
 	// Skybox is a BasicShapeArrays
 	BasicShapeArrays skybox(skyboxVertices, sizeof(skyboxVertices));
-	skybox.enableAttribute(skyboxShader.getAttribLoc("scenePosition"), 3, 3 * sizeof(GLfloat), 0);
+	skybox.enableAttribute(skyboxShader.getAttribLoc("pos"), 3, 3 * sizeof(GLfloat), 0);
 
 
 	// Models

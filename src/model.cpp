@@ -14,8 +14,8 @@ Model::Model(const char* path) {
 		indices.data(),
 		indices.size() * sizeof(GLuint)
 	);
-	m_shape.enableAttribute(0, 3, 20, 0);
-	m_shape.enableAttribute(1, 2, 20, 12);
+	m_shape.enableAttribute(0, 3, 5 * sizeof(GLfloat), 0);
+	m_shape.enableAttribute(1, 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat));
 }
 
 void Model::loadObj(const char* path, std::vector<GLfloat>& vertexData, std::vector<GLuint>& indices) {
