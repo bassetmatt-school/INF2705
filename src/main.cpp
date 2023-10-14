@@ -25,7 +25,7 @@ void checkGLError(int line);
 
 std::string readFile(const char* path);
 
-void groupInstanciation(glm::mat4* treeTransform, glm::mat4* rockTransform, glm::mat4* shroomTransform);
+void groupInstanciation(glm::vec3 groupPos, glm::mat4* treeTransform, glm::mat4* rockTransform, glm::mat4* shroomTransform);
 
 
 int main() {
@@ -76,6 +76,15 @@ int main() {
 	BasicShapeArrays skybox(skyboxVertices, sizeof(skyboxVertices));
 	skybox.enableAttribute(skyboxShader.getAttribLoc("pos"), 3, 3 * sizeof(GLfloat), 0);
 
+	const int N_GRASS = 500;
+	std::vector<BasicShapeArrays> grassArray;
+	for (int i = 0; i < N_GRASS; ++i) {
+		BasicShapeArrays grass(groundVertices, sizeof(groundVertices));
+		grass.enableAttribute(modelShader.getAttribLoc("pos"), 3, 5 * sizeof(GLfloat), 0);
+		grass.enableAttribute(modelShader.getAttribLoc("inTexCoord"), 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat));
+		// TODO: Move
+		grassArray.push_back(grass);
+	}
 
 	// Models
 	Model suzanne("../models/suzanne.obj");
@@ -88,7 +97,6 @@ int main() {
 	Texture2D mushroomTex("../models/mushroomTexture.png", GL_CLAMP_TO_BORDER);
 	Texture2D rockTex("../models/rockTexture.png", GL_CLAMP_TO_BORDER);
 	Texture2D groundTex("../textures/groundSeamless.jpg", GL_REPEAT);
-	// Texture2D groundTex("../textures/holyhell.bmp", GL_REPEAT);
 	Texture2D riverTex("../textures/waterSeamless.jpg", GL_REPEAT);
 	Texture2D hudTex("../textures/heart.png", GL_CLAMP_TO_BORDER);
 
@@ -102,8 +110,8 @@ int main() {
 	glm::mat4 treeTransform[N_GROUPS];
 	glm::mat4 rockTransform[N_GROUPS];
 	glm::mat4 shroomTransform[N_GROUPS];
-
-	groupInstanciation(treeTransform, rockTransform, shroomTransform);
+	glm::vec3 groupPos[N_GROUPS];
+	groupInstanciation(groupPos, treeTransform, rockTransform, shroomTransform);
 
 	// Camera
 	glm::vec3 playerPos(0.);
@@ -278,12 +286,13 @@ int main() {
 	return 0;
 }
 
-void groupInstanciation(glm::mat4* treeTransform, glm::mat4* rockTransform, glm::mat4* shroomTransform) {
+void groupInstanciation(glm::vec3* groupPos, glm::mat4* treeTransform, glm::mat4* rockTransform, glm::mat4* shroomTransform) {
 	glm::mat4 groupsTransform[N_GROUPS];
 	for (int i = 0; i < N_GROUPS; ++i) {
 		// Group transform
 		float x, z;
 		getGroupRandomPos(i, N_ROWS, x, z);
+		groupPos[i] = glm::vec3(x, -1., z);
 		float groupScale = rand01() * 0.6 + 0.7;
 		float groupRotation = rand01() * 360.f;
 		glm::mat4 model = glm::translate(
