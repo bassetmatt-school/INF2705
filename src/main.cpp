@@ -113,6 +113,8 @@ int main() {
 	// Mipmap for repeated textures
 	groundTex.enableMipmap();
 	riverTex.enableMipmap();
+	// It looks better but I disabled it because it wasn't asked
+	// grassTex.enableMipmap();
 
 	// Groups
 	glm::mat4 treeTransform[N_GROUPS];
@@ -177,7 +179,6 @@ int main() {
 			case -1:
 				camera.m_mode = Camera::Mode::THIRD_PERSON;
 				break;
-			default:	break;
 		}
 
 

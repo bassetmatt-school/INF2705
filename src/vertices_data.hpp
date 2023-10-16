@@ -5,9 +5,9 @@
 
 const GLfloat groundVertices[] ={
 	-30.f, -1.f, -30.f, 0.f, 0.f,
-	-30.f, -1.f,  30.f, 0.f, 15.f,
-	 30.f, -1.f, -30.f, 15.f, 0.f,
-	 30.f, -1.f,  30.f, 15.f, 15.f,
+	-30.f, -1.f,  30.f, 0.f, 20.f,
+	 30.f, -1.f, -30.f, 20.f, 0.f,
+	 30.f, -1.f,  30.f, 20.f, 20.f,
 };
 
 const GLuint groundIndexes[] ={

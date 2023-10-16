@@ -36,6 +36,8 @@ Texture2D::~Texture2D() {
 void Texture2D::enableMipmap() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_id);
+	// Changes sampling method to use mipmaps
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
