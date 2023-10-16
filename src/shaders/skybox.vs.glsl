@@ -2,12 +2,12 @@
 
 uniform mat4 MVP;
 
-layout (location = 0) in vec3 pos;
+layout (location = 0) in vec3 inPos;
 
-out vec3 texCoord;
+out vec3 vTexCoord;
 
 void main(void) {
-	 vec4 out_pos = MVP * vec4(pos, 1.0);
+	 vec4 out_pos = MVP * vec4(inPos, 1.0);
     gl_Position = out_pos.xyww;
-	 texCoord = pos;
+	 vTexCoord = inPos;
 }

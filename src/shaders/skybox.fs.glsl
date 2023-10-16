@@ -2,10 +2,10 @@
 
 uniform samplerCube tex;
 
-in vec3 texCoord;
+in vec3 vTexCoord;
 
 out vec4 FragColor;
 
 void main() {
-	FragColor = texture(tex, texCoord);
+	FragColor = texture(tex, vTexCoord);
 }

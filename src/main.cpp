@@ -25,7 +25,7 @@ void checkGLError(int line);
 
 std::string readFile(const char* path);
 
-void groupInstanciation(glm::vec3 groupPos, glm::mat4* treeTransform, glm::mat4* rockTransform, glm::mat4* shroomTransform);
+void groupInstanciation(glm::vec3* groupPos, glm::mat4* treeTransform, glm::mat4* rockTransform, glm::mat4* shroomTransform);
 
 
 int main() {
@@ -44,19 +44,25 @@ int main() {
 	ShaderProgram modelShader;
 	modelShader.init("./shaders/model.vs.glsl", "./shaders/model.fs.glsl");
 
-
 	ShaderProgram skyboxShader;
 	skyboxShader.init("./shaders/skybox.vs.glsl", "./shaders/skybox.fs.glsl");
 
 	ShaderProgram riverShader;
 	riverShader.init("./shaders/river.vs.glsl", "./shaders/river.fs.glsl");
 
+	ShaderProgram grassShader;
+	grassShader.init("./shaders/grass.vs.glsl", "./shaders/grass.fs.glsl");
+
 	// Shader attributes
 	// We always use GL_TEXTURE0 anyway, so no need to modify it in the loop
+	// TODO: Enable
 	glUniform1i(modelShader.getUniformLoc("tex"), 0);
-	GLint locMVP = modelShader.getUniformLoc("MVP");
-	GLint locMVPSkybox = skyboxShader.getUniformLoc("MVP");
-	GLint locTime = riverShader.getUniformLoc("time");
+	GL_CHECK_ERROR;
+	GLint locMVP_M = modelShader.getUniformLoc("MVP");
+	GLint locMVP_S = skyboxShader.getUniformLoc("MVP");
+	GLint locMVP_G = grassShader.getUniformLoc("MVP");
+	GLint locTimeR = riverShader.getUniformLoc("time");
+	GLint locTimeG = grassShader.getUniformLoc("time");
 
 	// Instanciation of elements
 	// Shape elements
@@ -74,15 +80,34 @@ int main() {
 
 	// Skybox is a BasicShapeArrays
 	BasicShapeArrays skybox(skyboxVertices, sizeof(skyboxVertices));
-	skybox.enableAttribute(skyboxShader.getAttribLoc("pos"), 3, 3 * sizeof(GLfloat), 0);
+	skybox.enableAttribute(skyboxShader.getAttribLoc("inPos"), 3, 3 * sizeof(GLfloat), 0);
+
+	BasicShapeElements grass;
+	grass.setData(grassVertices, sizeof(grassVertices), grassIndexes, sizeof(grassIndexes));
+	grass.enablePosTex(grassShader);
+
 
 	const int N_GRASS = 500;
-	std::vector<BasicShapeArrays> grassArray;
+	std::vector<BasicShapeElements*> grassArray;
+	const int GRASS_N_ELEMENTS = sizeof(grassVertices) / (sizeof(GLfloat));
 	for (int i = 0; i < N_GRASS; ++i) {
-		BasicShapeArrays grass(groundVertices, sizeof(groundVertices));
-		grass.enableAttribute(modelShader.getAttribLoc("pos"), 3, 5 * sizeof(GLfloat), 0);
-		grass.enableAttribute(modelShader.getAttribLoc("inTexCoord"), 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat));
-		// TODO: Move
+		GLfloat grassVerticesCopy[GRASS_N_ELEMENTS];
+		int texId;
+		float x, z;
+		getGrassRandomPosTex(x, z, texId);
+		for (int i = 0; i < GRASS_N_ELEMENTS; ++i) {
+			float offset = 0.;
+			switch (i % 5) {
+				case 0: offset = x; break;
+				case 1: offset = -1; break;
+				case 2: offset = z; break;
+				case 3: offset = texId / 3.; break;
+			}
+			grassVerticesCopy[i] = grassVertices[i] + offset;
+		}
+		BasicShapeElements* grass = new BasicShapeElements();
+		grass->setData(grassVerticesCopy, sizeof(grassVerticesCopy), grassIndexes, sizeof(grassIndexes));
+		grass->enablePosTex(modelShader);
 		grassArray.push_back(grass);
 	}
 
@@ -99,6 +124,7 @@ int main() {
 	Texture2D groundTex("../textures/groundSeamless.jpg", GL_REPEAT);
 	Texture2D riverTex("../textures/waterSeamless.jpg", GL_REPEAT);
 	Texture2D hudTex("../textures/heart.png", GL_CLAMP_TO_BORDER);
+	Texture2D grassTex("../textures/grassAtlas.png", GL_CLAMP_TO_BORDER);
 
 	TextureCubeMap skyboxTex(skyboxPaths);
 
@@ -194,9 +220,20 @@ int main() {
 		riverShader.use();
 		// Drawing River, no model it doesn't move and its coordinates are absolute
 		glm::mat4 mvp = display;
-		glUniform1f(locTime, (float) w.getTick() / 1000.f);
-		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+		glUniform1f(locTimeR, (float) w.getTick() / 1000.f);
+		glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(mvp));
 		river.drawTexture(GL_TRIANGLES, 6, riverTex);
+
+		// Grass
+		grassShader.use();
+		glDisable(GL_CULL_FACE);
+		mvp = display;
+		glUniform1f(locTimeG, (float) w.getTick() / 1000.f);
+		glUniformMatrix4fv(locMVP_G, 1, GL_FALSE, glm::value_ptr(mvp));
+		for (int i = 0; i < N_GRASS; ++i) {
+			grassArray[i]->drawTexture(GL_TRIANGLES, 18, grassTex);
+		}
+		glEnable(GL_CULL_FACE);
 
 		modelShader.use();
 		glm::mat4 model = glm::mat4(1.0f);
@@ -216,13 +253,13 @@ int main() {
 				glm::vec3(0., 1., 0.)
 			);
 			mvp = display * model;
-			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(mvp));
 			suzanne.drawTexture(suzanneTex);
 		}
 
 		// Drawing Ground, same as river, no need for a model matrix
 		mvp = display;
-		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+		glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(mvp));
 		ground.drawTexture(GL_TRIANGLES, 6, groundTex);
 
 		// Drawing Groups
@@ -230,21 +267,21 @@ int main() {
 		treeTex.use();
 		for (int i = 0; i < N_GROUPS; ++i) {
 			mvp = display * treeTransform[i];
-			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(mvp));
 			tree.draw();
 		}
 		// Rocks
 		rockTex.use();
 		for (int i = 0; i < N_GROUPS; ++i) {
 			mvp = display * rockTransform[i];
-			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(mvp));
 			rock.draw();
 		}
 		// Mushrooms
 		mushroomTex.use();
 		for (int i = 0; i < N_GROUPS; ++i) {
 			mvp = display * shroomTransform[i];
-			glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+			glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(mvp));
 			mushroom.draw();
 		}
 		mushroomTex.unuse();
@@ -265,15 +302,15 @@ int main() {
 			model,
 			glm::vec3(100.f / w.getWidth(), 100.f / w.getHeight(), 1.f)
 		);
-		glUniformMatrix4fv(locMVP, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(model));
 		hud.drawTexture(GL_TRIANGLES, 6, hudTex);
 
-		// Skybox, changing depth function to `GL_LEQUAL` because its value is exactly the limit
+		// Skybox, changing depth function to `GL_LEQUAL` because its position is exactly the limit
 		glDepthFunc(GL_LEQUAL);
 		skyboxShader.use();
 		// Removes translation from view matrix, so the skybox is always centered on the camera
 		mvp = proj * glm::mat4(glm::mat3(view));
-		glUniformMatrix4fv(locMVPSkybox, 1, GL_FALSE, glm::value_ptr(mvp));
+		glUniformMatrix4fv(locMVP_S, 1, GL_FALSE, glm::value_ptr(mvp));
 		skyboxTex.use();
 		skybox.draw(GL_TRIANGLES, 36);
 		glDepthFunc(GL_LESS);
@@ -281,6 +318,7 @@ int main() {
 		w.swap();
 		w.pollEvent();
 		isRunning = !w.shouldClose() && !w.getKeyPress(Window::Key::ESC);
+		// printf("\n");
 	}
 
 	return 0;

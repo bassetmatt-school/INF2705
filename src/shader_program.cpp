@@ -11,8 +11,6 @@ Shader::Shader(GLenum type, const char* code) {
 	m_id = glCreateShader(type);
 	glShaderSource(m_id, 1, &code, NULL);
 	glCompileShader(m_id);
-	// Il est toujours bonne pratique de vérifier s'il y a
-	// des erreurs à la fin.
 	checkError();
 }
 
@@ -69,14 +67,12 @@ void ShaderProgram::link() {
 	checkError();
 }
 
-// Personnal additions, to use the location of the attribute, not just 0 or 1
 GLint ShaderProgram::getAttribLoc(const char* name) {
 	GLint attrib = glGetAttribLocation(m_id, name);
 	if (attrib == -1)
 		std::cerr << "Could not find attribute " << name << std::endl;
 	return attrib;
 }
-// End of personnal additions
 
 GLint ShaderProgram::getUniformLoc(const char* name) {
 	GLint loc = glGetUniformLocation(m_id, name);

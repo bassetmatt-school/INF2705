@@ -45,7 +45,7 @@ void Texture2D::use() {
 }
 
 void Texture2D::unuse() {
-	glActiveTexture(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
