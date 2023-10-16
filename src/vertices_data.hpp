@@ -40,6 +40,18 @@ const GLuint hudIndexes[] ={
 	1,  3,  2,
 };
 
+const GLfloat billboardVertices[] ={
+	-0.5f, -0.5f, 0.f, 0.f, 0.f,
+	 0.5f, -0.5f, 0.f, 1.f, 0.f,
+	-0.5f,  0.5f, 0.f, 0.f, 1.f,
+	 0.5f,  0.5f, 0.f, 1.f, 1.f,
+};
+
+const GLuint billboardIndexes[] ={
+	0,  1,  2,
+	1,  3,  2,
+};
+
 const char* skyboxPaths[] ={
 	"../textures/skybox/Daylight Box_Right.bmp",
 	"../textures/skybox/Daylight Box_Left.bmp",

@@ -27,7 +27,13 @@ std::string readFile(const char* path);
 
 void groupInstanciation(glm::vec3* groupPos, glm::mat4* treeTransform, glm::mat4* rockTransform, glm::mat4* shroomTransform);
 
+void grassInstanciation(const int N_GRASS, std::vector<BasicShapeElements*>& grassArray, ShaderProgram& shader);
 
+/* Small comments
+ * You can lock/unlock the mouse by pressing the L key
+ * There is a setting for going up or down with Q/E
+ * You can sprint with left shift
+ */
 int main() {
 	Window w;
 	if (!w.init())
@@ -40,7 +46,7 @@ int main() {
 	}
 	// printGLInfo();
 
-	// Shader Program
+	// Shader Programs
 	ShaderProgram modelShader;
 	modelShader.init("./shaders/model.vs.glsl", "./shaders/model.fs.glsl");
 
@@ -54,10 +60,6 @@ int main() {
 	grassShader.init("./shaders/grass.vs.glsl", "./shaders/grass.fs.glsl");
 
 	// Shader attributes
-	// We always use GL_TEXTURE0 anyway, so no need to modify it in the loop
-	// TODO: Enable
-	glUniform1i(modelShader.getUniformLoc("tex"), 0);
-	GL_CHECK_ERROR;
 	GLint locMVP_M = modelShader.getUniformLoc("MVP");
 	GLint locMVP_S = skyboxShader.getUniformLoc("MVP");
 	GLint locMVP_G = grassShader.getUniformLoc("MVP");
@@ -78,38 +80,17 @@ int main() {
 	hud.setData(hudVertices, sizeof(hudVertices), hudIndexes, sizeof(hudIndexes));
 	hud.enablePosTex(modelShader);
 
+	BasicShapeElements billboard;
+	billboard.setData(billboardVertices, sizeof(billboardVertices), billboardIndexes, sizeof(billboardIndexes));
+	billboard.enablePosTex(modelShader);
+
 	// Skybox is a BasicShapeArrays
 	BasicShapeArrays skybox(skyboxVertices, sizeof(skyboxVertices));
 	skybox.enableAttribute(skyboxShader.getAttribLoc("inPos"), 3, 3 * sizeof(GLfloat), 0);
 
-	BasicShapeElements grass;
-	grass.setData(grassVertices, sizeof(grassVertices), grassIndexes, sizeof(grassIndexes));
-	grass.enablePosTex(grassShader);
-
-
 	const int N_GRASS = 500;
 	std::vector<BasicShapeElements*> grassArray;
-	const int GRASS_N_ELEMENTS = sizeof(grassVertices) / (sizeof(GLfloat));
-	for (int i = 0; i < N_GRASS; ++i) {
-		GLfloat grassVerticesCopy[GRASS_N_ELEMENTS];
-		int texId;
-		float x, z;
-		getGrassRandomPosTex(x, z, texId);
-		for (int i = 0; i < GRASS_N_ELEMENTS; ++i) {
-			float offset = 0.;
-			switch (i % 5) {
-				case 0: offset = x; break;
-				case 1: offset = -1; break;
-				case 2: offset = z; break;
-				case 3: offset = texId / 3.; break;
-			}
-			grassVerticesCopy[i] = grassVertices[i] + offset;
-		}
-		BasicShapeElements* grass = new BasicShapeElements();
-		grass->setData(grassVerticesCopy, sizeof(grassVerticesCopy), grassIndexes, sizeof(grassIndexes));
-		grass->enablePosTex(modelShader);
-		grassArray.push_back(grass);
-	}
+	grassInstanciation(N_GRASS, grassArray, grassShader);
 
 	// Models
 	Model suzanne("../models/suzanne.obj");
@@ -125,6 +106,7 @@ int main() {
 	Texture2D riverTex("../textures/waterSeamless.jpg", GL_REPEAT);
 	Texture2D hudTex("../textures/heart.png", GL_CLAMP_TO_BORDER);
 	Texture2D grassTex("../textures/grassAtlas.png", GL_CLAMP_TO_BORDER);
+	Texture2D billboardTex("../textures/treeBillboard.png", GL_CLAMP_TO_BORDER);
 
 	TextureCubeMap skyboxTex(skyboxPaths);
 
@@ -153,7 +135,6 @@ int main() {
 	while (isRunning) {
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
-
 		if (w.shouldResize())
 			glViewport(0, 0, w.getWidth(), w.getHeight());
 
@@ -170,6 +151,7 @@ int main() {
 		playerOrientation.y = glm::clamp(playerOrientation.y, -89.99f, 89.99f);
 		float theta = glm::radians(playerOrientation.x);
 
+		// Considering that by default the camera is looking at -z
 		glm::vec3 up(0., 1., 0.);
 		glm::vec3 forward(glm::sin(theta), 0., -glm::cos(theta));
 		glm::vec3 right = glm::cross(forward, up);
@@ -200,9 +182,9 @@ int main() {
 
 
 		// Projection matrix
-		// FOV: 70°, near plane at 0.1, far plane at 10
+		// FOV: 70°, near plane at 0.1, far plane at 200
 		float aspect = w.getWidth() / (float) w.getHeight();
-		glm::mat4 proj = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 100.0f);
+		glm::mat4 proj = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 200.0f);
 		glm::mat4 view = glm::mat4(1.0f);
 
 		// View matrix
@@ -216,9 +198,9 @@ int main() {
 		}
 		glm::mat4 display = proj * view;
 
-		// Selects main shader for almost all drawings
+		// River
+		// No model, it doesn't move and its coordinates are absolute
 		riverShader.use();
-		// Drawing River, no model it doesn't move and its coordinates are absolute
 		glm::mat4 mvp = display;
 		glUniform1f(locTimeR, (float) w.getTick() / 1000.f);
 		glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(mvp));
@@ -235,9 +217,9 @@ int main() {
 		}
 		glEnable(GL_CULL_FACE);
 
+		// Suzanne model, only in third person
 		modelShader.use();
 		glm::mat4 model = glm::mat4(1.0f);
-		// Drawing Suzanne if in third person
 		if (camera.m_mode == Camera::Mode::THIRD_PERSON) {
 			model = glm::translate(
 				glm::mat4(1.0f),
@@ -264,11 +246,36 @@ int main() {
 
 		// Drawing Groups
 		// Trees
-		treeTex.use();
 		for (int i = 0; i < N_GROUPS; ++i) {
-			mvp = display * treeTransform[i];
-			glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(mvp));
-			tree.draw();
+			// Really a lot of GL calls due to texture switch
+			// Could sort trees by distance to player (?)
+			if (glm::distance(playerPos, groupPos[i]) <= 25.f) { // Tree model
+				mvp = display * treeTransform[i];
+				glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(mvp));
+				tree.drawTexture(treeTex);
+			} else { // Billboard
+				// All columns have the same scaling (see groupInstanciation)
+				// So we take the norm of the first one
+				float scale = glm::length(glm::mat3(treeTransform[i])[0]);
+
+				model = glm::translate(
+					glm::mat4(1.0f),
+					groupPos[i] + glm::vec3(0., 1., 0.) // Out of the ground
+				);
+				model = glm::scale(
+					model,
+					// Corrections along x and z axis (image ratio)
+					scale * glm::vec3(0.96f * 3.47f, 3.47f, 0.96f * 3.47f)
+				);
+				model = glm::rotate(
+					model,
+					glm::radians(-playerOrientation.x),
+					up
+				);
+				mvp = display * model;
+				glUniformMatrix4fv(locMVP_M, 1, GL_FALSE, glm::value_ptr(mvp));
+				billboard.drawTexture(GL_TRIANGLES, 6, billboardTex);
+			}
 		}
 		// Rocks
 		rockTex.use();
@@ -318,20 +325,24 @@ int main() {
 		w.swap();
 		w.pollEvent();
 		isRunning = !w.shouldClose() && !w.getKeyPress(Window::Key::ESC);
-		// printf("\n");
 	}
 
 	return 0;
 }
 
-void groupInstanciation(glm::vec3* groupPos, glm::mat4* treeTransform, glm::mat4* rockTransform, glm::mat4* shroomTransform) {
+void groupInstanciation(
+	glm::vec3* groupPos,
+	glm::mat4* treeTransform,
+	glm::mat4* rockTransform,
+	glm::mat4* shroomTransform
+) {
 	glm::mat4 groupsTransform[N_GROUPS];
 	for (int i = 0; i < N_GROUPS; ++i) {
 		// Group transform
 		float x, z;
 		getGroupRandomPos(i, N_ROWS, x, z);
 		groupPos[i] = glm::vec3(x, -1., z);
-		float groupScale = rand01() * 0.6 + 0.7;
+		float groupScale = rand01() * 0.6 + 0.7; // Scale [0.7, 1.3]
 		float groupRotation = rand01() * 360.f;
 		glm::mat4 model = glm::translate(
 			glm::mat4(1.0f),
@@ -349,7 +360,7 @@ void groupInstanciation(glm::vec3* groupPos, glm::mat4* treeTransform, glm::mat4
 		groupsTransform[i] = model;
 
 		// Tree transform
-		float treeScale = rand01() * 0.6 + 0.7;
+		float treeScale = rand01() * 0.6 + 0.7; // Scale [0.7, 1.3]
 		treeTransform[i] = glm::scale(
 			groupsTransform[i],
 			glm::vec3(treeScale)
@@ -357,7 +368,7 @@ void groupInstanciation(glm::vec3* groupPos, glm::mat4* treeTransform, glm::mat4
 
 		// Rock Transform
 		float rockRotation = rand01() * 360.f;
-		float rockDistance = rand01() + 1.f;
+		float rockDistance = rand01() + 1.f; // Distance [1, 2]
 		model = glm::rotate(
 			groupsTransform[i],
 			glm::radians(rockRotation),
@@ -375,7 +386,7 @@ void groupInstanciation(glm::vec3* groupPos, glm::mat4* treeTransform, glm::mat4
 
 		// Scaling already applied in tree transform,
 		model = glm::translate(
-			treeTransform[i],
+			treeTransform[i], // Taking tree transform into account
 			glm::vec3(0.3, 0.0, 0.3)
 		);
 		// We still rescale because otherwise the mushroom is too big
@@ -383,6 +394,30 @@ void groupInstanciation(glm::vec3* groupPos, glm::mat4* treeTransform, glm::mat4
 			model,
 			glm::vec3(0.05)
 		);
+	}
+}
+
+void grassInstanciation(const int N_GRASS, std::vector<BasicShapeElements*>& grassArray, ShaderProgram& shader) {
+	const int GRASS_N_ELEMENTS = sizeof(grassVertices) / (sizeof(GLfloat));
+	for (int i = 0; i < N_GRASS; ++i) {
+		GLfloat grassVerticesCopy[GRASS_N_ELEMENTS];
+		int texId;
+		float x, z;
+		getGrassRandomPosTex(x, z, texId);
+		for (int i = 0; i < GRASS_N_ELEMENTS; ++i) {
+			float offset = 0.;
+			switch (i % 5) {
+				case 0: offset =  x; break;
+				case 1: offset = -1; break;
+				case 2: offset =  z; break;
+				case 3: offset = texId / 3.; break;
+			}
+			grassVerticesCopy[i] = grassVertices[i] + offset;
+		}
+		BasicShapeElements* grass = new BasicShapeElements();
+		grass->setData(grassVerticesCopy, sizeof(grassVerticesCopy), grassIndexes, sizeof(grassIndexes));
+		grass->enablePosTex(shader);
+		grassArray.push_back(grass);
 	}
 }
 

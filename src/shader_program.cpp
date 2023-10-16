@@ -35,7 +35,6 @@ void Shader::checkError() {
 }
 
 
-
 ShaderProgram::ShaderProgram() {
 	m_id = glCreateProgram();
 }

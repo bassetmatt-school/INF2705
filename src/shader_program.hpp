@@ -27,9 +27,7 @@ class ShaderProgram {
 	void attachShader(Shader& s);
 	void link();
 
-	// Extension of the base code
 	GLint getAttribLoc(const char* name);
-
 	GLint getUniformLoc(const char* name);
 
 	private:
