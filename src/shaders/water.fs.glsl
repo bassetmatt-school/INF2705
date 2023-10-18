@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 in vec2 texCoords;
 
@@ -7,8 +7,7 @@ uniform float time;
 
 out vec4 FragColor;
 
-void main()
-{    
+void main() {
     vec2 timeScale = vec2(1.0, 2.0);
     vec2 offsetScale = vec2(2.0, 2.0);
     vec2 waveFunc = vec2(

@@ -1,11 +1,10 @@
-#version 330 core
+#version 450 core
 
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec2 texCoords;
 layout (location = 2) in vec3 normal;
 
-out ATTRIB_VS_OUT
-{
+out ATTRIB_VS_OUT {
     vec2 texCoords;
     vec3 normal;
     vec3 lightDir[3];
@@ -18,8 +17,7 @@ uniform mat4 view;
 uniform mat4 modelView;
 uniform mat3 normalMatrix;
 
-struct Material
-{
+struct Material {
     vec3 emission;
     vec3 ambient;
     vec3 diffuse;
@@ -27,8 +25,7 @@ struct Material
     float shininess;
 };
 
-struct UniversalLight
-{
+struct UniversalLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -36,8 +33,7 @@ struct UniversalLight
     vec3 spotDirection;
 };
 
-layout (std140) uniform LightingBlock
-{
+layout (std140) uniform LightingBlock {
     Material mat;
     UniversalLight lights[3];
     vec3 lightModelAmbient;
@@ -48,7 +44,6 @@ layout (std140) uniform LightingBlock
     float spotOpeningAngle;
 };
 
-void main()
-{
+void main() {
     // TODO
 }

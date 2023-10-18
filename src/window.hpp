@@ -16,6 +16,8 @@ class Window {
 		D = SDLK_d,
 		Q = SDLK_q,
 		E = SDLK_e,
+		SPACE = SDLK_SPACE,
+		// TODO: Remove if unused
 		SHIFT = SDLK_LSHIFT,
 		BUTTON5 = SDL_BUTTON_X2
 	};
@@ -34,6 +36,9 @@ class Window {
 
 	void getMouseMotion(int& x, int& y);
 	int getMouseScrollDirection();
+
+	void showMouse();
+	void hideMouse();
 
 	unsigned int getTick();
 
@@ -54,6 +59,7 @@ class Window {
 	std::unordered_map<Key, bool> m_keys;
 	int m_mouseX, m_mouseY, m_scroll;
 
+	//TODO: Remove if unused
 	bool m_mouseLock;
 };
 

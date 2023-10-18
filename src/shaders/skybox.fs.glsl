@@ -1,11 +1,12 @@
 #version 450 core
 
-uniform samplerCube tex;
+in vec3 texCoords;
 
-in vec3 vTexCoord;
+uniform samplerCube textureSampler;
 
 out vec4 FragColor;
 
 void main() {
-	FragColor = texture(tex, vTexCoord);
+    vec4 texel = texture(textureSampler, texCoords);
+    FragColor = vec4(texel.rgb, 1.0f);
 }

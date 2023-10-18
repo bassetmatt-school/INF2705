@@ -4,9 +4,8 @@
 
 #include <GL/glew.h>
 
-class Texture2D
-{
-public:
+class Texture2D {
+	public:
 	Texture2D(const char* path, GLenum wrapMode);
 	~Texture2D();
 
@@ -15,20 +14,19 @@ public:
 	void use();
 	static void unuse();
 
-private:
+	private:
 	GLuint m_id;
 };
 
 
-class TextureCubeMap
-{
-public:
+class TextureCubeMap {
+	public:
 	TextureCubeMap(const char** pathes);
 	~TextureCubeMap();
 
 	void use();
 
-private:
+	private:
 	GLuint m_id;
 };
 

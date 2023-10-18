@@ -1,15 +1,19 @@
 #version 450 core
 
-uniform mat4 MVP;
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec2 inTexCoords;
 
-layout (location = 0) in vec3 inPos;
-layout (location = 1) in vec2 inTexCoord;
+out vec2 texCoords;
 
-out vec2 vTexCoord;
-out vec3 vPos;
+uniform mat4 mvp;
+uniform float time;
 
-void main(void) {
-    gl_Position = MVP * vec4(inPos, 1.0);
-	 vPos = inPos;
-	 vTexCoord = inTexCoord.st;
+void main() {
+    vec3 pos = position;
+    pos.x += inTexCoords.y*sin(time/2.0 + pos.x + pos.z)*0.05;
+    pos.z += inTexCoords.y*sin(time/2.0 + pos.x + pos.z)*0.05;
+    //pos.z += inTexCoords.y*cos(time/2.0 + pos.x + pos.z)*cos(time/2.0 + pos.x + pos.z)*0.05;
+
+    gl_Position = mvp * vec4(pos.x, pos.y, pos.z, 1.0);
+    texCoords = inTexCoords;
 }

@@ -1,12 +1,13 @@
 #version 450 core
 
-uniform sampler2D tex;
+in vec2 texCoords;
 
-in vec2 vTexCoord;
+uniform sampler2D textureSampler;
 
 out vec4 FragColor;
 
 void main() {
-	FragColor = texture(tex, vTexCoord);
-	if (FragColor.a < 0.3) discard;
+    vec4 texel = texture(textureSampler, texCoords);
+    if (texel.a < 0.3) discard;
+    FragColor = texel;
 }

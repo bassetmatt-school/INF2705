@@ -11,7 +11,6 @@ class Model {
 	void drawTexture(Texture2D& texture);
 
 	private:
-
 	void loadObj(const char* path, std::vector<GLfloat>& vertexData, std::vector<GLuint>& indices);
 
 	private:

@@ -29,6 +29,7 @@ class ShaderProgram {
 
 	GLint getAttribLoc(const char* name);
 	GLint getUniformLoc(const char* name);
+	void setUniformBlockBinding(const char* name, GLuint bindingIndex);
 
 	private:
 	void checkError();

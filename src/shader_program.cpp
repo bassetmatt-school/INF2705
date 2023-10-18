@@ -4,8 +4,7 @@
 #include <sstream>
 
 #include "shader_program.hpp"
-
-std::string readFile(const char* path);
+#include "utils.hpp"
 
 Shader::Shader(GLenum type, const char* code) {
 	m_id = glCreateShader(type);
@@ -80,6 +79,11 @@ GLint ShaderProgram::getUniformLoc(const char* name) {
 	return loc;
 }
 
+void ShaderProgram::setUniformBlockBinding(const char* name, GLuint bindingIndex) {
+	GLuint blockIndex = glGetUniformBlockIndex(m_id, name);
+	glUniformBlockBinding(m_id, blockIndex, bindingIndex);
+}
+
 void ShaderProgram::checkError() {
 	GLint success;
 	GLchar infoLog[1024];
@@ -90,11 +94,4 @@ void ShaderProgram::checkError() {
 		glDeleteProgram(m_id);
 		std::cout << "Program linking error: " << infoLog << std::endl;
 	}
-}
-
-std::string readFile(const char* path) {
-	std::ifstream file(path);
-	std::stringstream buffer;
-	buffer << file.rdbuf();
-	return buffer.str();
 }

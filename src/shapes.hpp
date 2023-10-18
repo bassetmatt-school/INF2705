@@ -8,11 +8,14 @@
 class BasicShapeElements {
 	public:
 	BasicShapeElements();
+	BasicShapeElements(const GLfloat* data, GLsizeiptr byteSize, const GLuint* indexes, GLsizeiptr indexesByteSize);
 	~BasicShapeElements();
 
 	void setData(const GLfloat* data, GLsizeiptr byteSize, const GLuint* indexes, GLsizeiptr indexesByteSize);
+
 	void enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);
 	void enablePosTex(ShaderProgram& s);
+
 	void draw(GLenum mode, GLsizei count);
 	void drawTexture(GLenum mode, GLsizei count, Texture2D& texture);
 

@@ -1,13 +1,13 @@
 #version 450 core
 
-uniform mat4 MVP;
+layout (location = 0) in vec3 position;
 
-layout (location = 0) in vec3 inPos;
+out vec3 texCoords;
 
-out vec3 vTexCoord;
+uniform mat4 mvp;
 
-void main(void) {
-	 vec4 out_pos = MVP * vec4(inPos, 1.0);
-    gl_Position = out_pos.xyww;
-	 vTexCoord = inPos;
+void main() {
+    vec4 pos = mvp * vec4(position.x, position.y, position.z, 1.0);
+    gl_Position = pos.xyww;
+    texCoords = position;
 }

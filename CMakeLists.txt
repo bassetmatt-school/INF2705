@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 project(
-	"INF2705 - TP2"
+	"INF2705 - TP3"
 	LANGUAGES
 	CXX
 )
 
-add_executable(tp2)
+add_executable(tp3)
 
 add_subdirectory(src)
 
@@ -18,7 +18,7 @@ include_directories(
 	${GLEW_INCLUDE_DIRS}
 	${OPENGL_INCLUDE_DIRS}
 )
-target_link_libraries(tp2
+target_link_libraries(tp3
 	${SDL2_LIBRARIES}
 	${GLEW_LIBRARIES}
 	${OPENGL_LIBRARIES}
@@ -32,7 +32,7 @@ add_compile_options(
 	-std=c++17
 )
 
-set_target_properties(tp2
+set_target_properties(tp3
 	PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY  ${PROJECT_SOURCE_DIR}/bin
 )

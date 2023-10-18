@@ -1,5 +1,9 @@
 #include "window.hpp"
 
+#include "imgui/imgui.hpp"
+#include "imgui/imgui_impl_sdl2.hpp"
+#include "imgui/imgui_impl_opengl3.hpp"
+
 #include <iostream>
 
 
@@ -17,6 +21,10 @@ Window::Window()
 }
 
 Window::~Window() {
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+
 	SDL_GL_DeleteContext(m_context);
 	SDL_DestroyWindow(m_window);
 	SDL_Quit();
@@ -50,7 +58,7 @@ bool Window::init() {
 	}
 
 	SDL_GetWindowSize(m_window, &m_width, &m_height);
-	SDL_SetRelativeMouseMode(m_mouseLock ? SDL_TRUE : SDL_FALSE);
+	hideMouse();
 
 	m_context = SDL_GL_CreateContext(m_window);
 	if (!m_context) {
@@ -62,10 +70,24 @@ bool Window::init() {
 	const int VSYNC = 1; // 1 on, 0 off, -1 adaptive
 	SDL_GL_SetSwapInterval(VSYNC);
 
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGuiContext* c = ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	ImGui::StyleColorsDark();
+	// Setup Platform/Renderer backends
+	ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
+	ImGui_ImplOpenGL3_Init();
+
+	pollEvent(); // to generate the data for the first frame of ImGui
+
 	return true;
 }
 
 void Window::swap() {
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	SDL_GL_SwapWindow(m_window);
 }
 
@@ -73,6 +95,7 @@ void Window::pollEvent() {
 	m_scroll = 0;
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
+		ImGui_ImplSDL2_ProcessEvent(&e);
 		switch (e.type) {
 			case SDL_QUIT:
 				m_shouldClose = true;
@@ -89,6 +112,7 @@ void Window::pollEvent() {
 				break;
 			case SDL_KEYDOWN:
 				if (e.key.repeat) break; // disable key hold for now
+				// TODO: Check utility
 				// If the user presses L, we toggle the mouse lock
 				if (e.key.keysym.sym == SDLK_l) {
 					m_mouseLock = !m_mouseLock;
@@ -115,6 +139,12 @@ void Window::pollEvent() {
 				break;
 		}
 	}
+
+	// Start the Dear ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
+	// ImGui::ShowDemoWindow(); // If you want to see what ImGui has to offer
 }
 
 
@@ -125,6 +155,15 @@ void Window::getMouseMotion(int& x, int& y) {
 
 int Window::getMouseScrollDirection() {
 	return m_scroll;
+}
+
+void Window::showMouse() {
+	m_mouseX = m_mouseY = 0;
+	SDL_SetRelativeMouseMode(SDL_FALSE);
+}
+
+void Window::hideMouse() {
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 bool Window::getKeyHold(Key k) {

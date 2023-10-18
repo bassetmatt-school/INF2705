@@ -1,7 +1,6 @@
-#version 330 core
+#version 450 core
 
-in ATTRIB_VS_OUT
-{
+in ATTRIB_VS_OUT {
     vec2 texCoords;
     vec3 normal;
     vec3 lightDir[3];
@@ -9,8 +8,7 @@ in ATTRIB_VS_OUT
     vec3 obsPos;
 } attribIn;
 
-struct Material
-{
+struct Material {
     vec3 emission;
     vec3 ambient;
     vec3 diffuse;
@@ -18,8 +16,7 @@ struct Material
     float shininess;
 };
 
-struct UniversalLight
-{
+struct UniversalLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -27,8 +24,7 @@ struct UniversalLight
     vec3 spotDirection;
 };
 
-layout (std140) uniform LightingBlock
-{
+layout (std140) uniform LightingBlock {
     Material mat;
     UniversalLight lights[3];
     vec3 lightModelAmbient;
@@ -43,17 +39,16 @@ uniform sampler2D textureSampler;
 
 out vec4 FragColor;
 
-float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal)
-{
+float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
     // TODO
+	 return 0.;
 }
 
-vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos)
-{
+vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos) {
     // TODO
+	 return vec3(0.);
 }
 
-void main()
-{
+void main() {
     // TODO
 }

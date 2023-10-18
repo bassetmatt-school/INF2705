@@ -1,7 +1,6 @@
-#version 330 core
+#version 450 core
 
-in ATTRIB_VS_OUT
-{
+in ATTRIB_VS_OUT {
     vec2 texCoords;
     vec3 color;
 } attribIn;
@@ -10,7 +9,6 @@ uniform sampler2D textureSampler;
 
 out vec4 FragColor;
 
-void main()
-{
+void main() {
     // TODO
 }
