@@ -29,7 +29,7 @@ add_compile_options(
 	-Wextra
 	-pedantic
 	-O2
-	-std=c++23
+	-std=c++17
 )
 
 set_target_properties(tp2
