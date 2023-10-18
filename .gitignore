@@ -3,3 +3,7 @@ build/
 bin/
 src/build-Linux
 *.zip
+*.sln
+*.vcxproj
+*.bat
+packages.config
