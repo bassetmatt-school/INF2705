@@ -52,6 +52,19 @@ void ShaderProgram::init(const char* vsPath, const char* fsPath) {
 	this->link();
 }
 
+void ShaderProgram::init(const char* vsPath, const char* gsPath, const char* fsPath) {
+	std::string vertexShaderCode   = readFile(vsPath);
+	std::string geometryShaderCode = readFile(gsPath);
+	std::string fragmentShaderCode = readFile(fsPath);
+	Shader vertexShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
+	Shader geometryShader(GL_GEOMETRY_SHADER, geometryShaderCode.c_str());
+	Shader fragmentShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
+	this->attachShader(vertexShader);
+	this->attachShader(geometryShader);
+	this->attachShader(fragmentShader);
+	this->link();
+}
+
 void ShaderProgram::use() {
 	glUseProgram(m_id);
 }

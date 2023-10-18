@@ -38,9 +38,9 @@ Index of this file:
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 
-#include "imgui.hpp"
+#include "imgui.h"
 #ifndef IMGUI_DISABLE
-#include "imgui_internal.hpp"
+#include "imgui_internal.h"
 
 // System includes
 #include <stdint.h>     // intptr_t
@@ -3030,7 +3030,7 @@ const char* ImParseFormatFindEnd(const char* fmt) {
 }
 
 // Extract the format out of a format string with leading or trailing decorations
-//  fmt = "blah bl.hpp"  -> return ""
+//  fmt = "blah blah"  -> return ""
 //  fmt = "%.3f"       -> return fmt
 //  fmt = "hello %.3f" -> return fmt + 6
 //  fmt = "%.3f hello" -> return buf written with "%.3f"
@@ -3524,7 +3524,7 @@ namespace ImStb
 
 #define STB_TEXTEDIT_IMPLEMENTATION
 #define STB_TEXTEDIT_memmove memmove
-#include "imstb_textedit.hpp"
+#include "imstb_textedit.h"
 
 // stb_textedit internally allows for a single undo record to do addition and deletion, but somehow, calling
 // the stb_textedit_paste() function creates two separate records, so we perform it manually. (FIXME: Report to nothings/stb?)

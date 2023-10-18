@@ -750,7 +750,7 @@ extern "C" {
 		 "glDrawElementsBaseVertex",
 		 "glEnable",
 		 "glEnableVertexAttribArray",
-		 "glFlu.hpp",
+		 "glFlush",
 		 "glGenBuffers",
 		 "glGenTextures",
 		 "glGenVertexArrays",

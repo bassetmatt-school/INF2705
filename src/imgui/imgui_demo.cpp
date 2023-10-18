@@ -93,7 +93,7 @@ Index of this file:
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "imgui.hpp"
+#include "imgui.h"
 #ifndef IMGUI_DISABLE
 
 // System includes
@@ -705,7 +705,7 @@ static void ShowDemoWindowWidgets() {
 			IMGUI_DEMO_MARKER("Widgets/Basic/Slider (enum)");
 			enum Element { Element_Fire, Element_Earth, Element_Air, Element_Water, Element_COUNT };
 			static int elem = Element_Fire;
-			const char* elems_names[Element_COUNT] ={ "Fire", "Ear.hpp", "Air", "Water" };
+			const char* elems_names[Element_COUNT] ={ "Fire", "Earth", "Air", "Water" };
 			const char* elem_name = (elem >= 0 && elem < Element_COUNT) ? elems_names[elem] : "Unknown";
 			ImGui::SliderInt("slider enum", &elem, 0, Element_COUNT - 1, elem_name); // Use ImGuiSliderFlags_NoInput flag to disable CTRL+Click here.
 			ImGui::SameLine(); HelpMarker("Using the format string parameter to display a name instead of the underlying integer.");
@@ -859,7 +859,7 @@ static void ShowDemoWindowWidgets() {
 					ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 
 				if (ImGui::TreeNode((void*) (intptr_t) i, "Child %d", i)) {
-					ImGui::Text("blah bl.hpp");
+					ImGui::Text("blah blah");
 					ImGui::SameLine();
 					if (ImGui::SmallButton("button")) {}
 					ImGui::TreePop();
@@ -878,8 +878,8 @@ static void ShowDemoWindowWidgets() {
 			static bool test_drag_and_drop = false;
 			ImGui::CheckboxFlags("ImGuiTreeNodeFlags_OpenOnArrow", &base_flags, ImGuiTreeNodeFlags_OpenOnArrow);
 			ImGui::CheckboxFlags("ImGuiTreeNodeFlags_OpenOnDoubleClick", &base_flags, ImGuiTreeNodeFlags_OpenOnDoubleClick);
-			ImGui::CheckboxFlags("ImGuiTreeNodeFlags_SpanAvailWid.hpp", &base_flags, ImGuiTreeNodeFlags_SpanAvailWidth); ImGui::SameLine(); HelpMarker("Extend hit area to all available width instead of allowing more items to be laid out after the node.");
-			ImGui::CheckboxFlags("ImGuiTreeNodeFlags_SpanFullWid.hpp", &base_flags, ImGuiTreeNodeFlags_SpanFullWidth);
+			ImGui::CheckboxFlags("ImGuiTreeNodeFlags_SpanAvailWidth", &base_flags, ImGuiTreeNodeFlags_SpanAvailWidth); ImGui::SameLine(); HelpMarker("Extend hit area to all available width instead of allowing more items to be laid out after the node.");
+			ImGui::CheckboxFlags("ImGuiTreeNodeFlags_SpanFullWidth", &base_flags, ImGuiTreeNodeFlags_SpanFullWidth);
 			ImGui::Checkbox("Align label with current X position", &align_label_with_current_x_position);
 			ImGui::Checkbox("Test tree node as drag source", &test_drag_and_drop);
 			ImGui::Text("Hello!");
@@ -910,7 +910,7 @@ static void ShowDemoWindowWidgets() {
 						ImGui::EndDragDropSource();
 					}
 					if (node_open) {
-						ImGui::BulletText("Blah blah\nBlah Bl.hpp");
+						ImGui::BulletText("Blah blah\nBlah Blah");
 						ImGui::TreePop();
 					}
 				} else {
@@ -998,7 +998,7 @@ static void ShowDemoWindowWidgets() {
 			ImGui::Spacing();
 
 			static float wrap_width = 200.0f;
-			ImGui::SliderFloat("Wrap wid.hpp", &wrap_width, -20, 600, "%.0f");
+			ImGui::SliderFloat("Wrap width", &wrap_width, -20, 600, "%.0f");
 
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
 			for (int n = 0; n < 2; n++) {
@@ -1010,7 +1010,7 @@ static void ShowDemoWindowWidgets() {
 				if (n == 0)
 					ImGui::Text("The lazy dog is a good dog. This paragraph should fit within %.0f pixels. Testing a 1 character word. The quick brown fox jumps over the lazy dog.", wrap_width);
 				else
-					ImGui::Text("aaaaaaaa bbbbbbbb, c cccccccc,dddddddd. d eeeeeeee   ffffffff. gggggggg!hhhhhh.hpp");
+					ImGui::Text("aaaaaaaa bbbbbbbb, c cccccccc,dddddddd. d eeeeeeee   ffffffff. gggggggg!hhhhhhhh");
 
 				// Draw actual text bounding box, following by marker of our expected limit (should not overlap!)
 				draw_list->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 255, 0, 255));
@@ -1037,7 +1037,7 @@ static void ShowDemoWindowWidgets() {
 				"CJK text will only appear if the font was loaded with the appropriate CJK character ranges. "
 				"Call io.Fonts->AddFontFromFileTTF() manually to load extra character ranges. "
 				"Read docs/FONTS.md for details.");
-			ImGui::Text("Hiragana: \xe3\x81\x8b\xe3\x81\x8d\xe3\x81\x8f\xe3\x81\x91\xe3\x81\x93 (kakikukeko)"); // Normally we would use u8"blah bl.hpp" with the proper characters directly in the string.
+			ImGui::Text("Hiragana: \xe3\x81\x8b\xe3\x81\x8d\xe3\x81\x8f\xe3\x81\x91\xe3\x81\x93 (kakikukeko)"); // Normally we would use u8"blah blah" with the proper characters directly in the string.
 			ImGui::Text("Kanjis: \xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e (nihongo)");
 			static char buf[32] = "\xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e";
 			//static char buf[32] = u8"NIHONGO"; // <- this is how you would write it with C++11, using real kanjis
@@ -1265,7 +1265,7 @@ static void ShowDemoWindowWidgets() {
 			static bool selected[3] ={ false, false, false };
 			ImGui::SetNextItemAllowOverlap(); ImGui::Selectable("main.c", &selected[0]); ImGui::SameLine(); ImGui::SmallButton("Link 1");
 			ImGui::SetNextItemAllowOverlap(); ImGui::Selectable("Hello.cpp", &selected[1]); ImGui::SameLine(); ImGui::SmallButton("Link 2");
-			ImGui::SetNextItemAllowOverlap(); ImGui::Selectable("Hello.hpp", &selected[2]); ImGui::SameLine(); ImGui::SmallButton("Link 3");
+			ImGui::SetNextItemAllowOverlap(); ImGui::Selectable("Hello.h", &selected[2]); ImGui::SameLine(); ImGui::SmallButton("Link 3");
 			ImGui::TreePop();
 		}
 
@@ -1526,15 +1526,15 @@ static void ShowDemoWindowWidgets() {
 			ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 			if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
 				if (ImGui::BeginTabItem("Avocado")) {
-					ImGui::Text("This is the Avocado tab!\nblah blah blah blah bl.hpp");
+					ImGui::Text("This is the Avocado tab!\nblah blah blah blah blah");
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Broccoli")) {
-					ImGui::Text("This is the Broccoli tab!\nblah blah blah blah bl.hpp");
+					ImGui::Text("This is the Broccoli tab!\nblah blah blah blah blah");
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Cucumber")) {
-					ImGui::Text("This is the Cucumber tab!\nblah blah blah blah bl.hpp");
+					ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah");
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
@@ -2031,24 +2031,24 @@ static void ShowDemoWindowWidgets() {
 		ImGui::SliderScalar("slider s16 full", ImGuiDataType_S16, &s16_v, &s16_min, &s16_max, "%d");
 		ImGui::SliderScalar("slider u16 full", ImGuiDataType_U16, &u16_v, &u16_min, &u16_max, "%u");
 		ImGui::SliderScalar("slider s32 low", ImGuiDataType_S32, &s32_v, &s32_zero, &s32_fifty, "%d");
-		ImGui::SliderScalar("slider s32 hi.hpp", ImGuiDataType_S32, &s32_v, &s32_hi_a, &s32_hi_b, "%d");
+		ImGui::SliderScalar("slider s32 high", ImGuiDataType_S32, &s32_v, &s32_hi_a, &s32_hi_b, "%d");
 		ImGui::SliderScalar("slider s32 full", ImGuiDataType_S32, &s32_v, &s32_min, &s32_max, "%d");
 		ImGui::SliderScalar("slider s32 hex", ImGuiDataType_S32, &s32_v, &s32_zero, &s32_fifty, "0x%04X");
 		ImGui::SliderScalar("slider u32 low", ImGuiDataType_U32, &u32_v, &u32_zero, &u32_fifty, "%u");
-		ImGui::SliderScalar("slider u32 hi.hpp", ImGuiDataType_U32, &u32_v, &u32_hi_a, &u32_hi_b, "%u");
+		ImGui::SliderScalar("slider u32 high", ImGuiDataType_U32, &u32_v, &u32_hi_a, &u32_hi_b, "%u");
 		ImGui::SliderScalar("slider u32 full", ImGuiDataType_U32, &u32_v, &u32_min, &u32_max, "%u");
 		ImGui::SliderScalar("slider s64 low", ImGuiDataType_S64, &s64_v, &s64_zero, &s64_fifty, "%" PRId64);
-		ImGui::SliderScalar("slider s64 hi.hpp", ImGuiDataType_S64, &s64_v, &s64_hi_a, &s64_hi_b, "%" PRId64);
+		ImGui::SliderScalar("slider s64 high", ImGuiDataType_S64, &s64_v, &s64_hi_a, &s64_hi_b, "%" PRId64);
 		ImGui::SliderScalar("slider s64 full", ImGuiDataType_S64, &s64_v, &s64_min, &s64_max, "%" PRId64);
 		ImGui::SliderScalar("slider u64 low", ImGuiDataType_U64, &u64_v, &u64_zero, &u64_fifty, "%" PRIu64 " ms");
-		ImGui::SliderScalar("slider u64 hi.hpp", ImGuiDataType_U64, &u64_v, &u64_hi_a, &u64_hi_b, "%" PRIu64 " ms");
+		ImGui::SliderScalar("slider u64 high", ImGuiDataType_U64, &u64_v, &u64_hi_a, &u64_hi_b, "%" PRIu64 " ms");
 		ImGui::SliderScalar("slider u64 full", ImGuiDataType_U64, &u64_v, &u64_min, &u64_max, "%" PRIu64 " ms");
 		ImGui::SliderScalar("slider float low", ImGuiDataType_Float, &f32_v, &f32_zero, &f32_one);
 		ImGui::SliderScalar("slider float low log", ImGuiDataType_Float, &f32_v, &f32_zero, &f32_one, "%.10f", ImGuiSliderFlags_Logarithmic);
-		ImGui::SliderScalar("slider float hi.hpp", ImGuiDataType_Float, &f32_v, &f32_lo_a, &f32_hi_a, "%e");
+		ImGui::SliderScalar("slider float high", ImGuiDataType_Float, &f32_v, &f32_lo_a, &f32_hi_a, "%e");
 		ImGui::SliderScalar("slider double low", ImGuiDataType_Double, &f64_v, &f64_zero, &f64_one, "%.10f grams");
 		ImGui::SliderScalar("slider double low log", ImGuiDataType_Double, &f64_v, &f64_zero, &f64_one, "%.10f", ImGuiSliderFlags_Logarithmic);
-		ImGui::SliderScalar("slider double hi.hpp", ImGuiDataType_Double, &f64_v, &f64_lo_a, &f64_hi_a, "%e grams");
+		ImGui::SliderScalar("slider double high", ImGuiDataType_Double, &f64_v, &f64_lo_a, &f64_hi_a, "%e grams");
 
 		ImGui::SeparatorText("Sliders (reverse)");
 		ImGui::SliderScalar("slider s8 reverse", ImGuiDataType_S8, &s8_v, &s8_max, &s8_min, "%d");
@@ -2486,7 +2486,7 @@ static void ShowDemoWindowWidgets() {
 			"  \"xxx,yyy\"  display lines containing \"xxx\" or \"yyy\"\n"
 			"  \"-xxx\"     hide lines containing \"xxx\"");
 		filter.Draw();
-		const char* lines[] ={ "aaa1.c", "bbb1.c", "ccc1.c", "aaa2.cpp", "bbb2.cpp", "ccc2.cpp", "abc.hpp", "hello, world" };
+		const char* lines[] ={ "aaa1.c", "bbb1.c", "ccc1.c", "aaa2.cpp", "bbb2.cpp", "ccc2.cpp", "abc.h", "hello, world" };
 		for (int i = 0; i < IM_ARRAYSIZE(lines); i++)
 			if (filter.PassFilter(lines[i]))
 				ImGui::BulletText("%s", lines[i]);
@@ -2582,8 +2582,8 @@ static void ShowDemoWindowLayout() {
 		ImGui::TreePop();
 	}
 
-	IMGUI_DEMO_MARKER("Layout/Widgets Wid.hpp");
-	if (ImGui::TreeNode("Widgets Wid.hpp")) {
+	IMGUI_DEMO_MARKER("Layout/Widgets Width");
+	if (ImGui::TreeNode("Widgets Width")) {
 		static float f = 0.0f;
 		static bool show_indented_items = true;
 		ImGui::Checkbox("Show indented items", &show_indented_items);
@@ -2693,7 +2693,7 @@ static void ShowDemoWindowLayout() {
 		ImGui::Checkbox("My", &c1); ImGui::SameLine();
 		ImGui::Checkbox("Tailor", &c2); ImGui::SameLine();
 		ImGui::Checkbox("Is", &c3); ImGui::SameLine();
-		ImGui::Checkbox("Ri.hpp", &c4);
+		ImGui::Checkbox("Rich", &c4);
 
 		// Various
 		static float f0 = 1.0f, f1 = 2.0f, f2 = 3.0f;
@@ -2799,7 +2799,7 @@ static void ShowDemoWindowLayout() {
 				"Lines only composed of text or \"small\" widgets use less vertical space than lines with framed widgets.");
 			ImGui::Indent();
 
-			ImGui::Text("KO Blahbl.hpp"); ImGui::SameLine();
+			ImGui::Text("KO Blahblah"); ImGui::SameLine();
 			ImGui::Button("Some framed item"); ImGui::SameLine();
 			HelpMarker("Baseline of button will look misaligned with text..");
 
@@ -2807,7 +2807,7 @@ static void ShowDemoWindowLayout() {
 			// (because we don't know what's coming after the Text() statement, we need to move the text baseline
 			// down by FramePadding.y ahead of time)
 			ImGui::AlignTextToFramePadding();
-			ImGui::Text("OK Blahbl.hpp"); ImGui::SameLine();
+			ImGui::Text("OK Blahblah"); ImGui::SameLine();
 			ImGui::Button("Some framed item"); ImGui::SameLine();
 			HelpMarker("We call AlignTextToFramePadding() to vertically align the text baseline by +FramePadding.y");
 
@@ -3284,7 +3284,7 @@ static void ShowDemoWindowPopups() {
 			"Clicking outside the popup closes it.");
 
 		static int selected_fish = -1;
-		const char* names[] ={ "Bream", "Haddock", "Mackerel", "Pollock", "Tilefi.hpp" };
+		const char* names[] ={ "Bream", "Haddock", "Mackerel", "Pollock", "Tilefish" };
 		static bool toggles[] ={ true, false, false, false, false };
 
 		// Simple selection popup (if you want to show the current selection inside the Button itself,
@@ -3647,7 +3647,7 @@ static void EditTableColumnsFlags(ImGuiTableColumnFlags* p_flags) {
 	ImGui::CheckboxFlags("_Disabled", p_flags, ImGuiTableColumnFlags_Disabled); ImGui::SameLine(); HelpMarker("Master disable flag (also hide from context menu)");
 	ImGui::CheckboxFlags("_DefaultHide", p_flags, ImGuiTableColumnFlags_DefaultHide);
 	ImGui::CheckboxFlags("_DefaultSort", p_flags, ImGuiTableColumnFlags_DefaultSort);
-	if (ImGui::CheckboxFlags("_WidthStret.hpp", p_flags, ImGuiTableColumnFlags_WidthStretch))
+	if (ImGui::CheckboxFlags("_WidthStretch", p_flags, ImGuiTableColumnFlags_WidthStretch))
 		*p_flags &= ~(ImGuiTableColumnFlags_WidthMask_ ^ ImGuiTableColumnFlags_WidthStretch);
 	if (ImGui::CheckboxFlags("_WidthFixed", p_flags, ImGuiTableColumnFlags_WidthFixed))
 		*p_flags &= ~(ImGuiTableColumnFlags_WidthMask_ ^ ImGuiTableColumnFlags_WidthFixed);
@@ -3659,7 +3659,7 @@ static void EditTableColumnsFlags(ImGuiTableColumnFlags* p_flags) {
 	ImGui::CheckboxFlags("_NoSortAscending", p_flags, ImGuiTableColumnFlags_NoSortAscending);
 	ImGui::CheckboxFlags("_NoSortDescending", p_flags, ImGuiTableColumnFlags_NoSortDescending);
 	ImGui::CheckboxFlags("_NoHeaderLabel", p_flags, ImGuiTableColumnFlags_NoHeaderLabel);
-	ImGui::CheckboxFlags("_NoHeaderWid.hpp", p_flags, ImGuiTableColumnFlags_NoHeaderWidth);
+	ImGui::CheckboxFlags("_NoHeaderWidth", p_flags, ImGuiTableColumnFlags_NoHeaderWidth);
 	ImGui::CheckboxFlags("_PreferSortAscending", p_flags, ImGuiTableColumnFlags_PreferSortAscending);
 	ImGui::CheckboxFlags("_PreferSortDescending", p_flags, ImGuiTableColumnFlags_PreferSortDescending);
 	ImGui::CheckboxFlags("_IndentEnable", p_flags, ImGuiTableColumnFlags_IndentEnable); ImGui::SameLine(); HelpMarker("Default for column 0");
@@ -3835,9 +3835,9 @@ static void ShowDemoWindowTables() {
 
 	if (open_action != -1)
 		ImGui::SetNextItemOpen(open_action != 0);
-	IMGUI_DEMO_MARKER("Tables/Resizable, stret.hpp");
-	if (ImGui::TreeNode("Resizable, stret.hpp")) {
-		// By default, if we don't enable ScrollX the sizing policy for each column is "Stret.hpp"
+	IMGUI_DEMO_MARKER("Tables/Resizable, stretch");
+	if (ImGui::TreeNode("Resizable, stretch")) {
+		// By default, if we don't enable ScrollX the sizing policy for each column is "Stretch"
 		// All columns maintain a sizing weight, and they will occupy all available width.
 		static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_ContextMenuInBody;
 		PushStyleCompact();
@@ -3907,7 +3907,7 @@ static void ShowDemoWindowTables() {
 				ImGui::TableNextRow();
 				for (int column = 0; column < 3; column++) {
 					ImGui::TableSetColumnIndex(column);
-					ImGui::Text("%s %d,%d", (column == 2) ? "Stret.hpp" : "Fixed", column, row);
+					ImGui::Text("%s %d,%d", (column == 2) ? "Stretch" : "Fixed", column, row);
 				}
 			}
 			ImGui::EndTable();
@@ -3924,7 +3924,7 @@ static void ShowDemoWindowTables() {
 				ImGui::TableNextRow();
 				for (int column = 0; column < 6; column++) {
 					ImGui::TableSetColumnIndex(column);
-					ImGui::Text("%s %d,%d", (column >= 3) ? "Stret.hpp" : "Fixed", column, row);
+					ImGui::Text("%s %d,%d", (column >= 3) ? "Stretch" : "Fixed", column, row);
 				}
 			}
 			ImGui::EndTable();
@@ -4283,7 +4283,7 @@ static void ShowDemoWindowTables() {
 		ImGui::PushID("flags3");
 		ImGui::PushItemWidth(TEXT_BASE_WIDTH * 30);
 		ImGui::CheckboxFlags("ImGuiTableFlags_ScrollX", &flags2, ImGuiTableFlags_ScrollX);
-		ImGui::DragFloat("inner_wid.hpp", &inner_width, 1.0f, 0.0f, FLT_MAX, "%.1f");
+		ImGui::DragFloat("inner_width", &inner_width, 1.0f, 0.0f, FLT_MAX, "%.1f");
 		ImGui::PopItemWidth();
 		ImGui::PopID();
 		PopStyleCompact();
@@ -4687,12 +4687,12 @@ static void ShowDemoWindowTables() {
 
 	if (open_action != -1)
 		ImGui::SetNextItemOpen(open_action != 0);
-	IMGUI_DEMO_MARKER("Tables/Item wid.hpp");
-	if (ImGui::TreeNode("Item wid.hpp")) {
+	IMGUI_DEMO_MARKER("Tables/Item width");
+	if (ImGui::TreeNode("Item width")) {
 		HelpMarker(
 			"Showcase using PushItemWidth() and how it is preserved on a per-column basis.\n\n"
 			"Note that on auto-resizing non-resizable fixed columns, querying the content width for e.g. right-alignment doesn't make sense.");
-		if (ImGui::BeginTable("table_item_wid.hpp", 3, ImGuiTableFlags_Borders)) {
+		if (ImGui::BeginTable("table_item_width", 3, ImGuiTableFlags_Borders)) {
 			ImGui::TableSetupColumn("small");
 			ImGui::TableSetupColumn("half");
 			ImGui::TableSetupColumn("right-align");
@@ -5306,7 +5306,7 @@ static void ShowDemoWindowColumns() {
 		ImGui::Separator();
 		ImGui::Text("ID"); ImGui::NextColumn();
 		ImGui::Text("Name"); ImGui::NextColumn();
-		ImGui::Text("Pa.hpp"); ImGui::NextColumn();
+		ImGui::Text("Path"); ImGui::NextColumn();
 		ImGui::Text("Hovered"); ImGui::NextColumn();
 		ImGui::Separator();
 		const char* names[3] ={ "One", "Two", "Three" };
@@ -5384,9 +5384,9 @@ static void ShowDemoWindowColumns() {
 		ImGui::InputFloat("blue", &bar, 0.05f, 0, "%.3f");
 		ImGui::NextColumn();
 
-		if (ImGui::CollapsingHeader("Category A")) { ImGui::Text("Blah blah bl.hpp"); } ImGui::NextColumn();
-		if (ImGui::CollapsingHeader("Category B")) { ImGui::Text("Blah blah bl.hpp"); } ImGui::NextColumn();
-		if (ImGui::CollapsingHeader("Category C")) { ImGui::Text("Blah blah bl.hpp"); } ImGui::NextColumn();
+		if (ImGui::CollapsingHeader("Category A")) { ImGui::Text("Blah blah blah"); } ImGui::NextColumn();
+		if (ImGui::CollapsingHeader("Category B")) { ImGui::Text("Blah blah blah"); } ImGui::NextColumn();
+		if (ImGui::CollapsingHeader("Category C")) { ImGui::Text("Blah blah blah"); } ImGui::NextColumn();
 		ImGui::Columns(1);
 		ImGui::Separator();
 		ImGui::TreePop();
@@ -5982,7 +5982,7 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref) {
 			static ImGuiColorEditFlags alpha_flags = 0;
 			if (ImGui::RadioButton("Opaque", alpha_flags == ImGuiColorEditFlags_None)) { alpha_flags = ImGuiColorEditFlags_None; } ImGui::SameLine();
 			if (ImGui::RadioButton("Alpha", alpha_flags == ImGuiColorEditFlags_AlphaPreview)) { alpha_flags = ImGuiColorEditFlags_AlphaPreview; } ImGui::SameLine();
-			if (ImGui::RadioButton("Bo.hpp", alpha_flags == ImGuiColorEditFlags_AlphaPreviewHalf)) { alpha_flags = ImGuiColorEditFlags_AlphaPreviewHalf; } ImGui::SameLine();
+			if (ImGui::RadioButton("Both", alpha_flags == ImGuiColorEditFlags_AlphaPreviewHalf)) { alpha_flags = ImGuiColorEditFlags_AlphaPreviewHalf; } ImGui::SameLine();
 			HelpMarker(
 				"In the color list:\n"
 				"Left-click on color square to open color picker,\n"
@@ -6179,7 +6179,7 @@ static void ShowExampleMenuFile() {
 	if (ImGui::BeginMenu("Open Recent")) {
 		ImGui::MenuItem("fish_hat.c");
 		ImGui::MenuItem("fish_hat.inl");
-		ImGui::MenuItem("fish_hat.hpp");
+		ImGui::MenuItem("fish_hat.h");
 		if (ImGui::BeginMenu("More..")) {
 			ImGui::MenuItem("Hello");
 			ImGui::MenuItem("Sailor");
@@ -6786,7 +6786,7 @@ static void ShowPlaceholderObject(const char* prefix, int uid) {
 	ImGui::AlignTextToFramePadding();
 	bool node_open = ImGui::TreeNode("Object", "%s_%u", prefix, uid);
 	ImGui::TableSetColumnIndex(1);
-	ImGui::Text("my sailor is ri.hpp");
+	ImGui::Text("my sailor is rich");
 
 	if (node_open) {
 		static float placeholder_members[8] ={ 0.0f, 0.0f, 1.0f, 3.1416f, 100.0f, 999.0f };

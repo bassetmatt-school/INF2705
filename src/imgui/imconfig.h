@@ -4,7 +4,7 @@
 // You can use ImGui::SetAllocatorFunctions() before calling ImGui::CreateContext() to rewire memory allocation functions.
 //-----------------------------------------------------------------------------
 // A) You may edit imconfig.h (and not overwrite it when updating Dear ImGui, or maintain a patch/rebased branch with your modifications to it)
-// B) or '#define IMGUI_USER_CONFIG "my_imgui_config.hpp"' in your project and then add directives in your own file without touching this template.
+// B) or '#define IMGUI_USER_CONFIG "my_imgui_config.h"' in your project and then add directives in your own file without touching this template.
 //-----------------------------------------------------------------------------
 // You need to make sure that configuration settings are defined consistently _everywhere_ Dear ImGui is used, which include the imgui*.cpp
 // files but also _any_ of your code that uses Dear ImGui. This is because some compile-time options have an affect on data structures.
@@ -60,9 +60,9 @@
 
 //---- Avoid multiple STB libraries implementations, or redefine path/filenames to prioritize another version
 // By default the embedded implementations are declared static and not available outside of Dear ImGui sources files.
-//#define IMGUI_STB_TRUETYPE_FILENAME   "my_folder/stb_truetype.hpp"
-//#define IMGUI_STB_RECT_PACK_FILENAME  "my_folder/stb_rect_pack.hpp"
-//#define IMGUI_STB_SPRINTF_FILENAME    "my_folder/stb_sprintf.hpp"    // only used if IMGUI_USE_STB_SPRINTF is defined.
+//#define IMGUI_STB_TRUETYPE_FILENAME   "my_folder/stb_truetype.h"
+//#define IMGUI_STB_RECT_PACK_FILENAME  "my_folder/stb_rect_pack.h"
+//#define IMGUI_STB_SPRINTF_FILENAME    "my_folder/stb_sprintf.h"    // only used if IMGUI_USE_STB_SPRINTF is defined.
 //#define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
 //#define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
 //#define IMGUI_DISABLE_STB_SPRINTF_IMPLEMENTATION                   // only disabled if IMGUI_USE_STB_SPRINTF is defined.
@@ -124,6 +124,6 @@
 /*
 namespace ImGui
 {
-	void MyFunction(const char* name, MyMatrix44* mtx);
+	 void MyFunction(const char* name, MyMatrix44* mtx);
 }
 */

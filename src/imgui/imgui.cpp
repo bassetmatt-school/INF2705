@@ -233,12 +233,12 @@ CODE
  - About imconfig.h:
 	- You may modify your copy of imconfig.h, in this case don't overwrite it.
 	- or you may locally branch to modify imconfig.h and merge/rebase latest.
-	- or you may '#define IMGUI_USER_CONFIG "my_config_file.hpp"' globally from your build system to
+	- or you may '#define IMGUI_USER_CONFIG "my_config_file.h"' globally from your build system to
 	  specify a custom path for your imconfig.h file and instead not have to modify the default one.
 
  - Overwrite all the sources files except for imconfig.h (if you have modified your copy of imconfig.h)
  - Or maintain your own branch where you have imconfig.h modified as a top-most commit which you can regularly rebase over "master".
- - You can also use '#define IMGUI_USER_CONFIG "my_config_file.hpp" to redirect configuration to your own file.
+ - You can also use '#define IMGUI_USER_CONFIG "my_config_file.h" to redirect configuration to your own file.
  - Read the "API BREAKING CHANGES" section (below). This is where we list occasional API breaking changes.
 	If a function/type has been renamed / or marked obsolete, try to fix the name in your code before it is permanently removed
 	from the public API. If you have a problem with a missing function/symbols, search for its name in the code, there will
@@ -442,7 +442,7 @@ CODE
  - 2023/06/28 (1.89.7) - overlapping items: IsItemHovered() now by default return false when querying an item using AllowOverlap mode which is being overlapped. Use ImGuiHoveredFlags_AllowWhenOverlappedByItem to revert to old behavior.
  - 2023/06/28 (1.89.7) - overlapping items: Selectable and TreeNode don't allow overlap when active so overlapping widgets won't appear as hovered. While this fixes a common small visual issue, it also means that calling IsItemHovered() after a non-reactive elements - e.g. Text() - overlapping an active one may fail if you don't use IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem). (#6610)
  - 2023/06/20 (1.89.7) - moved io.HoverDelayShort/io.HoverDelayNormal to style.HoverDelayShort/style.HoverDelayNormal. As the fields were added in 1.89 and expected to be left unchanged by most users, or only tweaked once during app initialization, we are exceptionally accepting the breakage.
- - 2023/05/30 (1.89.6) - backends: renamed "imgui_impl_sdlrenderer.cpp" to "imgui_impl_sdlrenderer2.cpp" and "imgui_impl_sdlrenderer.hpp" to "imgui_impl_sdlrenderer2.hpp". This is in prevision for the future release of SDL3.
+ - 2023/05/30 (1.89.6) - backends: renamed "imgui_impl_sdlrenderer.cpp" to "imgui_impl_sdlrenderer2.cpp" and "imgui_impl_sdlrenderer.h" to "imgui_impl_sdlrenderer2.h". This is in prevision for the future release of SDL3.
  - 2023/05/22 (1.89.6) - listbox: commented out obsolete/redirecting functions that were marked obsolete more than two years ago:
 									- ListBoxHeader()  -> use BeginListBox() (note how two variants of ListBoxHeader() existed. Check commented versions in imgui.h for reference)
 									- ListBoxFooter()  -> use EndListBox()
@@ -459,9 +459,9 @@ CODE
 								 Even though we encourage using your own maths types and operators by setting up IM_VEC2_CLASS_EXTRA,
 								 it has been frequently requested by people to use our own. We had an opt-in define which was
 								 previously fulfilled in imgui_internal.h. It is now fulfilled in imgui.h. (#6164)
-									- OK:     #define IMGUI_DEFINE_MATH_OPERATORS / #include "imgui.hpp" / #include "imgui_internal.hpp"
-									- Error:  #include "imgui.hpp" / #define IMGUI_DEFINE_MATH_OPERATORS / #include "imgui_internal.hpp"
- - 2023/02/07 (1.89.3) - backends: renamed "imgui_impl_sdl.cpp" to "imgui_impl_sdl2.cpp" and "imgui_impl_sdl.hpp" to "imgui_impl_sdl2.hpp". (#6146) This is in prevision for the future release of SDL3.
+									- OK:     #define IMGUI_DEFINE_MATH_OPERATORS / #include "imgui.h" / #include "imgui_internal.h"
+									- Error:  #include "imgui.h" / #define IMGUI_DEFINE_MATH_OPERATORS / #include "imgui_internal.h"
+ - 2023/02/07 (1.89.3) - backends: renamed "imgui_impl_sdl.cpp" to "imgui_impl_sdl2.cpp" and "imgui_impl_sdl.h" to "imgui_impl_sdl2.h". (#6146) This is in prevision for the future release of SDL3.
  - 2022/10/26 (1.89)   - commented out redirecting OpenPopupContextItem() which was briefly the name of OpenPopupOnItemClick() from 1.77 to 1.79.
  - 2022/10/12 (1.89)   - removed runtime patching of invalid "%f"/"%0.f" format strings for DragInt()/SliderInt(). This was obsoleted in 1.61 (May 2018). See 1.61 changelog for details.
  - 2022/09/26 (1.89)   - renamed and merged keyboard modifiers key enums and flags into a same set. Kept inline redirection enums (will obsolete).
@@ -940,9 +940,9 @@ CODE
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 
-#include "imgui.hpp"
+#include "imgui.h"
 #ifndef IMGUI_DISABLE
-#include "imgui_internal.hpp"
+#include "imgui_internal.h"
 
 // System includes
 #include <stdio.h>      // vsnprintf, sscanf, printf
@@ -1823,7 +1823,7 @@ const char* ImStrSkipBlank(const char* str) {
 #ifdef IMGUI_STB_SPRINTF_FILENAME
 #include IMGUI_STB_SPRINTF_FILENAME
 #else
-#include "stb_sprintf.hpp"
+#include "stb_sprintf.h"
 #endif
 #endif // #ifdef IMGUI_USE_STB_SPRINTF
 
@@ -7360,8 +7360,8 @@ static const char* const GKeyNames[] =
 	 "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H",
 	 "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
 	 "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
-	 "Apostrophe", "Comma", "Minus", "Period", "Sla.hpp", "Semicolon", "Equal", "LeftBracket",
-	 "Backsla.hpp", "RightBracket", "GraveAccent", "CapsLock", "ScrollLock", "NumLock", "PrintScreen",
+	 "Apostrophe", "Comma", "Minus", "Period", "Slash", "Semicolon", "Equal", "LeftBracket",
+	 "Backslash", "RightBracket", "GraveAccent", "CapsLock", "ScrollLock", "NumLock", "PrintScreen",
 	 "Pause", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6",
 	 "Keypad7", "Keypad8", "Keypad9", "KeypadDecimal", "KeypadDivide", "KeypadMultiply",
 	 "KeypadSubtract", "KeypadAdd", "KeypadEnter", "KeypadEqual",
@@ -11846,7 +11846,7 @@ void ImGui::LogButtons() {
 	const bool log_to_clipboard = Button("Log To Clipboard"); SameLine();
 	PushTabStop(false);
 	SetNextItemWidth(80.0f);
-	SliderInt("Default Dep.hpp", &g.LogDepthToExpandDefault, 0, 9, NULL);
+	SliderInt("Default Depth", &g.LogDepthToExpandDefault, 0, 9, NULL);
 	PopTabStop();
 	PopID();
 
@@ -12509,7 +12509,7 @@ void ImGui::DebugTextEncoding(const char* str) {
 		return;
 	TableSetupColumn("Offset");
 	TableSetupColumn("UTF-8");
-	TableSetupColumn("Gly.hpp");
+	TableSetupColumn("Glyph");
 	TableSetupColumn("Codepoint");
 	TableHeadersRow();
 	for (const char* p = str; *p != 0; ) {
@@ -13218,7 +13218,7 @@ void ImGui::DebugNodeFont(ImFont* font) {
 					count++;
 			if (count <= 0)
 				continue;
-			if (!TreeNode((void*) (intptr_t) base, "U+%04X..U+%04X (%d %s)", base, base + 255, count, count > 1 ? "glyphs" : "gly.hpp"))
+			if (!TreeNode((void*) (intptr_t) base, "U+%04X..U+%04X (%d %s)", base, base + 255, count, count > 1 ? "glyphs" : "glyph"))
 				continue;
 
 			// Draw a 16x16 grid of glyphs

@@ -1,8 +1,8 @@
 #include "window.hpp"
 
-#include "imgui/imgui.hpp"
-#include "imgui/imgui_impl_sdl2.hpp"
-#include "imgui/imgui_impl_opengl3.hpp"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_sdl2.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 #include <iostream>
 
@@ -112,22 +112,10 @@ void Window::pollEvent() {
 				break;
 			case SDL_KEYDOWN:
 				if (e.key.repeat) break; // disable key hold for now
-				// TODO: Check utility
-				// If the user presses L, we toggle the mouse lock
-				if (e.key.keysym.sym == SDLK_l) {
-					m_mouseLock = !m_mouseLock;
-					SDL_SetRelativeMouseMode(m_mouseLock ? SDL_TRUE : SDL_FALSE);
-				}
 				m_keys[(Key) e.key.keysym.sym] = true;
 				break;
 			case SDL_KEYUP:
 				m_keys[(Key) e.key.keysym.sym] = false;
-				break;
-			case SDL_MOUSEBUTTONDOWN:
-				m_keys[(Key) e.button.button] = true;
-				break;
-			case SDL_MOUSEBUTTONUP:
-				m_keys[(Key) e.button.button] = false;
 				break;
 			case SDL_MOUSEMOTION:
 				m_mouseX += e.motion.xrel;

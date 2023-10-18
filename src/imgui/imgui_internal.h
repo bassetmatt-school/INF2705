@@ -5,7 +5,7 @@
 // To implement maths operators for ImVec2 (disabled by default to not conflict with using IM_VEC2_CLASS_EXTRA with your own math types+operators), use:
 /*
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui_internal.hpp"
+#include "imgui_internal.h"
 */
 
 /*
@@ -50,7 +50,7 @@ Index of this file:
 //-----------------------------------------------------------------------------
 
 #ifndef IMGUI_VERSION
-#include "imgui.hpp"
+#include "imgui.h"
 #endif
 
 #include <stdio.h>      // FILE*, sscanf
@@ -208,7 +208,7 @@ namespace ImStb
 #define STB_TEXTEDIT_GETWIDTH_NEWLINE   (-1.0f)
 #define STB_TEXTEDIT_UNDOSTATECOUNT     99
 #define STB_TEXTEDIT_UNDOCHARCOUNT      999
-#include "imstb_textedit.hpp"
+#include "imstb_textedit.h"
 
 } // namespace ImStb
 

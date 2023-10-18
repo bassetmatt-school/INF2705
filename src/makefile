@@ -27,7 +27,7 @@ run : exe
 	$(EXE)
 $(EXE) : *.cpp
 	mkdir -p $(BUILD)
-	$(CXX) $(CXXFLAGS) -o$@ *.cpp $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o$@ *.cpp imgui/*.cpp $(LDFLAGS)
 
 # pour construire un projet en utilisant cmake (il faut ensuite aller dans '$(BUILD)' et y faire make)
 cmake :
