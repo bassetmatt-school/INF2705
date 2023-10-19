@@ -7,3 +7,4 @@ src/build-Linux
 *.vcxproj
 *.bat
 packages.config
+tex/
