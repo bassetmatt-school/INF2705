@@ -1,7 +1,7 @@
 # TP3
 
 ## Partie 1
-- [ ] Dessin halo avec shader
+- [x] Dessin halo avec shader
 - [ ] Stencil
   - [ ] Écriture correcte
   - [ ] Halos
