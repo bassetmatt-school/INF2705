@@ -69,6 +69,11 @@ void BasicShapeElements::drawTexture(GLenum mode, GLsizei count, Texture2D& text
 	texture.unuse();
 }
 
+BasicShapeArrays::BasicShapeArrays() {
+	glGenVertexArrays(1, &m_vao);
+	glGenBuffers(1, &m_vbo);
+}
+
 BasicShapeArrays::BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize) {
 	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
@@ -83,6 +88,12 @@ BasicShapeArrays::~BasicShapeArrays() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDeleteBuffers(1, &m_vbo);
 	glDeleteVertexArrays(1, &m_vao);
+}
+
+void BasicShapeArrays::setData(const GLfloat* data, GLsizeiptr byteSize) {
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBufferData(GL_ARRAY_BUFFER, byteSize, data, GL_STATIC_DRAW);
 }
 
 void BasicShapeArrays::enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset) {

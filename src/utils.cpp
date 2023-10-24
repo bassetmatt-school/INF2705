@@ -71,11 +71,3 @@ void getGroupRandomPos(int groupId, const int N_ROWS, float& x, float& z) {
 	x = randPosX;
 	z = randPosY;
 }
-
-void getGrassRandomPosTex(float& x, float& z, int& texId) {
-	x = -25.0f + rand01() * 50.0f;
-	z = -25.0f + rand01() * 50.0f;
-	double rval = rand01();
-	// Texture index [0,2]
-	texId = rval > 0.05f ? rval > 0.10f ? 0 : 1 : 2;
-}

@@ -45,8 +45,8 @@ void Texture2D::enableMipmap() {
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-void Texture2D::use() {
-	glActiveTexture(GL_TEXTURE0);
+void Texture2D::use(GLuint unit) {
+	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, m_id);
 }
 
@@ -77,8 +77,16 @@ TextureCubeMap::TextureCubeMap(const char** pathes) {
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	for (unsigned int i = 0; i < 6; i++) {
+		GLenum format = GL_RGBA;
+		switch (nChannels[i]) {
+			case 1: format = GL_RED;  break;
+			case 2: format = GL_RG;   break;
+			case 3: format = GL_RGB;  break;
+			case 4: format = GL_RGBA; break;
+			default: break;
+		}
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-			0, GL_RGB, widths[i], heights[i], 0, GL_RGB, GL_UNSIGNED_BYTE, datas[i]
+			0, format, widths[i], heights[i], 0, format, GL_UNSIGNED_BYTE, datas[i]
 		);
 	}
 

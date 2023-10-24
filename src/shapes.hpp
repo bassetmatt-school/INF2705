@@ -27,8 +27,11 @@ class BasicShapeElements {
 
 class BasicShapeArrays {
 	public:
+	BasicShapeArrays();
 	BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize);
 	~BasicShapeArrays();
+
+	void setData(const GLfloat* data, GLsizeiptr byteSize);
 
 	void enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);
 	void draw(GLenum mode, GLsizei count);

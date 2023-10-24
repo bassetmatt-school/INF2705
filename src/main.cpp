@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "window.hpp"
 #include "camera.hpp"
@@ -14,7 +13,7 @@
 
 void printGLInfo();
 
-int main() {
+int main(int argc, char** argv) {
 	Window w;
 	if (!w.init())
 		return -1;
@@ -50,13 +49,15 @@ int main() {
 
 	// SCENES
 
-	WorldScene worldScene(res, isFirstPersonCam, playerPosition, playerOrientation);
+	WorldScene worldScene(res, w, isFirstPersonCam, playerPosition, playerOrientation);
 	StencilTestScene stencilScene(res, isFirstPersonCam, playerPosition, playerOrientation);
 	LightingTestScene lightingScene(res);
 
 	enum class AvailableScene {
 		WORLD, STENCIL_TEST, LIGHTING_TEST
 	} sceneChoice = AvailableScene::LIGHTING_TEST;
+
+	// MAIN LOOP
 
 	bool isRunning = true;
 	while (isRunning) {
@@ -72,14 +73,18 @@ int main() {
 		// PROCESS INPUT
 
 		if (w.getKeyPress(Window::Key::T)) {
+			playerPosition = glm::vec3(0);
+			playerOrientation = glm::vec2(0);
+
 			switch (sceneChoice) {
 				case AvailableScene::WORLD: sceneChoice = AvailableScene::STENCIL_TEST; break;
 				case AvailableScene::STENCIL_TEST: sceneChoice = AvailableScene::LIGHTING_TEST; break;
-				case AvailableScene::LIGHTING_TEST: sceneChoice = AvailableScene::STENCIL_TEST; break;
+				case AvailableScene::LIGHTING_TEST: sceneChoice = AvailableScene::WORLD; break;
 			}
 		}
 
-		if (w.getKeyPress(Window::Key::SPACE)) isMouseMotionEnabled = !isMouseMotionEnabled;
+		if (w.getKeyPress(Window::Key::SPACE))
+			isMouseMotionEnabled = !isMouseMotionEnabled;
 
 		const int SCROLL_MIN = 1, SCROLL_MAX = 12;
 		scrollLevel -= w.getMouseScrollDirection();
@@ -115,7 +120,6 @@ int main() {
 
 		glm::mat4 projPersp = glm::perspective(glm::radians(70.0f), (float) w.getWidth() / (float) w.getHeight(), 0.1f, 200.0f);
 		glm::mat4 view = isFirstPersonCam ? c.getFirstPersonViewMatrix() : c.getThirdPersonViewMatrix(scrollLevel);
-
 
 		switch (sceneChoice) {
 			case AvailableScene::WORLD:         worldScene.render(view, projPersp);    break;

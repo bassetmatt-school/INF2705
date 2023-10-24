@@ -4,19 +4,16 @@
 #include <iostream>
 
 Model::Model(const char* path) {
-	std::vector<GLfloat> data;
+	std::vector<GLfloat> vertexData;
 	std::vector<GLuint> indices;
-	loadObj(path, data, indices);
-	m_count = indices.size();
-	m_shape.setData(
-		data.data(),
-		data.size() * sizeof(GLfloat),
-		indices.data(),
-		indices.size() * sizeof(GLuint)
-	);
+	loadObj(path, vertexData, indices);
+
+	m_shape.setData(vertexData.data(), vertexData.size() * sizeof(GLfloat),
+		indices.data(), indices.size() * sizeof(unsigned int));
 	m_shape.enableAttribute(0, 3, 8, 0);
 	m_shape.enableAttribute(1, 2, 8, 3);
 	m_shape.enableAttribute(2, 3, 8, 5);
+	m_count = indices.size();
 }
 
 void Model::loadObj(const char* path, std::vector<GLfloat>& vertexData, std::vector<GLuint>& indices) {

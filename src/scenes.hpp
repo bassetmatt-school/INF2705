@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 
+#include "window.hpp"
 #include "resources.hpp"
 #include "uniform_buffer.hpp"
 
@@ -22,7 +23,7 @@ class Scene {
 
 class WorldScene : public Scene {
 	public:
-	WorldScene(Resources& resources, bool& isFirstPersonCam, glm::vec3& position, glm::vec2& orientation);
+	WorldScene(Resources& resources, Window& w, bool& isFirstPersonCam, glm::vec3& position, glm::vec2& orientation);
 	virtual ~WorldScene();
 
 	virtual void render(glm::mat4& view, glm::mat4& projPersp);
@@ -31,8 +32,17 @@ class WorldScene : public Scene {
 	bool& m_isFirstPersonCam;
 	glm::vec3& m_position;
 	glm::vec2& m_orientation;
+	Window& m_w;
 
 	// MATRICES
+	static const int N_ROWS = 7;
+	static const int N_GROUPS = N_ROWS * N_ROWS;
+
+	glm::mat4 m_groupsTransform[N_GROUPS];
+
+	glm::mat4 m_treeTransform[N_GROUPS];
+	glm::mat4 m_rockTransform[N_GROUPS];
+	glm::mat4 m_shroomTransform[N_GROUPS];
 };
 
 

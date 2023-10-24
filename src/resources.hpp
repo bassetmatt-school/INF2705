@@ -19,6 +19,14 @@ class Resources {
 	ShaderProgram model;
 	GLint mvpLocationModel;
 	// ---
+	ShaderProgram water;
+	GLint mvpLocationWater;
+	GLint timeLocationWater;
+	// ---
+	ShaderProgram grassShader;
+	GLint mvpLocationGrass;
+	GLint timeLocationGrass;
+	// ---
 	ShaderProgram phong;
 	GLint mvpLocationPhong;
 	GLint modelViewLocationPhong;
@@ -47,24 +55,38 @@ class Resources {
 	// SIMPLE GEOMETRY MESHES
 	// #############
 	BasicShapeElements ground;
+	BasicShapeElements river;
+	BasicShapeElements quad;
+	BasicShapeArrays grass;
+	GLsizei grassCount;
 	BasicShapeArrays skybox;
 	// #############
 	// MODELS
 	// #############
-	Model glass;
+	Model rock;
+	Model shroom;
+	Model tree;
 	Model suzanne;
+	Model glass;
 	Model sphere;
 	Model cube;
 	Model spotlight;
-	Model rock;
 	// #############
 	// TEXTURES
 	// #############
-	Texture2D glassTexture;
-	Texture2D suzanneTexture;
-	Texture2D whiteTexture;
-	Texture2D groundTexture;
 	Texture2D rockTexture;
+	Texture2D shroomTexture;
+	Texture2D treeTexture;
+	Texture2D suzanneTexture;
+	Texture2D glassTexture;
+	Texture2D groundTexture;
+	Texture2D riverTexture;
+	Texture2D grassCluterTexture;
+	Texture2D billboardTexture;
+	Texture2D heartTexture;
+	Texture2D whiteTexture;
+	Texture2D diffuseMapTexture;
+	Texture2D specularMapTexture;
 	TextureCubeMap skyboxTexture;
 };
 

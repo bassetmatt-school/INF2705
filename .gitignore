@@ -8,3 +8,5 @@ src/build-Linux
 *.bat
 packages.config
 tex/
+
+*.ini

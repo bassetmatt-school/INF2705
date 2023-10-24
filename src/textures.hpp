@@ -11,7 +11,7 @@ class Texture2D {
 
 	void enableMipmap();
 
-	void use();
+	void use(GLuint unit = 0);
 	static void unuse();
 
 	private:

@@ -70,11 +70,12 @@ GLuint groundIndexes[] ={
 };
 
 
-const GLfloat riverVertices[] ={
-	-30.f, -1.f, -50.f, 0.f, 0.f,
-	-30.f, -1.f, -30.f, 0.f, 2.f,
-	 30.f, -1.f, -50.f, 5.f, 0.f,
-	 30.f, -1.f, -30.f, 5.f, 2.f,
+#define RIVER_WIDTH_X 20.0f
+GLfloat riverVertices[] ={
+	 -RIVER_WIDTH_X - GROUND_SIZE, -1.0f, GROUND_SIZE, 0.0, 1.0,
+	 -GROUND_SIZE, -1.0f, GROUND_SIZE, 1.0, 1.0,
+	 -GROUND_SIZE, -1.0f, -GROUND_SIZE, 1.0, 0.0,
+	 -RIVER_WIDTH_X - GROUND_SIZE, -1.0f, -GROUND_SIZE, 0.0, 0.0
 };
 
 const GLuint riverIndexes[] ={
@@ -82,37 +83,16 @@ const GLuint riverIndexes[] ={
 	1,  3,  2,
 };
 
-const GLfloat hudVertices[] ={
-	-1.f, -1.f, 0.f, 0.f, 0.f,
-	 1.f, -1.f, 0.f, 1.f, 0.f,
-	-1.f,  1.f, 0.f, 0.f, 1.f,
-	 1.f,  1.f, 0.f, 1.f, 1.f,
+GLfloat quad2dVertices[] ={
+	 -0.5f, -0.5f, 0, 0.0, 0.0,
+	 0.5f, -0.5f, 0, 1.0, 0.0,
+	 0.5f, 0.5f, 0, 1.0, 1.0,
+	 -0.5f, 0.5f, 0, 0.0, 1.0
 };
 
-const GLuint hudIndexes[] ={
-	0,  1,  2,
-	1,  3,  2,
-};
-
-const GLfloat billboardVertices[] ={
-	-0.5f, -0.5f, 0.f, 0.f, 0.f,
-	 0.5f, -0.5f, 0.f, 1.f, 0.f,
-	-0.5f,  0.5f, 0.f, 0.f, 1.f,
-	 0.5f,  0.5f, 0.f, 1.f, 1.f,
-};
-
-const GLuint billboardIndexes[] ={
-	0,  1,  2,
-	1,  3,  2,
-};
-
-const char* skyboxPaths[] ={
-	"../textures/skybox/Daylight Box_Right.bmp",
-	"../textures/skybox/Daylight Box_Left.bmp",
-	"../textures/skybox/Daylight Box_Top.bmp",
-	"../textures/skybox/Daylight Box_Bottom.bmp",
-	"../textures/skybox/Daylight Box_Front.bmp",
-	"../textures/skybox/Daylight Box_Back.bmp",
+GLuint quad2dIndexes[] ={
+	 0, 1, 2,
+	 0, 2, 3
 };
 
 const GLfloat skyboxVertices[] ={
@@ -160,33 +140,57 @@ const GLfloat skyboxVertices[] ={
 };
 
 
-// TODO: Explain why this shit exists
-const GLfloat grassVertices[] ={
-	 0.433013f,  0.0f,  -0.25f,   0.0f, 0.0f,
-	-0.433013f,  0.0f,   0.25f, 0.333f, 0.0f,
-	 0.433013f, 0.75f,  -0.25f,   0.0f, 1.0f,
-	-0.433013f, 0.75f,   0.25f, 0.333f, 1.0f,
+GLfloat grassPosition[] ={
+	 0.433013f, 0.0f, -0.25f,
+	 -0.433013f, 0.75f, 0.25f,
+	 0.433013f, 0.75f, -0.25f,
 
-	0.0f      ,   0.0f,   0.5f,   0.0f, 0.0f,
-	0.0f      ,   0.0f,  -0.5f, 0.333f, 0.0f,
-	0.0f      ,  0.75f,   0.5f,   0.0f, 1.0f,
-	0.0f      ,  0.75f,  -0.5f, 0.333f, 1.0f,
+	 0.433013f,  0.0f,  -0.25f,
+	 -0.433013f, 0.0f,  0.25f,
+	 -0.433013f,  0.75f,  0.25f,
 
-	 0.433013f,   0.0f,  0.25f,   0.0f, 0.0f,
-	-0.433013f,   0.0f, -0.25f, 0.333f, 0.0f,
-	 0.433013f,  0.75f,  0.25f,   0.0f, 1.0f,
-	-0.433013f,  0.75f, -0.25f, 0.333f, 1.0f,
+	 0.0f     ,  0.0f, -0.5f,
+	 0.0f     ,  0.75f,  0.5f,
+	 0.0f     ,  0.0f,  0.5f,
+
+	 0.0f     ,  0.0f, -0.5f,
+	 0.0f     ,  0.75f, -0.5f,
+	 0.0f     ,  0.75f,  0.5f,
+
+	 -0.433013f,  0.0f, -0.25f,
+	 0.433013f,  0.75f,  0.25f,
+	 0.433013f,  0.0f,  0.25f,
+
+	 -0.433013f,  0.0f, -0.25f,
+	 -0.433013f,  0.75f, -0.25f,
+	 0.433013f,  0.75f,  0.25f,
 };
+GLfloat grassTexCoords[] ={
+	 0.0f, 0.0f,
+	 1.0f, 1.0f,
+	 0.0f, 1.0f,
 
-const GLuint grassIndexes[] ={
-	0, 1, 2,
-	2, 1, 3,
+	 0.0f, 0.0f,
+	 1.0f, 0.0f,
+	 1.0f, 1.0f,
 
-	4, 5, 6,
-	6, 5, 7,
 
-	8, 9, 10,
-	10, 9, 11,
+	 1.0f, 0.0f,
+	 0.0f, 1.0f,
+	 0.0f, 0.0f,
+
+	 1.0f, 0.0f,
+	 1.0f, 1.0f,
+	 0.0f, 1.0f,
+
+
+	 1.0f, 0.0f,
+	 0.0f, 1.0f,
+	 0.0f, 0.0f,
+
+	 1.0f, 0.0f,
+	 1.0f, 1.0f,
+	 0.0f, 1.0f,
 };
 
 #endif // VERTICES_DATA_H

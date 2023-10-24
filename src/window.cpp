@@ -117,6 +117,14 @@ void Window::pollEvent() {
 			case SDL_KEYUP:
 				m_keys[(Key) e.key.keysym.sym] = false;
 				break;
+			case SDL_MOUSEBUTTONDOWN:
+				if (e.button.button == SDL_BUTTON_X2)
+					m_keys[Key::BUTTON5] = true;
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if (e.button.button == SDL_BUTTON_X2)
+					m_keys[Key::BUTTON5] = false;
+				break;
 			case SDL_MOUSEMOTION:
 				m_mouseX += e.motion.xrel;
 				m_mouseY += e.motion.yrel;
