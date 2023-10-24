@@ -9,10 +9,10 @@ uniform mat4 mvp;
 uniform float time;
 
 void main() {
-    gl_Position = mvp * vec4(position.x, position.y, position.z, 1.0);
+	gl_Position = mvp * vec4(position.x, position.y, position.z, 1.0);
 
-    vec2 tiledCoords = inTexCoords * vec2(2, 5);
-    vec2 flow = vec2(0, time/10.0);
+	vec2 tiledCoords = inTexCoords * vec2(2, 5);
+	vec2 flow = vec2(0, time/10.0);
 
-    texCoords = tiledCoords + flow;
+	texCoords = tiledCoords + flow;
 }

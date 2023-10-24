@@ -6,5 +6,5 @@ layout (location = 2) in vec3 normal;
 uniform mat4 mvp;
 
 void main() {
-    // TODO
+	// TODO
 }

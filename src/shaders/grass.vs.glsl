@@ -9,11 +9,10 @@ uniform mat4 mvp;
 uniform float time;
 
 void main() {
-    vec3 pos = position;
-    pos.x += inTexCoords.y*sin(time/2.0 + pos.x + pos.z)*0.05;
-    pos.z += inTexCoords.y*sin(time/2.0 + pos.x + pos.z)*0.05;
-    //pos.z += inTexCoords.y*cos(time/2.0 + pos.x + pos.z)*cos(time/2.0 + pos.x + pos.z)*0.05;
+	vec3 pos = position;
+	pos.x += inTexCoords.y * sin(time/2.0 + pos.x + pos.z) * 0.05;
+	pos.z += inTexCoords.y * sin(time/2.0 + pos.x + pos.z) * 0.05;
 
-    gl_Position = mvp * vec4(pos.x, pos.y, pos.z, 1.0);
-    texCoords = inTexCoords;
+	gl_Position = mvp * vec4(pos.x, pos.y, pos.z, 1.0);
+	texCoords = inTexCoords;
 }
