@@ -9,5 +9,5 @@ out vec4 FragColor;
 void main() {
 	vec4 texel = texture(textureSampler, texCoords);
 	if (texel.a < 0.3) discard;
-	FragColor = vec4(texel.rgb, 1.0f);
+	FragColor = vec4(texel.rgba);
 }

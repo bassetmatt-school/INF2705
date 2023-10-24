@@ -276,11 +276,11 @@ void StencilTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	mvp = projPersp * glm::mat4(glm::mat3(view));
 	drawSky(mvp);
 
-	m_res.model.use();
-	m_res.glassTexture.use();
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	m_res.model.use();
+	m_res.glassTexture.use();
 
 	// TODO: Dessin du mur vitrée
 	mvp = projView * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
@@ -291,11 +291,13 @@ void StencilTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 
 	// TODO: Dessiner les halos
 	m_res.simple.use();
-	glUniform3f(m_res.colorLocationSimple, 0.0f, 0.0f, 1.0f);
+	// Cyan
+	glUniform3f(m_res.colorLocationSimple, 0.0f, 1.0f, 1.0f);
 	for (int i = 0; i < N_ALLY_MONKEE; ++i) {
 		glUniformMatrix4fv(m_res.mvpLocationSimple, 1, GL_FALSE, &allyMVP[i][0][0]);
 		m_res.suzanne.draw();
 	}
+	// Red
 	glUniform3f(m_res.colorLocationSimple, 1.0f, 0.0f, 0.0f);
 	for (int i = 0; i < N_ENEMY_MONKEE; ++i) {
 		glUniformMatrix4fv(m_res.mvpLocationSimple, 1, GL_FALSE, &enemyMVP[i][0][0]);
