@@ -8,6 +8,8 @@ project(
 add_executable(tp3)
 
 add_subdirectory(src)
+# Obscure option to avoid obscure warnign about multiple OpenGL installations
+set(OpenGL_GL_PREFERENCE GLVND)
 
 find_package(SDL2 REQUIRED)
 find_package(GLEW REQUIRED)
