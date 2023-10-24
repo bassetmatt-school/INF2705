@@ -1,12 +1,15 @@
+# Settings
 .vscode
+# Build dirs
 build/
 bin/
 src/build-Linux
+# Archive
 *.zip
+# Windows related files
 *.sln
 *.vcxproj
 *.bat
 packages.config
-tex/
 
 *.ini
