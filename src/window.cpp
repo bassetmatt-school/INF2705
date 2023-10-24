@@ -15,8 +15,7 @@ Window::Window()
 	, m_width(0), m_height(0)
 	, m_mouseX(0)
 	, m_mouseY(0)
-	, m_scroll(0)
-	, m_mouseLock(true) {
+	, m_scroll(0) {
 
 }
 

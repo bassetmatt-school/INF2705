@@ -12,7 +12,6 @@ const char* pathes[] ={
 	"../textures/skybox/Daylight Box_Back.bmp",
 };
 
-// TODO: Réecrire avec shader init
 Resources::Resources()
 	: ground(groundVertices, sizeof(groundVertices), groundIndexes, sizeof(groundIndexes))
 	, river(riverVertices, sizeof(riverVertices), groundIndexes, sizeof(groundIndexes))

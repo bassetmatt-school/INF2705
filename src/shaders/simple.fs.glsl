@@ -5,5 +5,5 @@ out vec4 FragColor;
 uniform vec3 color;
 
 void main() {
-	// TODO
+	FragColor = vec4(color, 0.5);
 }

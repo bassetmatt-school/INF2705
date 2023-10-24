@@ -247,14 +247,30 @@ void StencilTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	m_res.ground.draw(GL_TRIANGLES, 6);
 
 
-	// TODO: Précalcul des matrices mvp des singes,
-	// utilisable pour les modèles et halos.
+	// MVP Matrices for ally and enemy monkeys
+	glm::mat4 allyMVP[N_ALLY_MONKEE];
+	for (int i = 0; i < N_ALLY_MONKEE; ++i)
+		allyMVP[i] = projView * allyTransform[i];
+
+	glm::mat4 enemyMVP[N_ENEMY_MONKEE];
+	for (int i = 0; i < N_ENEMY_MONKEE; ++i)
+		enemyMVP[i] = projView * enemyTransform[i];
 
 
 	m_res.suzanneTexture.use();
 	// TODO: Remplir le stencil en dessinant les singes
-
-
+	// glEnable(GL_STENCIL_TEST);
+	// glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	// glStencilMask(0xFF);
+	for (int i = 0; i < N_ALLY_MONKEE; ++i) {
+		glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &allyMVP[i][0][0]);
+		m_res.suzanne.draw();
+	}
+	for (int i = 0; i < N_ENEMY_MONKEE; ++i) {
+		glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &enemyMVP[i][0][0]);
+		m_res.suzanne.draw();
+	}
 
 	// On dessine le ciel un peu plus tôt
 	mvp = projPersp * glm::mat4(glm::mat3(view));
@@ -263,11 +279,28 @@ void StencilTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	m_res.model.use();
 	m_res.glassTexture.use();
 
-	// TODO: Dessin du mur vitrée
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	// TODO: Dessin du mur vitrée
+	mvp = projView * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+	glDisable(GL_CULL_FACE);
+	glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
+	m_res.glass.draw();
+	glEnable(GL_CULL_FACE);
 
 	// TODO: Dessiner les halos
-
+	m_res.simple.use();
+	glUniform3f(m_res.colorLocationSimple, 0.0f, 0.0f, 1.0f);
+	for (int i = 0; i < N_ALLY_MONKEE; ++i) {
+		glUniformMatrix4fv(m_res.mvpLocationSimple, 1, GL_FALSE, &allyMVP[i][0][0]);
+		m_res.suzanne.draw();
+	}
+	glUniform3f(m_res.colorLocationSimple, 1.0f, 0.0f, 0.0f);
+	for (int i = 0; i < N_ENEMY_MONKEE; ++i) {
+		glUniformMatrix4fv(m_res.mvpLocationSimple, 1, GL_FALSE, &enemyMVP[i][0][0]);
+		m_res.suzanne.draw();
+	}
 }
 
 
