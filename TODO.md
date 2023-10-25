@@ -2,10 +2,10 @@
 
 ## Partie 1
 - [x] Dessin halo avec shader
-- [ ] Stencil
-  - [ ] Écriture correcte
-  - [ ] Halos
-  - [ ] Vitres
+- [x] Stencil
+  - [x] Écriture correcte
+  - [x] Halos
+  - [x] Vitres
 
 ## Partie 2
 - [ ] Illumination
