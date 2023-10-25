@@ -51,5 +51,14 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 }
 
 void main() {
-	// TODO
+	vec3 color = vec3(0.0);
+	color += mat.emission;
+	color += mat.ambient * lightModelAmbient;
+	if (useSpotlight) {
+		color += mat.ambient * lights[0].ambient;
+		color += mat.ambient * lights[1].ambient;
+		color += mat.ambient * lights[2].ambient;
+	}
+	FragColor = clamp( vec4(color, 1.0), 0.0, 1.0 );
+
 }

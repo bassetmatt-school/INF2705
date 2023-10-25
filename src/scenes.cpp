@@ -456,6 +456,7 @@ void LightingTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 		modelView = view * lightModel;
 		glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
 		glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, &modelView[0][0]);
+		// GL_TRUE for third argument means to transpose the matrix
 		glUniformMatrix3fv(normalMatrixLocation, 1, GL_TRUE, glm::value_ptr(glm::inverse(glm::mat3(modelView))));
 
 		Material lightMaterial =
