@@ -104,6 +104,7 @@ Resources::Resources()
 
 	// Phong shader
 	{
+		printf("Loading phong shader...\n");
 		phong.init("shaders/phong.vs.glsl", "shaders/phong.fs.glsl");
 		mvpLocationPhong = phong.getUniformLoc("mvp");
 		modelViewLocationPhong = phong.getUniformLoc("modelView");
@@ -116,6 +117,7 @@ Resources::Resources()
 
 	// Gouraud shader
 	{
+		printf("Loading gouraud shader...\n");
 		gouraud.init("shaders/gouraud.vs.glsl", "shaders/gouraud.fs.glsl");
 		mvpLocationGouraud = gouraud.getUniformLoc("mvp");
 		modelViewLocationGouraud = gouraud.getUniformLoc("modelView");
@@ -128,7 +130,8 @@ Resources::Resources()
 
 	// Flat shader
 	{
-		flat.init("shaders/flat.vs.glsl", "shaders/flat.gs.glsl", "shaders/flat.fs.glsl");
+		printf("Loading flat shader...\n");
+		flat.init("shaders/flat.vs.glsl", "shaders/flat.gs.glsl", "shaders/gouraud.fs.glsl");
 		mvpLocationFlat = flat.getUniformLoc("mvp");
 		modelViewLocationFlat = flat.getUniformLoc("modelView");
 		viewLocationFlat = flat.getUniformLoc("view");
