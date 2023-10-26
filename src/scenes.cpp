@@ -258,6 +258,7 @@ void StencilTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 
 
 	m_res.suzanneTexture.use();
+
 	// Draw the monkeys in the stencil buffer
 	glEnable(GL_STENCIL_TEST);
 	// Filling stencil
@@ -390,9 +391,12 @@ void LightingTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	drawMenu();
 
 	GLintptr offset = 0;
-	m_lightingData.updateData(&m_material, offset, sizeof(m_material));   offset += sizeof(m_material);
-	m_lightingData.updateData(m_lights, offset, sizeof(m_lights));     offset += sizeof(m_lights);
-	m_lightingData.updateData(&m_lightModel, offset, sizeof(m_lightModel)); offset += sizeof(m_lightModel);
+	m_lightingData.updateData(&m_material, offset, sizeof(m_material));
+	offset += sizeof(m_material);
+	m_lightingData.updateData(m_lights, offset, sizeof(m_lights));
+	offset += sizeof(m_lights);
+	m_lightingData.updateData(&m_lightModel, offset, sizeof(m_lightModel));
+	offset += sizeof(m_lightModel);
 
 	glm::mat4 mvp;
 	glm::mat4 projView = projPersp * view;

@@ -51,13 +51,10 @@ void main() {
 	attribOut.texCoords = texCoords;
 	attribOut.normal = normalMatrix * normal;
 
-	attribOut.spotDir[0] = - mat3(view) * lights[0].spotDirection;
-	attribOut.spotDir[1] = - mat3(view) * lights[1].spotDirection;
-	attribOut.spotDir[2] = - mat3(view) * lights[2].spotDirection;
-
 	vec3 pos = (modelView * vec4(position, 1.0)).xyz;
 
-	attribOut.lightDir[0] = (view * vec4(lightModelAmbient, 1.0)).xyz;
-	attribOut.lightDir[1] = (view * vec4(lightModelAmbient, 1.0)).xyz;
-	attribOut.lightDir[2] = (view * vec4(lightModelAmbient, 1.0)).xyz;
+	for (int i = 0; i < 3; ++i) {
+		attribOut.lightDir[i] = (view * vec4(lights[i].position, 1.0)).xyz - pos;
+		attribOut.spotDir[i] = mat3(view) * -lights[i].spotDirection;
+	}
 }
