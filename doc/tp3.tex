@@ -373,7 +373,7 @@ Tous les calculs d'illumination se font dans le repère de la caméra en GLSL.\v
 \subsection{Modèles de spot inspirés d'OpenGL ou de Direct3D}
 
 Un spot n'éclaire qu'à l'intérieur d'un cône, c'est-à-dire qu'il n'a une influence que si l'angle $\gamma$ entre la direction du spot et la direction vers le point à éclairer est plus petit que l'angle d'ouverture $\delta$ du spot.
-Lorsque c'est le cas, on a `` $\gamma < \delta$ '' et mais on vérifiera plutôt si `` $\cos(\gamma) > \cos(\delta)$'' en évaluant des produits scalaires entre les vecteurs appropriés.\vspace*{11pt}
+Lorsque c'est le cas, on a `` $\gamma < \delta$ '' mais on vérifiera plutôt si `` $\cos(\gamma) > \cos(\delta)$'' en évaluant des produits scalaires entre les vecteurs appropriés.\vspace*{11pt}
 \\
 Pour déterminer la direction du spot dans le repère de la caméra, on peut calculer ce vecteur de direction
 directement dans le nuanceur :\vspace*{11pt}
