@@ -46,6 +46,7 @@ void main() {
 	vec3 texSpecular = vec3(1.0f);
 	if (useTexture)
 		texDiffuse = texture(diffuseSampler, attribIn.texCoords).rgb;
+		// TODO: Same as phong, which component?
 		texSpecular = texture(specularSampler, attribIn.texCoords).rgb;
 	vec3 color = attribIn.emission;
 	color += (attribIn.ambient + attribIn.diffuse) * texDiffuse;

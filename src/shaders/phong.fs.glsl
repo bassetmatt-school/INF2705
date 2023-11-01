@@ -94,7 +94,8 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 		// No need to take the max between spec and 0.0 since we ignore the negative case
 		if (spec > 0) {
 			vec3 texSpec = vec3(1.0);
-			// if (useTexture) texSpec = texture(specularSampler, attribIn.texCoords).rgb;
+			// TODO: RGB or RRR (1 component)
+			if (useTexture) texSpec = texture(specularSampler, attribIn.texCoords).rgb;
 			spec = pow(spec, mat.shininess); // Apply shininess to lighthen formula below
 			color += mat.specular * lights[lightIndex].specular * spec * texSpec;
 		}

@@ -78,8 +78,6 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 	float LdotN = max(dot(lightDir, normal), 0.0);
 	if (LdotN > 0.0) {
 		float	spot = useSpotlight ?
-		// TODO: This must be wrong (spotDir is not in world space)
-			// computeSpot(lights[lightIndex].spotDirection, lightDir, normal) :
 			computeSpot(spotDir, lightDir, normal) :
 			1.0f;
 		attribOut.diffuse += spot * mat.diffuse * lights[lightIndex].diffuse * LdotN;
