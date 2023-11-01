@@ -9,8 +9,9 @@
 
 ## Partie 2
 - [ ] Illumination
-  - [ ] Gouraud
-  - [ ] Phong
+  - [x] Gouraud
+  - [x] Phong
   - [ ] Flat
-- [ ] Spéculaire Blinn et Phong
-- [ ] Spotlights
+- [x] Spéculaire Blinn et Phong
+- [x] Spotlights
+- [ ] Textures
