@@ -45,24 +45,31 @@ float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
 	// light dir is already normalized
 	float cos_gamma = dot(normalize(spotDir), lightDir);
 
-	if (!useDirect3D) {
-		// OpenGL
-		if (cos_gamma < cos_delta)	return 0.0;
+	if (!useDirect3D) { // OpenGL
+		if (cos_gamma > cos_delta) // Inside of spotlight cone
+			return pow(cos_gamma, spotExponent);
+		else // Outside of spotlight cone
+			return 0.0;
+	} else { // Direct3D
+		float cos_inner = cos_delta;
+		float cos_outer = pow(cos_delta, 1.01 + spotExponent / 2.0);
 
-		return pow(cos_gamma, spotExponent);
-	} else {
-		// Direct3D
-		// TODO: Implement it ??
-		if (cos_gamma < cos_delta)	return 0.0;
-		return pow(cos_gamma, spotExponent);
+		if (cos_gamma > cos_inner) // Inside of spotlight cone
+			return 1.0;
+		else if (cos_gamma < cos_outer) // Outside of spotlight cone
+			return 0.0;
+		else // Inside fading zone
+			return (cos_gamma - cos_outer) / (cos_inner - cos_outer);
 	}
 	return 0.0;
 }
 
 vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos) {
 	vec3 color = vec3(0.0);
+	// Ambiant component
 	color += mat.ambient * lights[lightIndex].ambient;
 
+	// Diffuse component (spotlight or not)
 	float LdotN = max(dot(lightDir, normal), 0.0);
 	if (LdotN > 0.0) {
 		float	spot = useSpotlight ?
@@ -71,17 +78,19 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 		color += spot * mat.diffuse * lights[lightIndex].diffuse * LdotN;
 	}
 
+	// Specular component
 	float spec = 0.0;
-	if (useBlinn) {
+	if (useBlinn) { // Blinn
 		vec3 halfVec = normalize(lightDir + obsPos);
 		spec = max(dot(halfVec, normal), 0.0);
-	} else {
+	} else { // Phong
 		vec3 reflectDir = reflect(-lightDir, normal);
 		spec = max(dot(reflectDir, obsPos), 0.0);
 	}
 
+	// No need to take the max between spec and 0.0 since we ignore the negative case
 	if (spec > 0) {
-		spec = pow(spec, mat.shininess);
+		spec = pow(spec, mat.shininess); // Apply shininess to lighthen formula below
 		color += mat.specular * lights[lightIndex].specular * spec;
 	}
 
