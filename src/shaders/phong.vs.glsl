@@ -40,6 +40,7 @@ layout (std140) uniform LightingBlock {
 	bool useBlinn;
 	bool useSpotlight;
 	bool useDirect3D;
+	bool useTexture;
 	float spotExponent;
 	float spotOpeningAngle;
 };

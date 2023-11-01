@@ -32,6 +32,7 @@ layout (std140) uniform LightingBlock {
 	bool useBlinn;
 	bool useSpotlight;
 	bool useDirect3D;
+	bool useTexture;
 	float spotExponent;
 	float spotOpeningAngle;
 };
@@ -68,7 +69,9 @@ float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
 vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos) {
 	vec3 color = vec3(0.0);
 	// Ambiant component
-	color += mat.ambient * lights[lightIndex].ambient;
+	vec3 texDiffuse = vec3(1.0);
+	if (useTexture) texDiffuse = texture(diffuseSampler, attribIn.texCoords).rgb;
+	color += mat.ambient * lights[lightIndex].ambient * texDiffuse;
 
 	// Diffuse component (spotlight or not)
 	float LdotN = max(dot(lightDir, normal), 0.0);
@@ -76,7 +79,7 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 		float	spot = useSpotlight ?
 			computeSpot(attribIn.spotDir[lightIndex], lightDir, normal) :
 			1.0f;
-		color += spot * mat.diffuse * lights[lightIndex].diffuse * LdotN;
+		color += spot * mat.diffuse * lights[lightIndex].diffuse * LdotN * texDiffuse;
 
 		// Specular component
 		float spec = 0.0;
@@ -90,8 +93,10 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 
 		// No need to take the max between spec and 0.0 since we ignore the negative case
 		if (spec > 0) {
+			vec3 texSpec = vec3(1.0);
+			// if (useTexture) texSpec = texture(specularSampler, attribIn.texCoords).rgb;
 			spec = pow(spec, mat.shininess); // Apply shininess to lighthen formula below
-			color += mat.specular * lights[lightIndex].specular * spec;
+			color += mat.specular * lights[lightIndex].specular * spec * texSpec;
 		}
 	}
 
@@ -99,7 +104,12 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 }
 
 void main() {
-	vec3 color = mat.emission + mat.ambient * lightModelAmbient;
+	// Emission
+	vec3 color = mat.emission;
+	// Ambient
+	vec3 texDiffuse = useTexture ? texture(diffuseSampler, attribIn.texCoords).rgb : vec3(1.0);
+	color += mat.ambient * lightModelAmbient * texDiffuse;
+
 	vec3 normal = normalize(attribIn.normal);
 	vec3 obsPos = normalize(attribIn.obsPos);
 	for (int i = 0; i < 3; ++i) {
