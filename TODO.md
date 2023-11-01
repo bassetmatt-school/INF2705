@@ -8,10 +8,10 @@
   - [x] Vitres
 
 ## Partie 2
-- [ ] Illumination
+- [x] Illumination
   - [x] Gouraud
   - [x] Phong
-  - [ ] Flat
+  - [x] Flat
 - [x] Spéculaire Blinn et Phong
 - [x] Spotlights
-- [ ] Textures
+- [x] Textures
