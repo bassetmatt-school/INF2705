@@ -77,22 +77,22 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 			computeSpot(attribIn.spotDir[lightIndex], lightDir, normal) :
 			1.0f;
 		color += spot * mat.diffuse * lights[lightIndex].diffuse * LdotN;
-	}
 
-	// Specular component
-	float spec = 0.0;
-	if (useBlinn) { // Blinn
-		vec3 halfVec = normalize(lightDir + obsPos);
-		spec = max(dot(halfVec, normal), 0.0);
-	} else { // Phong
-		vec3 reflectDir = reflect(-lightDir, normal);
-		spec = max(dot(reflectDir, obsPos), 0.0);
-	}
+		// Specular component
+		float spec = 0.0;
+		if (useBlinn) { // Blinn
+			vec3 halfVec = normalize(lightDir + obsPos);
+			spec = max(dot(halfVec, normal), 0.0);
+		} else { // Phong
+			vec3 reflectDir = reflect(-lightDir, normal);
+			spec = max(dot(reflectDir, obsPos), 0.0);
+		}
 
-	// No need to take the max between spec and 0.0 since we ignore the negative case
-	if (spec > 0) {
-		spec = pow(spec, mat.shininess); // Apply shininess to lighthen formula below
-		color += mat.specular * lights[lightIndex].specular * spec;
+		// No need to take the max between spec and 0.0 since we ignore the negative case
+		if (spec > 0) {
+			spec = pow(spec, mat.shininess); // Apply shininess to lighthen formula below
+			color += mat.specular * lights[lightIndex].specular * spec;
+		}
 	}
 
 	return color;

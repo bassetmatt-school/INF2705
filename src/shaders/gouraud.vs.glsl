@@ -68,8 +68,8 @@ float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
 	return 0.0;
 }
 
-// TODO: Ask for signature and update ??
-vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos, in vec3 spotDir) {
+vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos) {
+	vec3 spotDir = mat3(view) * -lights[lightIndex].spotDirection;
 	// Ambiant component
 	attribOut.ambient += mat.ambient * lights[lightIndex].ambient;
 
@@ -82,24 +82,23 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 			computeSpot(spotDir, lightDir, normal) :
 			1.0f;
 		attribOut.diffuse += spot * mat.diffuse * lights[lightIndex].diffuse * LdotN;
-	}
 
-	// Specular component
-	float spec = 0.0;
-	if (useBlinn) { // Blinn
-		vec3 halfVec = normalize(lightDir + obsPos);
-		spec = dot(halfVec, normal);
-	} else { // Phong
-		vec3 reflectDir = reflect(-lightDir, normal);
-		spec = dot(reflectDir, obsPos);
-	}
+		// Specular component
+		float spec = 0.0;
+		if (useBlinn) { // Blinn
+			vec3 halfVec = normalize(lightDir + obsPos);
+			spec = dot(halfVec, normal);
+		} else { // Phong
+			vec3 reflectDir = reflect(-lightDir, normal);
+			spec = dot(reflectDir, obsPos);
+		}
 
-	// No need to take the max between spec and 0.0 since we ignore the negative case
-	if (spec > 0) {
-		spec = pow(spec, mat.shininess); // Apply shininess to lighthen formula below
-		attribOut.specular += mat.specular * lights[lightIndex].specular * spec;
+		// No need to take the max between spec and 0.0 since we ignore the negative case
+		if (spec > 0) {
+			spec = pow(spec, mat.shininess); // Apply shininess to lighthen formula below
+			attribOut.specular += mat.specular * lights[lightIndex].specular * spec;
+		}
 	}
-	// TODO: ??????????
 	return vec3(0.0);
 }
 
@@ -107,16 +106,6 @@ void main() {
 	gl_Position = mvp * vec4(position, 1.0);
 
 	attribOut.texCoords = texCoords;
-	vec3 pos = (modelView * vec4(position, 1.0)).xyz;
-
-	vec3 lightDir[3];
-	vec3 spotDir[3];
-	// Directions in view space
-	for (int i = 0; i < 3; ++i) {
-		lightDir[i] = (view * vec4(lights[i].position, 1.0)).xyz - pos;
-		spotDir[i] = mat3(view) * -lights[i].spotDirection;
-		// lights[i].spotDirection = spotDir[i];
-	}
 
 	// Initializes colors components
 	attribOut.emission = mat.emission;
@@ -124,12 +113,14 @@ void main() {
 	attribOut.diffuse = vec3(0.0);
 	attribOut.specular = vec3(0.0);
 
+	vec3 pos = (modelView * vec4(position, 1.0)).xyz;
+	vec3 lightDir[3];
 	for (int i = 0; i < 3; ++i) {
+		lightDir[i] = (view * vec4(lights[i].position, 1.0)).xyz - pos;
 		computeLight(i,
 			normalize(normalMatrix * normal),
 			normalize(lightDir[i]),
-			normalize(-pos),
-			normalize(spotDir[i])
+			normalize(-pos)
 		);
 	}
 }
