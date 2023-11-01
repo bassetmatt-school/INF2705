@@ -337,6 +337,7 @@ LightingTestScene::LightingTestScene(Resources& resources)
 		 false,
 		 false,
 		 false,
+		 false,
 		 1.0f,
 		 20.0f
 	};
@@ -492,11 +493,11 @@ void LightingTestScene::drawMenu() {
 	ImGui::ColorEdit3("Diffuse##m", &m_material.diffuse[0]);
 	ImGui::ColorEdit3("Specular##m", &m_material.specular[0]);
 	ImGui::DragFloat("Shininess##m", &m_material.shininess, 1.0f, 0.0f, 1000.0f);
-
 	ImGui::SeparatorText("Light Model");
 	ImGui::Combo("Shading", &m_currentShading, shadingList, sizeof(shadingList) / sizeof(shadingList[0]));
 	ImGui::ColorEdit3("Global ambient", &m_lightModel.lightModelAmbient[0]);
-	ImGui::Checkbox("Use blinn?", (bool*) &m_lightModel.useBlinn);
+	ImGui::Checkbox("Use blinn?", (bool*) &m_lightModel.useBlinn); ImGui::SameLine();
+	ImGui::Checkbox("Use textures?", (bool*) &m_lightModel.useTexture);
 	ImGui::Checkbox("Use spotlight?", (bool*) &m_lightModel.useSpotlight); ImGui::SameLine();
 	ImGui::Checkbox("Use Direct3D?", (bool*) &m_lightModel.useDirect3D);
 	ImGui::DragFloat("Spot Exponent", &m_lightModel.spotExponent, 0.5f, 0.0f, 500.0f);

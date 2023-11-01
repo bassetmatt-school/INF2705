@@ -89,6 +89,7 @@ struct LightModel {
 	GLuint useBlinn;
 	GLuint useSpotlight;
 	GLuint useDirect3D;
+	GLuint useTexture;
 	GLfloat spotExponent;
 	GLfloat spotOpeningAngle;
 };
