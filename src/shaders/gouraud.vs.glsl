@@ -70,7 +70,9 @@ float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
 }
 
 vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos) {
+	// Will only be normalized in computeSpot if needed
 	vec3 spotDir = mat3(view) * -lights[lightIndex].spotDirection;
+
 	// Ambiant component
 	attribOut.ambient += mat.ambient * lights[lightIndex].ambient;
 
@@ -94,8 +96,10 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 
 		// No need to take the max between spec and 0.0 since we ignore the negative case
 		if (spec > 0) {
-			spec = pow(spec, mat.shininess); // Apply shininess to lighthen formula below
-			attribOut.specular += mat.specular * lights[lightIndex].specular * spec;
+			// Apply shininess to lighthen formula below
+			spec = pow(spec, mat.shininess);
+			// Also multiply by spotlight factor to avoid reflexion outside of spotlight cone
+			attribOut.specular += spot * mat.specular * lights[lightIndex].specular * spec;
 		}
 	}
 	return vec3(0.0);

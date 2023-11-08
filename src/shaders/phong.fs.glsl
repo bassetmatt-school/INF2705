@@ -68,9 +68,11 @@ float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
 
 vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos) {
 	vec3 color = vec3(0.0);
+
+	// Diffuse texture loading (or not)
+	vec3 texDiffuse = useTexture ? texture(diffuseSampler, attribIn.texCoords).rgb : vec3(1.0);
+
 	// Ambiant component
-	vec3 texDiffuse = vec3(1.0);
-	if (useTexture) texDiffuse = texture(diffuseSampler, attribIn.texCoords).rgb;
 	color += mat.ambient * lights[lightIndex].ambient * texDiffuse;
 
 	// Diffuse component (spotlight or not)
@@ -93,11 +95,12 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 
 		// No need to take the max between spec and 0.0 since we ignore the negative case
 		if (spec > 0) {
-			vec3 texSpec = vec3(1.0);
-			// TODO: RGB or RRR (1 component)
-			if (useTexture) texSpec = texture(specularSampler, attribIn.texCoords).rgb;
-			spec = pow(spec, mat.shininess); // Apply shininess to lighthen formula below
-			color += mat.specular * lights[lightIndex].specular * spec * texSpec;
+			// Specular texture
+			float texSpec = useTexture ? texture(specularSampler, attribIn.texCoords).r : 1.0;
+			// Apply shininess to lighthen formula below
+			spec = pow(spec, mat.shininess);
+			// Also multiply by spotlight factor to avoid reflexion outside of spotlight cone
+			color += spot * mat.specular * lights[lightIndex].specular * spec * texSpec;
 		}
 	}
 
@@ -108,15 +111,23 @@ void main() {
 	// Emission
 	vec3 color = mat.emission;
 	// Ambient
-	vec3 texDiffuse = useTexture ? texture(diffuseSampler, attribIn.texCoords).rgb : vec3(1.0);
+	vec3 texDiffuse = vec3(1.0);
+	if (useTexture) {
+		vec4 tex = texture(diffuseSampler, attribIn.texCoords);
+		// Useless here since the diffuse texture only has 3 channels
+		if (tex.a < 0.3) discard;
+		texDiffuse = tex.rgb;
+	}
 	color += mat.ambient * lightModelAmbient * texDiffuse;
 
+	// Normalized after rasterization
 	vec3 normal = normalize(attribIn.normal);
 	vec3 obsPos = normalize(attribIn.obsPos);
+
 	for (int i = 0; i < 3; ++i) {
 		vec3 lightDir = normalize(attribIn.lightDir[i]);
 		color += computeLight(i, normal, lightDir, obsPos);
 	}
-	FragColor = clamp( vec4(color, 1.0), 0.0, 1.0 );
 
+	FragColor = clamp(vec4(color, 1.0), 0.0, 1.0);
 }
