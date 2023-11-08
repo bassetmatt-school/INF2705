@@ -73,14 +73,13 @@ float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal)
 	return 0.0;
 }
 
-vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos)
-{
-vec3 spotDir = mat3(view) * -lights[lightIndex].spotDirection;
+vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos) {
+	vec3 spotDir = mat3(view) * -lights[lightIndex].spotDirection;
 	// Ambiant component
 	attribOut.ambient += mat.ambient * lights[lightIndex].ambient;
 
 	// Diffuse component (spotlight or not)
-	float LdotN = max(dot(lightDir, normal), 0.0);
+	float LdotN = dot(lightDir, normal);
 	if (LdotN > 0.0) {
 		float	spot = useSpotlight ?
 			computeSpot(spotDir, lightDir, normal) :

@@ -74,7 +74,7 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 	color += mat.ambient * lights[lightIndex].ambient * texDiffuse;
 
 	// Diffuse component (spotlight or not)
-	float LdotN = max(dot(lightDir, normal), 0.0);
+	float LdotN = dot(lightDir, normal);
 	if (LdotN > 0.0) {
 		float	spot = useSpotlight ?
 			computeSpot(attribIn.spotDir[lightIndex], lightDir, normal) :
@@ -85,10 +85,10 @@ vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 		float spec = 0.0;
 		if (useBlinn) { // Blinn
 			vec3 halfVec = normalize(lightDir + obsPos);
-			spec = max(dot(halfVec, normal), 0.0);
+			spec = dot(halfVec, normal);
 		} else { // Phong
 			vec3 reflectDir = reflect(-lightDir, normal);
-			spec = max(dot(reflectDir, obsPos), 0.0);
+			spec = dot(reflectDir, obsPos);
 		}
 
 		// No need to take the max between spec and 0.0 since we ignore the negative case
