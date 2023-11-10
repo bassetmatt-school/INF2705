@@ -20,14 +20,25 @@ endif
 
 SRC=main
 BUILD=./build-$(shell uname)
-EXE=$(BUILD)/tp3.exe
+EXE=$(BUILD)/tp.exe
+
+SRC = $(wildcard *.cpp) $(wildcard */*.cpp)
+OBJ = $(addprefix $(BUILD)/, $(notdir $(SRC:.cpp=.o)))
 
 exe : $(EXE)
 run : exe
 	$(EXE)
-$(EXE) : *.cpp
-	mkdir -p $(BUILD)
-	$(CXX) $(CXXFLAGS) -o$@ *.cpp imgui/*.cpp $(LDFLAGS)
+$(EXE) : $(OBJ)
+	$(CXX) $(CXXFLAGS) -o$@ $^ $(LDFLAGS)
+
+$(BUILD)/%.o : %.cpp | $(BUILD)
+	$(CC) $(CFLAGS) $(CXXFLAGS) -o $@ -c $<
+
+$(BUILD)/%.o : */%.cpp | $(BUILD)
+	$(CC) $(CFLAGS) $(CXXFLAGS) -o $@ -c $<
+
+$(BUILD) :
+	mkdir -p $@
 
 # pour construire un projet en utilisant cmake (il faut ensuite aller dans '$(BUILD)' et y faire make)
 cmake :
@@ -42,4 +53,4 @@ clean :
 remise zip :
 	make clean
 	rm -f INF2705_remise_tp3.zip
-	zip -r INF2705_remise_tp3.zip *.cpp *.h *.glsl makefile *.txt shaders
+	zip -r INF2705_remise_tp3.zip *.cpp *.h *.glsl makefile *.txt
