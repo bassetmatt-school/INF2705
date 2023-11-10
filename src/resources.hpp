@@ -58,8 +58,8 @@ class Resources {
 	BasicShapeElements river;
 	BasicShapeElements quad;
 	BasicShapeArrays grass;
-	GLsizei grassCount;
 	BasicShapeArrays skybox;
+	GLsizei grassCount;
 	// #############
 	// MODELS
 	// #############
