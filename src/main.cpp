@@ -5,11 +5,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "window.hpp"
-#include "camera.hpp"
-#include "scenes.hpp"
+#include "window.h"
+#include "camera.h"
+#include "scenes.h"
 
-#include "utils.hpp"
+#include "utils.h"
 
 void printGLInfo();
 

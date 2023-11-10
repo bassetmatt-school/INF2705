@@ -2,7 +2,7 @@
 #define WINDOW_H
 
 #include <unordered_map>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 
 class Window {

@@ -1,7 +1,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "shapes.hpp"
+#include "shapes.h"
 #include <vector>
 
 class Model {

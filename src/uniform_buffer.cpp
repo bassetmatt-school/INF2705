@@ -1,4 +1,4 @@
-#include "uniform_buffer.hpp"
+#include "uniform_buffer.h"
 
 UniformBuffer::UniformBuffer(const void* data, GLsizeiptr byteSize) {
 	glGenBuffers(1, &m_ubo);

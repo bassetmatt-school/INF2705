@@ -4,10 +4,10 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include "shader_program.hpp"
-#include "shapes.hpp"
-#include "model.hpp"
-#include "textures.hpp"
+#include "shader_program.h"
+#include "shapes.h"
+#include "model.h"
+#include "textures.h"
 
 class Resources {
 	public:

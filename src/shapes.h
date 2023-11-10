@@ -2,8 +2,8 @@
 #define SHAPES_H
 
 #include <GL/glew.h>
-#include "shader_program.hpp"
-#include "textures.hpp"
+#include "shader_program.h"
+#include "textures.h"
 
 class BasicShapeElements {
 	public:

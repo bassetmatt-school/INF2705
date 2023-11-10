@@ -3,9 +3,9 @@
 
 #include <GL/glew.h>
 
-#include "window.hpp"
-#include "resources.hpp"
-#include "uniform_buffer.hpp"
+#include "window.h"
+#include "resources.h"
+#include "uniform_buffer.h"
 
 class Scene {
 	public:

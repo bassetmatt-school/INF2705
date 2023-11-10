@@ -1,4 +1,4 @@
-#include "shapes.hpp"
+#include "shapes.h"
 
 BasicShapeElements::BasicShapeElements() {
 	glGenVertexArrays(1, &m_vao);

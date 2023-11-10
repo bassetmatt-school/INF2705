@@ -1,4 +1,4 @@
-#include "scenes.hpp"
+#include "scenes.h"
 
 #include <iostream>
 
@@ -9,7 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "imgui/imgui.h"
 
-#include "utils.hpp"
+#include "utils.h"
 
 Scene::Scene(Resources& resources)
 	: m_res(resources) {

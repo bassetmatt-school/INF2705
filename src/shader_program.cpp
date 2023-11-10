@@ -3,8 +3,8 @@
 #include <cstring>
 #include <sstream>
 
-#include "shader_program.hpp"
-#include "utils.hpp"
+#include "shader_program.h"
+#include "utils.h"
 
 Shader::Shader(GLenum type, const char* code) {
 	m_id = glCreateShader(type);

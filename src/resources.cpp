@@ -1,7 +1,7 @@
-#include "resources.hpp"
+#include "resources.h"
 
-#include "vertices_data.hpp"
-#include "utils.hpp"
+#include "vertices_data.h"
+#include "utils.h"
 
 const char* pathes[] ={
 	"../textures/skybox/Daylight Box_Right.bmp",

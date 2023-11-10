@@ -10,7 +10,7 @@
 	#include ...
 	#include ...
 	#define STB_IMAGE_IMPLEMENTATION
-	#include "stb_image.hpp"
+	#include "stb_image.h"
 
 	You can #define STBI_ASSERT(x) before the #include to avoid using assert.h.
 	And #define STBI_MALLOC, STBI_REALLOC, and STBI_FREE to avoid using malloc,realloc,free
@@ -72,7 +72,7 @@ RECENT REVISION HISTORY:
 	 Sean Barrett (jpeg, png, bmp)          Jetro Lauha (stbi_info)
 	 Nicolas Schulz (hdr, psd)              Martin "SpartanJ" Golini (stbi_info)
 	 Jonathan Dummer (tga)                  James "moose2000" Brown (iPhone PNG)
-	 Jean-Marc Lienher (gif)                Ben "Dis.hpp" Wenger (io callbacks)
+	 Jean-Marc Lienher (gif)                Ben "Dis.h" Wenger (io callbacks)
 	 Tom Seddon (pic)                       Omar Cornut (1/2/4-bit PNG)
 	 Thatcher Ulrich (psd)                  Nicolas Guillemot (vertical flip)
 	 Ken Miller (pgm, ppm)                  Richard Mitton (16-bit PSD)
@@ -2906,7 +2906,7 @@ static int stbi__process_frame_header(stbi__jpeg* z, int scan) {
 	Lf = stbi__get16be(s);         if (Lf < 11) return stbi__err("bad SOF len", "Corrupt JPEG"); // JPEG
 	p  = stbi__get8(s);            if (p != 8) return stbi__err("only 8-bit", "JPEG format not supported: 8-bit only"); // JPEG baseline
 	s->img_y = stbi__get16be(s);   if (s->img_y == 0) return stbi__err("no header height", "JPEG format not supported: delayed height"); // Legal, but we don't handle it--but neither does IJG
-	s->img_x = stbi__get16be(s);   if (s->img_x == 0) return stbi__err("0 wid.hpp", "Corrupt JPEG"); // JPEG requires
+	s->img_x = stbi__get16be(s);   if (s->img_x == 0) return stbi__err("0 wid.h", "Corrupt JPEG"); // JPEG requires
 	c = stbi__get8(s);
 	if (c != 3 && c != 1 && c != 4) return stbi__err("bad component count", "Corrupt JPEG");
 	s->img_n = c;
@@ -5539,7 +5539,7 @@ static void* stbi__psd_load(stbi__context* s, int* x, int* y, int* comp, int req
 	// Make sure the depth is 8 bits.
 	bitdepth = stbi__get16be(s);
 	if (bitdepth != 8 && bitdepth != 16)
-		return stbi__errpuc("unsupported bit dep.hpp", "PSD bit depth is not 8 or 16 bit");
+		return stbi__errpuc("unsupported bit dep.h", "PSD bit depth is not 8 or 16 bit");
 
 	// Make sure the color mode is RGB.
 	// Valid options are:
@@ -6539,7 +6539,7 @@ static float* stbi__hdr_load(stbi__context* s, int* x, int* y, int* comp, int re
 			}
 			len <<= 8;
 			len |= stbi__get8(s);
-			if (len != width) { STBI_FREE(hdr_data); STBI_FREE(scanline); return stbi__errpf("invalid decoded scanline leng.hpp", "corrupt HDR"); }
+			if (len != width) { STBI_FREE(hdr_data); STBI_FREE(scanline); return stbi__errpf("invalid decoded scanline leng.h", "corrupt HDR"); }
 			if (scanline == NULL) {
 				scanline = (stbi_uc*) stbi__malloc_mad2(width, 4, 0);
 				if (!scanline) {
