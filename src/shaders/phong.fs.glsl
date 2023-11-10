@@ -1,7 +1,6 @@
 #version 450 core
 
 in ATTRIB_VS_OUT {
-	// TODO: Ask how to use textures ???????
 	vec2 texCoords;
 	vec3 normal;
 	vec3 lightDir[3];
