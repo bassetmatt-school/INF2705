@@ -6,6 +6,7 @@ Project to be introduced to OpenGL.
 - `gcc`, `clang` or any C++ compiler
 - `SDL2`
 - `glew`
+- `freeimage` (`freeimage` on arch based distros, `libfreeimage-dev` on Ubuntu based distros)
 
 ## Running
 Go to the source folder and run
