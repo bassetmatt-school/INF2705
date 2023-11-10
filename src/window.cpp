@@ -71,7 +71,7 @@ bool Window::init() {
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
-	ImGuiContext* c = ImGui::CreateContext();
+	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	ImGui::StyleColorsDark();

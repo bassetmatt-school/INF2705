@@ -53,4 +53,4 @@ clean :
 remise zip :
 	make clean
 	rm -f INF2705_remise_tp3.zip
-	zip -r INF2705_remise_tp3.zip *.cpp *.h *.glsl makefile *.txt
+	zip -r INF2705_remise_tp3.zip *.cpp *.h *.glsl makefile *.txt shaders

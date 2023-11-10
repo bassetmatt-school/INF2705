@@ -68,8 +68,6 @@ int main(int argc, char** argv) {
 		// Clears buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		float time = w.getTick() / 1000.0;
-
 		// PROCESS INPUT
 
 		if (w.getKeyPress(Window::Key::T)) {
