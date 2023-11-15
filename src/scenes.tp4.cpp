@@ -110,7 +110,7 @@ void ParticleScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	mvp = projPersp * glm::mat4(glm::mat3(view));
 	glUniformMatrix4fv(m_res.mvpLocationSky, 1, GL_FALSE, &mvp[0][0]);
 	m_res.skybox.draw(GL_TRIANGLES, 6 * 6);
-	glDepthMask(0xffffff);
+	glDepthMask(0xff);
 	glDepthFunc(GL_LESS);
 
 
