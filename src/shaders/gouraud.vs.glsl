@@ -61,61 +61,58 @@ float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
 	return spotFactor;
 }
 
-vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos) {
-	// Will only be normalized in computeSpot if needed
-	vec3 spotDir = mat3(view) * -lights[lightIndex].spotDirection;
+void computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos, out vec3 diffuseColor, out vec3 specularColor) {
+	float diff = max(dot(normal, lightDir), 0.0);
+	vec3 diffuse = diff * lights[lightIndex].diffuse * mat.diffuse;
 
-	// Ambiant component
-	attribOut.ambient += mat.ambient * lights[lightIndex].ambient;
+	float spec = useBlinn ?
+					dot(normalize( lightDir + obsPos ), normal) :
+					dot(reflect(-lightDir, normal), obsPos);
+	spec = max(0.0, spec);
+	spec = pow(spec, mat.shininess);
+	vec3 specular = spec * lights[lightIndex].specular * mat.specular;
 
-	// Diffuse component (spotlight or not)
-	float LdotN = dot(lightDir, normal);
-	if (LdotN > 0.0) {
-		float	spot = useSpotlight ?
-			computeSpot(spotDir, lightDir, normal) :
-			1.0f;
-		attribOut.diffuse += spot * mat.diffuse * lights[lightIndex].diffuse * LdotN;
-
-		// Specular component
-		float spec = 0.0;
-		if (useBlinn) { // Blinn
-			vec3 halfVec = normalize(lightDir + obsPos);
-			spec = dot(halfVec, normal);
-		} else { // Phong
-			vec3 reflectDir = reflect(-lightDir, normal);
-			spec = dot(reflectDir, obsPos);
-		}
-
-		// No need to take the max between spec and 0.0 since we ignore the negative case
-		if (spec > 0) {
-			// Apply shininess to lighthen formula below
-			spec = pow(spec, mat.shininess);
-			// Also multiply by spotlight factor to avoid reflexion outside of spotlight cone
-			attribOut.specular += spot * mat.specular * lights[lightIndex].specular * spec;
-		}
-	}
-	return vec3(0.0);
+	diffuseColor = diffuse;
+	specularColor = specular;
 }
 
 void main() {
-	gl_Position = mvp * vec4(position, 1.0);
-
+	vec4 modelPos = vec4(position.xyz, 1.0);
+	gl_Position = mvp * modelPos;
 	attribOut.texCoords = texCoords;
 
-	// Initializes colors components
-	attribOut.emission = mat.emission;
-	attribOut.ambient = mat.ambient * lightModelAmbient;
-	attribOut.diffuse = vec3(0.0);
-	attribOut.specular = vec3(0.0);
+	vec3 n = normal;
+	if (normal.x == 0 && normal.y == 0 && normal.z == 0)
+		n = vec3(0,1,0);
+	vec3 normal = normalize(normalMatrix * n);
 
-	vec3 pos = (modelView * vec4(position, 1.0)).xyz;
-	vec3 lightDir[3];
-	for (int i = 0; i < 3; ++i) {
-		lightDir[i] = (view * vec4(lights[i].position, 1.0)).xyz - pos;
-		computeLight(i,
-			normalize(normalMatrix * normal),
-			normalize(lightDir[i]),
-			normalize(-pos)
-		);
-	}
+	vec4 viewPos = modelView * modelPos;
+	vec3 lightDir0 = normalize(( view * vec4(lights[0].position, 1.0f) ).xyz - viewPos.xyz);
+	vec3 lightDir1 = normalize(( view * vec4(lights[1].position, 1.0f) ).xyz - viewPos.xyz);
+	vec3 lightDir2 = normalize(( view * vec4(lights[2].position, 1.0f) ).xyz - viewPos.xyz);
+	vec3 obsPos = normalize(-viewPos.xyz);
+
+	vec3 spotDir0 = normalize(mat3(view) * -lights[0].spotDirection);
+	vec3 spotDir1 = normalize(mat3(view) * -lights[1].spotDirection);
+	vec3 spotDir2 = normalize(mat3(view) * -lights[2].spotDirection);
+
+	float spotFactor0 = max(int(!useSpotlight), computeSpot(spotDir0, lightDir0, normal));
+	float spotFactor1 = max(int(!useSpotlight), computeSpot(spotDir1, lightDir1, normal));
+	float spotFactor2 = max(int(!useSpotlight), computeSpot(spotDir2, lightDir2, normal));
+
+	attribOut.emission = mat.emission;
+	attribOut.ambient = lightModelAmbient * mat.ambient
+							+ lights[0].ambient * mat.ambient
+							+ lights[1].ambient * mat.ambient
+							+ lights[2].ambient * mat.ambient;
+
+	vec3 lightDiffuse[3];
+	vec3 lightSpecular[3];
+
+	computeLight(0, normal, lightDir0, obsPos, lightDiffuse[0], lightSpecular[0]);
+	computeLight(1, normal, lightDir1, obsPos, lightDiffuse[1], lightSpecular[1]);
+	computeLight(2, normal, lightDir2, obsPos, lightDiffuse[2], lightSpecular[2]);
+
+	attribOut.diffuse = lightDiffuse[0] * spotFactor0 + lightDiffuse[1] * spotFactor1 + lightDiffuse[2] * spotFactor2;
+	attribOut.specular = lightSpecular[0] * spotFactor0 + lightSpecular[1] * spotFactor1 + lightSpecular[2] * spotFactor2;
 }

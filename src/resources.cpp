@@ -153,6 +153,7 @@ Resources::Resources()
 	}
 
 	// Phong shader
+	printf("Loading phong shader\n");
 	{
 		phong.init("shaders/phong.vs.glsl", "shaders/phong.fs.glsl");
 
@@ -167,7 +168,7 @@ Resources::Resources()
 
 	// Grass shader
 	{
-		grassShader.init("shaders/grass.vs.glsl", "shaders/model.fs.glsl");
+		grassShader.init("shaders/grass.vs.glsl", "shaders/phong.fs.glsl");
 
 		mvpLocationGrass = grassShader.getUniformLoc("mvp");
 		timeLocationGrass = grassShader.getUniformLoc("time");
@@ -182,6 +183,7 @@ Resources::Resources()
 	}
 
 	// Gouraud shader
+	printf("Loading gouraud shader\n");
 	{
 		gouraud.init("shaders/gouraud.vs.glsl", "shaders/gouraud.fs.glsl");
 
@@ -195,6 +197,7 @@ Resources::Resources()
 	}
 
 	// Flat shader
+	printf("Loading flat shader\n");
 	{
 		flat.init("shaders/flat.vs.glsl", "shaders/flat.gs.glsl", "shaders/gouraud.fs.glsl");
 
@@ -223,6 +226,7 @@ Resources::Resources()
 	}
 
 	// Tessellation shader
+	printf("Loading tessellation shader\n");
 	{ // TODO: Do better here
 		std::string vertexCode = readFile("shaders/tessellation.vs.glsl");
 		std::string tessCtrlCode = readFile("shaders/tessellation.tcs.glsl");

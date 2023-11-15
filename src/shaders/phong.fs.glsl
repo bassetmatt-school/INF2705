@@ -43,9 +43,11 @@ out vec4 FragColor;
 
 float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
 	float spotFactor = 0.0;
-	if (dot(spotDir, normal) >= 0.0) {
+
+	if (dot(spotDir, normal) >= 0.0)
+	{
 		float spotDot = dot(lightDir, spotDir);
-      float opening = cos(radians(spotOpeningAngle));
+		float opening = cos(radians(spotOpeningAngle));
 
 		if (useDirect3D)
 			spotFactor = smoothstep(pow(opening, 1.01 + spotExponent/2.0), opening, spotDot);
@@ -55,68 +57,56 @@ float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
 	return spotFactor;
 }
 
-vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos) {
-	vec3 color = vec3(0.0);
+void computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos, out vec3 diffuseColor, out vec3 specularColor) {
+	float diff = max(dot(normal, lightDir), 0.0);
+	vec3 diffuse = diff * lights[lightIndex].diffuse * mat.diffuse;
 
-	// Diffuse texture loading (or not)
-	vec3 texDiffuse = useTexture ? texture(diffuseSampler, attribIn.texCoords).rgb : vec3(1.0);
+	float spec = useBlinn ?
+					dot(normalize( lightDir + obsPos ), normal) :
+					dot(reflect(-lightDir, normal), obsPos);
+	spec = max(0.0, spec);
+	spec = pow(spec, mat.shininess);
+	vec3 specular = spec * lights[lightIndex].specular * mat.specular;
 
-	// Ambiant component
-	color += mat.ambient * lights[lightIndex].ambient * texDiffuse;
-
-	// Diffuse component (spotlight or not)
-	float LdotN = dot(lightDir, normal);
-	if (LdotN > 0.0) {
-		float	spot = useSpotlight ?
-			computeSpot(attribIn.spotDir[lightIndex], lightDir, normal) :
-			1.0f;
-		color += spot * mat.diffuse * lights[lightIndex].diffuse * LdotN * texDiffuse;
-
-		// Specular component
-		float spec = 0.0;
-		if (useBlinn) { // Blinn
-			vec3 halfVec = normalize(lightDir + obsPos);
-			spec = dot(halfVec, normal);
-		} else { // Phong
-			vec3 reflectDir = reflect(-lightDir, normal);
-			spec = dot(reflectDir, obsPos);
-		}
-
-		// No need to take the max between spec and 0.0 since we ignore the negative case
-		if (spec > 0) {
-			// Specular texture
-			float texSpec = useTexture ? texture(specularSampler, attribIn.texCoords).r : 1.0;
-			// Apply shininess to lighthen formula below
-			spec = pow(spec, mat.shininess);
-			// Also multiply by spotlight factor to avoid reflexion outside of spotlight cone
-			color += spot * mat.specular * lights[lightIndex].specular * spec * texSpec;
-		}
-	}
-
-	return color;
+	diffuseColor = diffuse;
+	specularColor = specular;
 }
 
 void main() {
-	// Emission
-	vec3 color = mat.emission;
-	// Ambient
-	vec3 texDiffuse = vec3(1.0);
-	if (useTexture) {
-		vec4 tex = texture(diffuseSampler, attribIn.texCoords);
-		// Useless here since the diffuse texture only has 3 channels
-		if (tex.a < 0.3) discard;
-		texDiffuse = tex.rgb;
-	}
-	color += mat.ambient * lightModelAmbient * texDiffuse;
+	vec4 diffuseTexel = texture(diffuseSampler, attribIn.texCoords);
+	if (diffuseTexel.a < 0.3) discard;
 
-	// Normalized after rasterization
-	vec3 normal = normalize(attribIn.normal);
-	vec3 obsPos = normalize(attribIn.obsPos);
+	vec4 specularTexel = texture(specularSampler, attribIn.texCoords);
 
-	for (int i = 0; i < 3; ++i) {
-		vec3 lightDir = normalize(attribIn.lightDir[i]);
-		color += computeLight(i, normal, lightDir, obsPos);
-	}
+	vec3 n = normalize(attribIn.normal);
+	vec3 ldir0 = normalize(attribIn.lightDir[0]);
+	vec3 ldir1 = normalize(attribIn.lightDir[1]);
+	vec3 ldir2 = normalize(attribIn.lightDir[2]);
+	vec3 op = normalize(attribIn.obsPos);
 
-	FragColor = clamp(vec4(color, 1.0), 0.0, 1.0);
+	float spotFactor0 = max(int(!useSpotlight), computeSpot(normalize(attribIn.spotDir[0]), ldir0, n));
+	float spotFactor1 = max(int(!useSpotlight), computeSpot(normalize(attribIn.spotDir[1]), ldir1, n));
+	float spotFactor2 = max(int(!useSpotlight), computeSpot(normalize(attribIn.spotDir[2]), ldir2, n));
+
+	vec3 emission = mat.emission;
+	vec3 ambient = lights[0].ambient * mat.ambient
+					+ lights[1].ambient * mat.ambient
+					+ lights[2].ambient * mat.ambient;
+
+	ambient += lightModelAmbient * mat.ambient;
+
+	vec3 lightDiffuse[3];
+	vec3 lightSpecular[3];
+
+	computeLight(0, n, ldir0, op, lightDiffuse[0], lightSpecular[0]);
+	computeLight(1, n, ldir1, op, lightDiffuse[1], lightSpecular[1]);
+	computeLight(2, n, ldir2, op, lightDiffuse[2], lightSpecular[2]);
+
+	vec3 diffuse = lightDiffuse[0] * spotFactor0 + lightDiffuse[1] * spotFactor1 + lightDiffuse[2] * spotFactor2;
+	vec3 specular = lightSpecular[0] * spotFactor0 + lightSpecular[1] * spotFactor1 + lightSpecular[2] * spotFactor2;
+
+	vec3 color = emission + min(ambient + diffuse, vec3(1.0f)) * vec3(diffuseTexel) + specular * vec3(specularTexel.x);
+
+	color = clamp(color, vec3(0.0f), vec3(1.0f));
+	FragColor = vec4(color, 1.0f);
 }

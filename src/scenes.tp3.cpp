@@ -36,7 +36,8 @@ WorldScene::WorldScene(Resources& resources, Window& w, bool& isFirstPersonCam, 
 	, m_isFirstPersonCam(isFirstPersonCam)
 	, m_position(position)
 	, m_orientation(orientation)
-	, m_w(w) {
+	, m_w(w)
+	, m_currentShading(2) {
 	for (int i = 0; i < N_GROUPS; ++i) {
 		float x = 0, y = 0;
 		getGroupRandomPos(i, N_ROWS, x, y);
@@ -47,6 +48,7 @@ WorldScene::WorldScene(Resources& resources, Window& w, bool& isFirstPersonCam, 
 		const float GROUP_SCALE = 0.7f + rand01() * 0.6f;
 		m_groupsTransform[i] = glm::scale(m_groupsTransform[i], glm::vec3(GROUP_SCALE));
 
+		//std::cout << x << " " << y << std::endl;
 		m_treeTransform[i] = glm::mat4(1);
 		const float TREE_SCALE = 0.7f + rand01() * 0.6f;
 		m_treeTransform[i] = glm::scale(m_treeTransform[i], glm::vec3(TREE_SCALE));
@@ -70,26 +72,82 @@ WorldScene::~WorldScene() {
 void WorldScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	glm::mat4 mvp;
 	glm::mat4 projView = projPersp * view;
+	glm::mat4 modelView;
 
 	float time = m_w.getTick() / 1000.0;
 
+	GLint mvpMatrixLocation = -1;
+	GLint viewMatrixLocation = -1;
+	GLint modelViewMatrixLocation = -1;
+	GLint normalMatrixLocation = -1;
+
 	// DRAW RIVER
 	m_res.water.use();
-	glUniformMatrix4fv(m_res.mvpLocationWater, 1, GL_FALSE, &projView[0][0]);
+	viewMatrixLocation = m_res.viewLocationWater;
+	mvpMatrixLocation = m_res.mvpLocationWater;
+	modelViewMatrixLocation = m_res.modelViewLocationWater;
+	normalMatrixLocation = m_res.normalLocationWater;
+
+	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &view[0][0]);
+	//glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &projView[0][0]);
+	modelView = view;
+	glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, &modelView[0][0]);
+	glUniformMatrix3fv(normalMatrixLocation, 1, GL_TRUE, glm::value_ptr(glm::inverse(glm::mat3(modelView))));
+
+	glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &projView[0][0]);
 	glUniform1f(m_res.timeLocationWater, time);
-	m_res.riverTexture.use();
+	m_res.riverTexture.use(0);
+	m_res.whiteTexture.use(1);
 	m_res.river.draw(GL_TRIANGLES, 6);
 
 	// DRAW GRASS
 	m_res.grassShader.use();
-	glUniformMatrix4fv(m_res.mvpLocationGrass, 1, GL_FALSE, &projView[0][0]);
+	viewMatrixLocation = m_res.viewLocationGrass;
+	mvpMatrixLocation = m_res.mvpLocationGrass;
+	modelViewMatrixLocation = m_res.modelViewLocationGrass;
+	normalMatrixLocation = m_res.normalLocationGrass;
+
+	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &view[0][0]);
+	glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &projView[0][0]);
+
+	modelView = view;
+	glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, &modelView[0][0]);
+	glUniformMatrix3fv(normalMatrixLocation, 1, GL_TRUE, glm::value_ptr(glm::inverse(glm::mat3(modelView))));
 	glUniform1f(m_res.timeLocationGrass, time);
 	m_res.grassCluterTexture.use();
 	glDisable(GL_CULL_FACE);
 	m_res.grass.draw(GL_TRIANGLES, m_res.grassCount);
 	glEnable(GL_CULL_FACE);
 
-	m_res.model.use();
+	if (m_w.getKeyPress(Window::Key::R)) {
+		if (++m_currentShading > 2)
+			m_currentShading = 0;
+	}
+
+	switch (m_currentShading) {
+		case 0:
+			m_res.flat.use();
+			viewMatrixLocation = m_res.viewLocationFlat;
+			mvpMatrixLocation = m_res.mvpLocationFlat;
+			modelViewMatrixLocation = m_res.modelViewLocationFlat;
+			normalMatrixLocation = m_res.normalLocationFlat;
+			break;
+		case 1:
+			m_res.gouraud.use();
+			viewMatrixLocation = m_res.viewLocationGouraud;
+			mvpMatrixLocation = m_res.mvpLocationGouraud;
+			modelViewMatrixLocation = m_res.modelViewLocationGouraud;
+			normalMatrixLocation = m_res.normalLocationGouraud;
+			break;
+		case 2:
+			m_res.phong.use();
+			viewMatrixLocation = m_res.viewLocationPhong;
+			mvpMatrixLocation = m_res.mvpLocationPhong;
+			modelViewMatrixLocation = m_res.modelViewLocationPhong;
+			normalMatrixLocation = m_res.normalLocationPhong;
+			break;
+	}
+	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &view[0][0]);
 
 	// DRAW CHARACTER
 	if (!m_isFirstPersonCam) {
@@ -99,15 +157,23 @@ void WorldScene::render(glm::mat4& view, glm::mat4& projPersp) {
 		playerMat = glm::rotate(playerMat, m_orientation.y + float(M_PI), glm::vec3(0, 1, 0));
 		playerMat = glm::scale(playerMat, glm::vec3(0.5));
 		mvp = projView * playerMat;
-		glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
-		m_res.suzanneTexture.use();
+		glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
+
+		modelView = view * playerMat;
+		glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, &modelView[0][0]);
+		glUniformMatrix3fv(normalMatrixLocation, 1, GL_TRUE, glm::value_ptr(glm::inverse(glm::mat3(modelView))));
+
+		m_res.suzanneShadelessTexture.use();
 		m_res.suzanne.draw();
 	}
 
 	// DRAW GROUND
 
 	mvp = projView * glm::mat4(1.0);
-	glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
+	glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
+	modelView = view;
+	glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, &modelView[0][0]);
+	glUniformMatrix3fv(normalMatrixLocation, 1, GL_TRUE, glm::value_ptr(glm::inverse(glm::mat3(modelView))));
 	m_res.groundTexture.use();
 	m_res.ground.draw(GL_TRIANGLES, 6);
 
@@ -124,45 +190,64 @@ void WorldScene::render(glm::mat4& view, glm::mat4& projPersp) {
 			const float BILLBOARD_3D_SCALE = 3.47f;
 			billboardMat = glm::scale(billboardMat, glm::vec3(BILLBOARD_3D_SCALE * 0.96, BILLBOARD_3D_SCALE, 1));
 			billboardMat = glm::translate(billboardMat, glm::vec3(0, 0.5, 0));
-			glm::mat4 modelView = view * groupTransformation * m_treeTransform[i] * billboardMat;
+			mvp = view * groupTransformation * m_treeTransform[i] * billboardMat;
 
-			float scaleX = glm::length(glm::vec3(modelView[0]));
-			// float scaleY = glm::length(glm::vec3(modelView[1]));
-			float scaleZ = glm::length(glm::vec3(modelView[2]));
+			// Since we want the normal to be up in world space, we need to
+			// keep the modelView matrix before cancelling the rotation.
+			glm::mat4 preInverseNormalMatrix = mvp;
 
-			modelView[0][0] = scaleX; /*modelView[1][0] = 0;*/      modelView[2][0] = 0;
-			modelView[0][1] = 0;      /*modelView[1][1] = scaleY;*/ modelView[2][1] = 0;
-			modelView[0][2] = 0;      /*modelView[1][2] = 0;*/      modelView[2][2] = scaleZ;
+			float scaleX = glm::length(glm::vec3(mvp[0]));
+			float scaleY = glm::length(glm::vec3(mvp[1]));
+			float scaleZ = glm::length(glm::vec3(mvp[2]));
 
-			mvp = projPersp * modelView;
-			glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
+			mvp[0][0] = scaleX; /*mvp[1][0] = 0;*/      mvp[2][0] = 0;
+			mvp[0][1] = 0;      /*mvp[1][1] = scaleY;*/ mvp[2][1] = 0;
+			mvp[0][2] = 0;      /*mvp[1][2] = 0;*/      mvp[2][2] = scaleZ;
+
+			modelView = mvp;
+			mvp = projPersp * mvp;
+			glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
+
+			glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, &modelView[0][0]);
+			glUniformMatrix3fv(normalMatrixLocation, 1, GL_TRUE, glm::value_ptr(glm::inverse(glm::mat3(preInverseNormalMatrix))));
 			m_res.quad.draw(GL_TRIANGLES, 6);
 		} else {
 			m_res.treeTexture.use();
 			glm::mat4 modelMat = m_groupsTransform[i] * m_treeTransform[i];
 			mvp = projView * modelMat;
-			glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
+			glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
+			modelView = view * modelMat;
+			glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, &modelView[0][0]);
+			glUniformMatrix3fv(normalMatrixLocation, 1, GL_TRUE, glm::value_ptr(glm::inverse(glm::mat3(modelView))));
 			m_res.tree.draw();
 		}
+
 	}
 
 	m_res.rockTexture.use();
-	for (size_t i = 0; i < N_GROUPS; ++i) {
+	for (int i = 0; i < N_GROUPS; ++i) {
 		glm::mat4 modelMat = m_groupsTransform[i] * m_rockTransform[i];
 		mvp = projView * modelMat;
-		glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
+		glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
+		modelView = view * modelMat;
+		glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, &modelView[0][0]);
+		glUniformMatrix3fv(normalMatrixLocation, 1, GL_TRUE, glm::value_ptr(glm::inverse(glm::mat3(modelView))));
 		m_res.rock.draw();
 	}
 
 	m_res.shroomTexture.use();
-	for (size_t i = 0; i < N_GROUPS; ++i) {
+	for (int i = 0; i < N_GROUPS; ++i) {
 		glm::mat4 modelMat = m_groupsTransform[i] * m_shroomTransform[i];
 		mvp = projView * modelMat;
-		glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
+		glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
+		modelView = view * modelMat;
+		glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, &modelView[0][0]);
+		glUniformMatrix3fv(normalMatrixLocation, 1, GL_TRUE, glm::value_ptr(glm::inverse(glm::mat3(modelView))));
 		m_res.shroom.draw();
 	}
 
 	// DRAW HUD
+	m_res.model.use();
 	glDepthFunc(GL_ALWAYS);
 	glm::mat4 projOrtho = glm::ortho(0.0f, (float) m_w.getWidth(), 0.0f, (float) m_w.getHeight(), 1.0f, -1.0f);
 	glm::mat4 quadMat = glm::mat4(1);
