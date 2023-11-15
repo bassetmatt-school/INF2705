@@ -1,6 +1,9 @@
 # INF2705
 Project to be introduced to OpenGL.
 
+<h2 style="color:#ff0000; font-weight:bold">Warning: Currently WIP, will not work as described behind<br>
+For this result, check tag TP3-end</h2>
+
 ## Requirements
 - `make`
 - `gcc`, `clang` or any C++ compiler
