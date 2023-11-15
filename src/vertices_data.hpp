@@ -25,15 +25,15 @@ const GLfloat cubeVertices[] ={
 	-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 1.0f,
 	-0.5f,  0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
 	// +y
-	-0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-	 // -y
-	-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f,
+  -0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+	0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+  -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+	// -y
+  -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
+	0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
+  -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f,
+	0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 1.0f,
 };
 
 const GLuint cubeIndexes[] ={
@@ -56,12 +56,13 @@ const GLuint cubeIndexes[] ={
 	 21, 23, 22,
 };
 
+
 #define GROUND_SIZE 30.0f
 GLfloat groundVertices[] ={
-	-GROUND_SIZE, -1.0f,  GROUND_SIZE,  0.0, 10.0,
-	 GROUND_SIZE, -1.0f,  GROUND_SIZE, 10.0, 10.0,
-	 GROUND_SIZE, -1.0f, -GROUND_SIZE, 10.0,  0.0,
-	-GROUND_SIZE, -1.0f, -GROUND_SIZE,  0.0,  0.0,
+	 -GROUND_SIZE, -1.0f, GROUND_SIZE, 0.0, 10.0,
+	 GROUND_SIZE, -1.0f, GROUND_SIZE, 10.0, 10.0,
+	 GROUND_SIZE, -1.0f, -GROUND_SIZE, 10.0, 0.0,
+	 -GROUND_SIZE, -1.0f, -GROUND_SIZE, 0.0, 0.0
 };
 
 GLuint groundIndexes[] ={
@@ -69,18 +70,12 @@ GLuint groundIndexes[] ={
 	 0, 2, 3
 };
 
-
 #define RIVER_WIDTH_X 20.0f
 GLfloat riverVertices[] ={
 	 -RIVER_WIDTH_X - GROUND_SIZE, -1.0f, GROUND_SIZE, 0.0, 1.0,
 	 -GROUND_SIZE, -1.0f, GROUND_SIZE, 1.0, 1.0,
 	 -GROUND_SIZE, -1.0f, -GROUND_SIZE, 1.0, 0.0,
 	 -RIVER_WIDTH_X - GROUND_SIZE, -1.0f, -GROUND_SIZE, 0.0, 0.0
-};
-
-const GLuint riverIndexes[] ={
-	0,  1,  2,
-	1,  3,  2,
 };
 
 GLfloat quad2dVertices[] ={
@@ -95,50 +90,49 @@ GLuint quad2dIndexes[] ={
 	 0, 2, 3
 };
 
-const GLfloat skyboxVertices[] ={
-	-1.0f,  1.0f, -1.0f,
-	-1.0f, -1.0f, -1.0f,
-	 1.0f, -1.0f, -1.0f,
-	 1.0f, -1.0f, -1.0f,
-	 1.0f,  1.0f, -1.0f,
-	-1.0f,  1.0f, -1.0f,
+GLfloat skyboxVertices[] ={
+	 -1.0f,  1.0f, -1.0f,
+	 -1.0f, -1.0f, -1.0f,
+	  1.0f, -1.0f, -1.0f,
+	  1.0f, -1.0f, -1.0f,
+	  1.0f,  1.0f, -1.0f,
+	 -1.0f,  1.0f, -1.0f,
 
-	-1.0f, -1.0f,  1.0f,
-	-1.0f, -1.0f, -1.0f,
-	-1.0f,  1.0f, -1.0f,
-	-1.0f,  1.0f, -1.0f,
-	-1.0f,  1.0f,  1.0f,
-	-1.0f, -1.0f,  1.0f,
+	 -1.0f, -1.0f,  1.0f,
+	 -1.0f, -1.0f, -1.0f,
+	 -1.0f,  1.0f, -1.0f,
+	 -1.0f,  1.0f, -1.0f,
+	 -1.0f,  1.0f,  1.0f,
+	 -1.0f, -1.0f,  1.0f,
 
-	 1.0f, -1.0f, -1.0f,
-	 1.0f, -1.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,
-	 1.0f,  1.0f, -1.0f,
-	 1.0f, -1.0f, -1.0f,
+	  1.0f, -1.0f, -1.0f,
+	  1.0f, -1.0f,  1.0f,
+	  1.0f,  1.0f,  1.0f,
+	  1.0f,  1.0f,  1.0f,
+	  1.0f,  1.0f, -1.0f,
+	  1.0f, -1.0f, -1.0f,
 
-	-1.0f, -1.0f,  1.0f,
-	-1.0f,  1.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,
-	 1.0f, -1.0f,  1.0f,
-	-1.0f, -1.0f,  1.0f,
+	 -1.0f, -1.0f,  1.0f,
+	 -1.0f,  1.0f,  1.0f,
+	  1.0f,  1.0f,  1.0f,
+	  1.0f,  1.0f,  1.0f,
+	  1.0f, -1.0f,  1.0f,
+	 -1.0f, -1.0f,  1.0f,
 
-	-1.0f,  1.0f, -1.0f,
-	 1.0f,  1.0f, -1.0f,
-	 1.0f,  1.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,
-	-1.0f,  1.0f,  1.0f,
-	-1.0f,  1.0f, -1.0f,
+	 -1.0f,  1.0f, -1.0f,
+	  1.0f,  1.0f, -1.0f,
+	  1.0f,  1.0f,  1.0f,
+	  1.0f,  1.0f,  1.0f,
+	 -1.0f,  1.0f,  1.0f,
+	 -1.0f,  1.0f, -1.0f,
 
-	-1.0f, -1.0f, -1.0f,
-	-1.0f, -1.0f,  1.0f,
-	 1.0f, -1.0f, -1.0f,
-	 1.0f, -1.0f, -1.0f,
-	-1.0f, -1.0f,  1.0f,
-	 1.0f, -1.0f,  1.0f
+	 -1.0f, -1.0f, -1.0f,
+	 -1.0f, -1.0f,  1.0f,
+	  1.0f, -1.0f, -1.0f,
+	  1.0f, -1.0f, -1.0f,
+	 -1.0f, -1.0f,  1.0f,
+	  1.0f, -1.0f,  1.0f
 };
-
 
 GLfloat grassPosition[] ={
 	 0.433013f, 0.0f, -0.25f,

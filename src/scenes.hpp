@@ -34,6 +34,8 @@ class WorldScene : public Scene {
 	glm::vec2& m_orientation;
 	Window& m_w;
 
+	int m_currentShading;
+
 	// MATRICES
 	static const int N_ROWS = 7;
 	static const int N_GROUPS = N_ROWS * N_ROWS;
@@ -115,5 +117,50 @@ class LightingTestScene : public Scene {
 	int m_currentModel;
 	int m_currentShading;
 };
+
+
+
+class TesselationScene : public Scene {
+	public:
+	TesselationScene(Resources& resources);
+	virtual ~TesselationScene();
+
+	virtual void render(glm::mat4& view, glm::mat4& projPersp);
+
+	void drawMenu();
+
+	private:
+	// IMGUI VARIABLE
+	bool m_viewWireframe;
+};
+
+
+struct Particle {
+	glm::vec3 position;
+	glm::vec3 velocity;
+	glm::vec4 color;
+	glm::vec2 size;
+	GLfloat timeToLive;
+};
+
+
+class ParticleScene : public Scene {
+	public:
+	ParticleScene(Resources& resources, Window& w);
+	virtual ~ParticleScene();
+
+	virtual void render(glm::mat4& view, glm::mat4& projPersp);
+
+	private:
+	Window& m_w;
+
+	float m_oldTime;
+	float m_cumulativeTime;
+
+	GLuint m_tfo, m_vao, m_vbo[2];
+	unsigned int m_nParticles;
+	unsigned int m_nMaxParticles;
+};
+
 
 #endif // SCENES_H

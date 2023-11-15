@@ -33,6 +33,8 @@ class ShaderProgram {
 	GLint getUniformLoc(const char* name);
 	void setUniformBlockBinding(const char* name, GLuint bindingIndex);
 
+	void setTransformFeedbackVaryings(const char** names, GLsizei number, GLenum mode);
+
 	private:
 	void checkError();
 

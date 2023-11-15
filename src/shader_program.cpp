@@ -97,6 +97,10 @@ void ShaderProgram::setUniformBlockBinding(const char* name, GLuint bindingIndex
 	glUniformBlockBinding(m_id, blockIndex, bindingIndex);
 }
 
+void ShaderProgram::setTransformFeedbackVaryings(const char** names, GLsizei number, GLenum mode) {
+	glTransformFeedbackVaryings(m_id, number, names, mode);
+}
+
 void ShaderProgram::checkError() {
 	GLint success;
 	GLchar infoLog[1024];

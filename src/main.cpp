@@ -52,10 +52,12 @@ int main(int argc, char** argv) {
 	WorldScene worldScene(res, w, isFirstPersonCam, playerPosition, playerOrientation);
 	StencilTestScene stencilScene(res, isFirstPersonCam, playerPosition, playerOrientation);
 	LightingTestScene lightingScene(res);
+	TesselationScene tesselationScene(res);
+	ParticleScene particuleScene(res, w);
 
 	enum class AvailableScene {
-		WORLD, STENCIL_TEST, LIGHTING_TEST
-	} sceneChoice = AvailableScene::LIGHTING_TEST;
+		WORLD, STENCIL_TEST, LIGHTING_TEST, TESSELATION, PARTICLE
+	} sceneChoice = AvailableScene::TESSELATION;
 
 	// MAIN LOOP
 
@@ -77,7 +79,9 @@ int main(int argc, char** argv) {
 			switch (sceneChoice) {
 				case AvailableScene::WORLD: sceneChoice = AvailableScene::STENCIL_TEST; break;
 				case AvailableScene::STENCIL_TEST: sceneChoice = AvailableScene::LIGHTING_TEST; break;
-				case AvailableScene::LIGHTING_TEST: sceneChoice = AvailableScene::WORLD; break;
+				case AvailableScene::LIGHTING_TEST: sceneChoice = AvailableScene::TESSELATION; break;
+				case AvailableScene::TESSELATION: sceneChoice = AvailableScene::PARTICLE; break;
+				case AvailableScene::PARTICLE: sceneChoice = AvailableScene::WORLD; break;
 			}
 		}
 
@@ -88,6 +92,8 @@ int main(int argc, char** argv) {
 		scrollLevel -= w.getMouseScrollDirection();
 		scrollLevel = glm::clamp(scrollLevel, SCROLL_MIN, SCROLL_MAX);
 		isFirstPersonCam = scrollLevel == SCROLL_MIN;
+		if (sceneChoice == AvailableScene::TESSELATION)
+			isFirstPersonCam = true;
 
 		if (isMouseMotionEnabled) w.hideMouse();
 		else w.showMouse();
@@ -98,6 +104,7 @@ int main(int argc, char** argv) {
 			playerOrientation.y -= x * 0.01f;
 			playerOrientation.x -= y * 0.01f;
 		}
+
 		glm::vec3 positionOffset = glm::vec3(0.0);
 		float speed = 0.1f;
 		// Sprint feature, can be useful to navigate the terrain
@@ -108,8 +115,8 @@ int main(int argc, char** argv) {
 		if (w.getKeyHold(Window::Key::D)) positionOffset.x += speed;
 		// Upward and downward movement to check from above to have a global
 		// view or below to check face culling
-		if (w.getKeyHold(Window::Key::Q)) positionOffset.y += speed;
-		if (w.getKeyHold(Window::Key::E)) positionOffset.y -= speed;
+		if (w.getKeyHold(Window::Key::Q)) positionOffset.y -= speed;
+		if (w.getKeyHold(Window::Key::E)) positionOffset.y += speed;
 
 		positionOffset = glm::rotate(glm::mat4(1.0f), playerOrientation.y, glm::vec3(0.0, 1.0, 0.0)) * glm::vec4(positionOffset, 1);
 
@@ -123,7 +130,10 @@ int main(int argc, char** argv) {
 			case AvailableScene::WORLD:         worldScene.render(view, projPersp);    break;
 			case AvailableScene::STENCIL_TEST:  stencilScene.render(view, projPersp); break;
 			case AvailableScene::LIGHTING_TEST: lightingScene.render(view, projPersp); break;
+			case AvailableScene::TESSELATION: tesselationScene.render(view, projPersp); break;
+			case AvailableScene::PARTICLE: particuleScene.render(view, projPersp); break;
 		}
+
 		w.swap();
 		w.pollEvent();
 		isRunning = !w.shouldClose() && !w.getKeyPress(Window::Key::ESC);

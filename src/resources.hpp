@@ -22,10 +22,16 @@ class Resources {
 	ShaderProgram water;
 	GLint mvpLocationWater;
 	GLint timeLocationWater;
+	GLint modelViewLocationWater;
+	GLint viewLocationWater;
+	GLint normalLocationWater;
 	// ---
 	ShaderProgram grassShader;
 	GLint mvpLocationGrass;
 	GLint timeLocationGrass;
+	GLint modelViewLocationGrass;
+	GLint viewLocationGrass;
+	GLint normalLocationGrass;
 	// ---
 	ShaderProgram phong;
 	GLint mvpLocationPhong;
@@ -51,6 +57,20 @@ class Resources {
 	// ---
 	ShaderProgram skyboxShader;
 	GLint mvpLocationSky;
+	// ---
+	ShaderProgram tessellation;
+	GLint mvpLocationTessellation;
+	GLint modelViewLocationTessellation;
+	GLint viewWireframeLocationTessellation;
+	// ---
+	ShaderProgram transformFeedback;
+	GLint timeLocationTransformFeedback;
+	GLint dtLocationTransformFeedback;
+	// ---
+	ShaderProgram particule;
+	GLint modelViewLocationParticle;
+	GLint projectionLocationParticle;
+
 	// #############
 	// SIMPLE GEOMETRY MESHES
 	// #############
@@ -58,8 +78,10 @@ class Resources {
 	BasicShapeElements river;
 	BasicShapeElements quad;
 	BasicShapeArrays grass;
-	BasicShapeArrays skybox;
+	BasicShapeArrays tesselationPlane;
 	GLsizei grassCount;
+	GLsizei tesselationPlaneCount;
+	BasicShapeArrays skybox;
 	// #############
 	// MODELS
 	// #############
@@ -78,15 +100,20 @@ class Resources {
 	Texture2D shroomTexture;
 	Texture2D treeTexture;
 	Texture2D suzanneTexture;
-	Texture2D glassTexture;
+	Texture2D suzanneShadelessTexture;
 	Texture2D groundTexture;
 	Texture2D riverTexture;
 	Texture2D grassCluterTexture;
 	Texture2D billboardTexture;
 	Texture2D heartTexture;
+	Texture2D glassTexture;
 	Texture2D whiteTexture;
 	Texture2D diffuseMapTexture;
 	Texture2D specularMapTexture;
+	Texture2D heightmapTexture;
+	Texture2D sandTexture;
+	Texture2D snowTexture;
+	Texture2D flameTexture;
 	TextureCubeMap skyboxTexture;
 };
 

@@ -176,7 +176,10 @@ unsigned int Window::getTick() {
 }
 
 bool Window::shouldClose() { return m_shouldClose; }
-bool Window::shouldResize() { return m_shouldResize; }
-
+bool Window::shouldResize() {
+	bool resize = m_shouldResize;
+	m_shouldResize = false;
+	return resize;
+}
 int Window::getWidth() { return m_width; }
 int Window::getHeight() { return m_height; }

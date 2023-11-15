@@ -42,27 +42,17 @@ uniform sampler2D specularSampler;
 out vec4 FragColor;
 
 float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
-	float cos_delta = cos(radians(spotOpeningAngle));
-	// light dir is already normalized
-	float cos_gamma = dot(normalize(spotDir), lightDir);
+	float spotFactor = 0.0;
+	if (dot(spotDir, normal) >= 0.0) {
+		float spotDot = dot(lightDir, spotDir);
+      float opening = cos(radians(spotOpeningAngle));
 
-	if (!useDirect3D) { // OpenGL
-		if (cos_gamma > cos_delta) // Inside of spotlight cone
-			return pow(cos_gamma, spotExponent);
-		else // Outside of spotlight cone
-			return 0.0;
-	} else { // Direct3D
-		float cos_inner = cos_delta;
-		float cos_outer = pow(cos_delta, 1.01 + spotExponent / 2.0);
-
-		if (cos_gamma > cos_inner) // Inside of spotlight cone
-			return 1.0;
-		else if (cos_gamma < cos_outer) // Outside of spotlight cone
-			return 0.0;
-		else // Inside fading zone
-			return (cos_gamma - cos_outer) / (cos_inner - cos_outer);
+		if (useDirect3D)
+			spotFactor = smoothstep(pow(opening, 1.01 + spotExponent/2.0), opening, spotDot);
+		else
+			spotFactor = spotDot > opening ? pow(spotDot, spotExponent) : 0.0;
 	}
-	return 0.0;
+	return spotFactor;
 }
 
 vec3 computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos) {
