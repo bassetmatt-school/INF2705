@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(
 	"INF2705 - TP3"
 	LANGUAGES
-	CXX
+	CXX C
 )
 
 add_executable(tp3)

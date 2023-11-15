@@ -1,6 +1,6 @@
 #include "model.hpp"
 
-#include "obj_loader.hpp"
+#include "obj_loader.h"
 #include <iostream>
 
 Model::Model(const char* path) {
