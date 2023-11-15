@@ -130,13 +130,16 @@ Resources::Resources()
 	groundTexture.enableMipmap();
 	riverTexture.enableMipmap();
 
+#define SHADER_LOAD_PRINT true
 	// Model shader
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading model shader\n");
 	{
 		model.init("shaders/model.vs.glsl", "shaders/model.fs.glsl");
 		mvpLocationModel = model.getUniformLoc("mvp");
 	}
 
 	// Water shader
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading water shader\n");
 	{
 		water.init("shaders/water.vs.glsl", "shaders/water.fs.glsl");
 
@@ -153,7 +156,7 @@ Resources::Resources()
 	}
 
 	// Phong shader
-	printf("Loading phong shader\n");
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading phong shader\n");
 	{
 		phong.init("shaders/phong.vs.glsl", "shaders/phong.fs.glsl");
 
@@ -167,6 +170,7 @@ Resources::Resources()
 	}
 
 	// Grass shader
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading grass shader\n");
 	{
 		grassShader.init("shaders/grass.vs.glsl", "shaders/phong.fs.glsl");
 
@@ -183,7 +187,7 @@ Resources::Resources()
 	}
 
 	// Gouraud shader
-	printf("Loading gouraud shader\n");
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading gouraud shader\n");
 	{
 		gouraud.init("shaders/gouraud.vs.glsl", "shaders/gouraud.fs.glsl");
 
@@ -197,7 +201,7 @@ Resources::Resources()
 	}
 
 	// Flat shader
-	printf("Loading flat shader\n");
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading flat shader\n");
 	{
 		flat.init("shaders/flat.vs.glsl", "shaders/flat.gs.glsl", "shaders/gouraud.fs.glsl");
 
@@ -211,6 +215,7 @@ Resources::Resources()
 	}
 
 	// Simple shader
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading simple shader\n");
 	{
 		simple.init("shaders/simple.vs.glsl", "shaders/simple.fs.glsl");
 
@@ -219,6 +224,7 @@ Resources::Resources()
 	}
 
 	// Skybox shader
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading skybox shader\n");
 	{
 		skyboxShader.init("shaders/skybox.vs.glsl", "shaders/skybox.fs.glsl");
 
@@ -226,7 +232,7 @@ Resources::Resources()
 	}
 
 	// Tessellation shader
-	printf("Loading tessellation shader\n");
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading tessellation shader\n");
 	{ // TODO: Do better here
 		std::string vertexCode = readFile("shaders/tessellation.vs.glsl");
 		std::string tessCtrlCode = readFile("shaders/tessellation.tcs.glsl");
@@ -258,6 +264,7 @@ Resources::Resources()
 	}
 
 	// Particule shader
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading particule shader\n");
 	{
 		std::string vertexCode = readFile("shaders/particle.vs.glsl");
 		std::string geometryCode = readFile("shaders/particle.gs.glsl");
@@ -276,6 +283,7 @@ Resources::Resources()
 	}
 
 	// Transform feedback shader
+	if (SHADER_LOAD_PRINT) printf("[Shader] Loading transform feedback shader\n");
 	{
 		std::string vertexCode = readFile("shaders/transformFeedback.vs.glsl");
 

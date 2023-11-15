@@ -5,11 +5,11 @@ layout (location = 1) in vec2 texCoords;
 layout (location = 2) in vec3 normal;
 
 out ATTRIB_VS_OUT {
-    vec2 texCoords;
-    vec3 normal;
-    vec3 lightDir[3];
-    vec3 spotDir[3];
-    vec3 obsPos;
+	vec2 texCoords;
+	vec3 normal;
+	vec3 lightDir[3];
+	vec3 spotDir[3];
+	vec3 obsPos;
 } attribOut;
 
 uniform mat4 mvp;
