@@ -421,7 +421,7 @@ LightingTestScene::LightingTestScene(Resources& resources)
 		 false,
 		 false,
 		 false,
-		 false,
+		 true,
 		 1.0f,
 		 20.0f
 	};
@@ -435,7 +435,7 @@ LightingTestScene::LightingTestScene(Resources& resources)
 		 100.0f
 	};
 
-#define ORIGINAL_PARAMETERS 0
+#define ORIGINAL_PARAMETERS 1
 
 #if ORIGINAL_PARAMETERS==1
 	m_lights[0] =

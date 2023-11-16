@@ -44,8 +44,7 @@ out vec4 FragColor;
 float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
 	float spotFactor = 0.0;
 
-	if (dot(spotDir, normal) >= 0.0)
-	{
+	if (dot(spotDir, normal) >= 0.0) {
 		float spotDot = dot(lightDir, spotDir);
 		float opening = cos(radians(spotOpeningAngle));
 
@@ -73,37 +72,32 @@ void computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 }
 
 void main() {
-	vec4 diffuseTexel = texture(diffuseSampler, attribIn.texCoords);
-	if (diffuseTexel.a < 0.3) discard;
-
-	vec4 specularTexel = texture(specularSampler, attribIn.texCoords);
+	vec4 diffuseTexel = vec4(1.0);
+	vec4 specularTexel = vec4(1.0);
+	if (useTexture) {
+		diffuseTexel =	texture(diffuseSampler, attribIn.texCoords);
+		if (diffuseTexel.a < 0.3) discard;
+		specularTexel = texture(specularSampler, attribIn.texCoords);
+	}
 
 	vec3 n = normalize(attribIn.normal);
-	vec3 ldir0 = normalize(attribIn.lightDir[0]);
-	vec3 ldir1 = normalize(attribIn.lightDir[1]);
-	vec3 ldir2 = normalize(attribIn.lightDir[2]);
 	vec3 op = normalize(attribIn.obsPos);
 
-	float spotFactor0 = max(int(!useSpotlight), computeSpot(normalize(attribIn.spotDir[0]), ldir0, n));
-	float spotFactor1 = max(int(!useSpotlight), computeSpot(normalize(attribIn.spotDir[1]), ldir1, n));
-	float spotFactor2 = max(int(!useSpotlight), computeSpot(normalize(attribIn.spotDir[2]), ldir2, n));
-
 	vec3 emission = mat.emission;
-	vec3 ambient = lights[0].ambient * mat.ambient
-					+ lights[1].ambient * mat.ambient
-					+ lights[2].ambient * mat.ambient;
+	vec3 ambient = mat.ambient * lightModelAmbient;
+	vec3 diffuse = vec3(0.0f);
+	vec3 specular = vec3(0.0f);
 
-	ambient += lightModelAmbient * mat.ambient;
-
-	vec3 lightDiffuse[3];
-	vec3 lightSpecular[3];
-
-	computeLight(0, n, ldir0, op, lightDiffuse[0], lightSpecular[0]);
-	computeLight(1, n, ldir1, op, lightDiffuse[1], lightSpecular[1]);
-	computeLight(2, n, ldir2, op, lightDiffuse[2], lightSpecular[2]);
-
-	vec3 diffuse = lightDiffuse[0] * spotFactor0 + lightDiffuse[1] * spotFactor1 + lightDiffuse[2] * spotFactor2;
-	vec3 specular = lightSpecular[0] * spotFactor0 + lightSpecular[1] * spotFactor1 + lightSpecular[2] * spotFactor2;
+	for (int i = 0; i < 3; ++i) {
+		vec3 ldir = normalize(attribIn.lightDir[i]);
+		vec3 spotDir = normalize(attribIn.spotDir[i]);
+		float spotFactor = max(int(!useSpotlight), computeSpot(spotDir, ldir, n));
+		ambient += lights[i].ambient * mat.ambient;
+		vec3 diffuseColor, specularColor;
+		computeLight(i, n, ldir, op, diffuseColor, specularColor);
+		diffuse += diffuseColor * spotFactor;
+		specular += specularColor * spotFactor;
+	}
 
 	vec3 color = emission + min(ambient + diffuse, vec3(1.0f)) * vec3(diffuseTexel) + specular * vec3(specularTexel.x);
 
