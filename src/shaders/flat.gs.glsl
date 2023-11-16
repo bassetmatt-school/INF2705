@@ -63,8 +63,8 @@ float computeSpot(in vec3 spotDir, in vec3 lightDir, in vec3 normal) {
 	}
 	return spotFactor;
 }
-
-void computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos, out vec3 diffuseColor, out vec3 specularColor) {
+// TODO: Continue inout structure and adapt to all shaders
+void computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 obsPos, inout vec3 diffuseColor, inout vec3 specularColor) {
 	float diff = max(dot(normal, lightDir), 0.0);
 	vec3 diffuse = diff * lights[lightIndex].diffuse * mat.diffuse;
 
@@ -75,8 +75,8 @@ void computeLight(in int lightIndex, in vec3 normal, in vec3 lightDir, in vec3 o
 	spec = pow(spec, mat.shininess);
 	vec3 specular = spec * lights[lightIndex].specular * mat.specular;
 
-	diffuseColor = diffuse;
-	specularColor = specular;
+	diffuseColor += diffuse;
+	specularColor += specular;
 }
 
 
