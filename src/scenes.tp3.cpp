@@ -271,7 +271,7 @@ StencilTestScene::StencilTestScene(Resources& resources, bool& isFirstPersonCam,
 	, m_orientation(orientation) {
 	const GLfloat GROUND_SIZE = 30.0f/2.0f;
 	// CALCULATE MATRIX TRANSFORMS FOR GROUPS AND OBJECTS
-	for (size_t i = 0; i < N_ALLY_MONKEE; ++i) {
+	for (int i = 0; i < N_ALLY_MONKEE; ++i) {
 		float x = -GROUND_SIZE + 2 * GROUND_SIZE * rand01();
 		float y = -GROUND_SIZE + 2 * GROUND_SIZE * rand01();
 		glm::mat4 model = glm::mat4(1);
@@ -281,7 +281,7 @@ StencilTestScene::StencilTestScene(Resources& resources, bool& isFirstPersonCam,
 		allyTransform[i] = model;
 	}
 
-	for (size_t i = 0; i < N_ENEMY_MONKEE; ++i) {
+	for (int i = 0; i < N_ENEMY_MONKEE; ++i) {
 		float x = -GROUND_SIZE + 2 * GROUND_SIZE * rand01();
 		float y = -GROUND_SIZE + 2 * GROUND_SIZE * rand01();
 		glm::mat4 model = glm::mat4(1);
@@ -324,89 +324,88 @@ void StencilTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
 	m_res.rock.draw();
 
-
 	// DRAW GROUND
 	mvp = projView * glm::mat4(1.0);
 	glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
 	m_res.groundTexture.use();
 	m_res.ground.draw(GL_TRIANGLES, 6);
 
+	// PRECOMPUTE MATRICES FOR THE MONKEYS AND HALOS
 
-	// MVP Matrices for ally and enemy monkeys
-	glm::mat4 allyMVP[N_ALLY_MONKEE];
-	for (size_t i = 0; i < N_ALLY_MONKEE; ++i)
-		allyMVP[i] = projView * allyTransform[i];
+	glm::mat4 allyFinalTransform[N_ALLY_MONKEE];
+	glm::mat4 enemyFinalTransform[N_ENEMY_MONKEE];
+	for (int i = 0; i < N_ALLY_MONKEE; ++i) {
+		allyFinalTransform[i] = projView * allyTransform[i];
+	}
+	for (int i = 0; i < N_ENEMY_MONKEE; ++i) {
+		enemyFinalTransform[i] = projView * enemyTransform[i];
+	}
 
-	glm::mat4 enemyMVP[N_ENEMY_MONKEE];
-	for (size_t i = 0; i < N_ENEMY_MONKEE; ++i)
-		enemyMVP[i] = projView * enemyTransform[i];
-
+	// DRAW THE MONKEY
 
 	m_res.suzanneTexture.use();
-
-	// Draw the monkeys in the stencil buffer
 	glEnable(GL_STENCIL_TEST);
-	// Filling stencil
-	glStencilFunc(GL_ALWAYS, 0xFF, 0xFF);
-	// Allies fill buffer even if z depth fails so that the halo is correctly
-	// displayed even behind an opaque object
-	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
-	for (size_t i = 0; i < N_ALLY_MONKEE; ++i) {
-		// Only affects the specific monkey bit
-		glStencilMask(1 << i);
-		glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &allyMVP[i][0][0]);
+	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+	for (int i = 0; i < N_ALLY_MONKEE; ++i) {
+		glStencilMask((1 << i));
+		glStencilFunc(GL_ALWAYS, 0xff, (1 << i));
+		mvp = allyFinalTransform[i];
+		glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
 		m_res.suzanne.draw();
 	}
-	// Enemy so no need to fill buffer if depth test fails
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	for (size_t i = 0; i < N_ENEMY_MONKEE; ++i) {
-		glStencilMask(1 << (i + N_ALLY_MONKEE));
-		glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &enemyMVP[i][0][0]);
+	for (int i = 0; i < N_ENEMY_MONKEE; ++i) {
+		glStencilMask((1 << (i + N_ALLY_MONKEE)));
+		glStencilFunc(GL_ALWAYS, 0xff, (1 << (i + N_ALLY_MONKEE)));
+		mvp = enemyFinalTransform[i];
+		glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
 		m_res.suzanne.draw();
 	}
+
 	glDisable(GL_STENCIL_TEST);
-
-
-	// On dessine le ciel un peu plus tôt
 	mvp = projPersp * glm::mat4(glm::mat3(view));
 	drawSky(mvp);
 
-
-	// Activate blending for glass transparency
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	m_res.model.use();
 	m_res.glassTexture.use();
-
-	mvp = projView * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
+	glDepthMask(0);
+	glm::mat4 model = glm::mat4(1);
+	model = glm::translate(model, glm::vec3(10.0f, -1.0f, 0));
+	mvp = projView * model;
 	glUniformMatrix4fv(m_res.mvpLocationModel, 1, GL_FALSE, &mvp[0][0]);
 	m_res.glass.draw();
+	glDepthMask(0xff);
 	glEnable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
 
-	// Halos
-	m_res.simple.use();
 	glEnable(GL_STENCIL_TEST);
-	// Do not write into the stencil anymore
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-	glStencilMask(0xFF);
-	// Disable depth test for ally monkey to draw them behind obstacles
+
+	// DRAW THE HALO
+
+	m_res.simple.use();
+	glStencilMask(0x00);
+
+	glUniform3f(m_res.colorLocationSimple, 1.0f, 0.25f, 0.25f);
+	for (int i = 0; i < N_ENEMY_MONKEE; ++i) {
+		mvp = enemyFinalTransform[i];
+		glStencilFunc(GL_NOTEQUAL, 0xff, (1 << (i + N_ALLY_MONKEE)));
+		glUniformMatrix4fv(m_res.mvpLocationSimple, 1, GL_FALSE, &mvp[0][0]);
+		m_res.suzanne.draw();
+	}
+
 	glDepthFunc(GL_ALWAYS);
-	glUniform3f(m_res.colorLocationSimple, 0.0f, 1.0f, 1.0f);
-	for (size_t i = 0; i < N_ALLY_MONKEE; ++i) {
-		glUniformMatrix4fv(m_res.mvpLocationSimple, 1, GL_FALSE, &allyMVP[i][0][0]);
-		glStencilFunc(GL_EQUAL, 0, 1 << i);
+	glUniform3f(m_res.colorLocationSimple, 0.25f, 0.80f, 1.0f);
+	for (int i = 0; i < N_ALLY_MONKEE; ++i) {
+		mvp = allyFinalTransform[i];
+		glStencilFunc(GL_NOTEQUAL, 0xff, (1 << i));
+		glUniformMatrix4fv(m_res.mvpLocationSimple, 1, GL_FALSE, &mvp[0][0]);
 		m_res.suzanne.draw();
 	}
 	glDepthFunc(GL_LESS);
+	glStencilMask(0xff);
 
-	glUniform3f(m_res.colorLocationSimple, 1.0f, 0.0f, 0.0f);
-	for (size_t i = 0; i < N_ENEMY_MONKEE; ++i) {
-		glUniformMatrix4fv(m_res.mvpLocationSimple, 1, GL_FALSE, &enemyMVP[i][0][0]);
-		glStencilFunc(GL_EQUAL, 0, 1 << (i + N_ALLY_MONKEE));
-		m_res.suzanne.draw();
-	}
 	glDisable(GL_STENCIL_TEST);
 }
 
@@ -418,7 +417,7 @@ LightingTestScene::LightingTestScene(Resources& resources)
 	, m_currentShading(2) {
 	m_lightModel =
 	{
-		 glm::vec3(0.2f),
+		 glm::vec3(0.4f),
 		 false,
 		 false,
 		 false,
@@ -436,6 +435,9 @@ LightingTestScene::LightingTestScene(Resources& resources)
 		 100.0f
 	};
 
+#define ORIGINAL_PARAMETERS 0
+
+#if ORIGINAL_PARAMETERS==1
 	m_lights[0] =
 	{
 		 {0.1f, 0.0f, 0.0f, 0.0f},
@@ -460,13 +462,46 @@ LightingTestScene::LightingTestScene(Resources& resources)
 		 {0.0f, 1.0f, -2.0f, 0.0f},
 		 {0.0f, 0.0f, 0.0f, 0.0f}
 	};
+#else
+	m_lights[0] =
+	{
+		 {0.0f, 0.0f, 0.0f, 0.0f},
+		 {1.0f, 1.0f, 1.0f, 0.0f},
+		 {0.1f, 0.1f, 0.1f, 0.0f},
+		 {700.5f, 1000.0f, 1.0f, 0.0f},
+		 {0.0f, 0.0f, 0.0f, 0.0f}
+	};
+	m_lights[1] =
+	{
+		 {0.0f, 0.0f, 0.0f, 0.0f},
+		 {0.0f, 0.0f, 0.0f, 0.0f},
+		 {0.0f, 0.0f, 0.0f, 0.0f},
+		 {-1.5f, 1.0f, 1.5f, 0.0f},
+		 {0.0f, 0.0f, 0.0f, 0.0f}
+	};
+	m_lights[2] =
+	{
+		 {0.0f, 0.0f, 0.0f, 0.0f},
+		 {0.0f, 0.0f, 0.0f, 0.0f},
+		 {0.0f, 0.0f, 0.0f, 0.0f},
+		 {0.0f, 1.0f, -2.0f, 0.0f},
+		 {0.0f, 0.0f, 0.0f, 0.0f}
+	};
+#endif
 
 	orientation[0] = glm::vec2(45.0f, 55.0f);
 	orientation[1] = glm::vec2(45.0f, -45.0f);
 	orientation[2] = glm::vec2(45.0f, 180.0f);
 
 	m_res.phong.setUniformBlockBinding("LightingBlock", 0);
+	m_res.water.setUniformBlockBinding("LightingBlock", 0);
+	m_res.grassShader.setUniformBlockBinding("LightingBlock", 0);
 	m_lightingData.setBindingIndex(0);
+
+	GLintptr offset = 0;
+	m_lightingData.updateData(&m_material, offset, sizeof(m_material));   offset += sizeof(m_material);
+	m_lightingData.updateData(m_lights, offset, sizeof(m_lights));     offset += sizeof(m_lights);
+	m_lightingData.updateData(&m_lightModel, offset, sizeof(m_lightModel)); offset += sizeof(m_lightModel);
 }
 
 LightingTestScene::~LightingTestScene() {
@@ -477,12 +512,9 @@ void LightingTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	drawMenu();
 
 	GLintptr offset = 0;
-	m_lightingData.updateData(&m_material, offset, sizeof(m_material));
-	offset += sizeof(m_material);
-	m_lightingData.updateData(m_lights, offset, sizeof(m_lights));
-	offset += sizeof(m_lights);
-	m_lightingData.updateData(&m_lightModel, offset, sizeof(m_lightModel));
-	offset += sizeof(m_lightModel);
+	m_lightingData.updateData(&m_material, offset, sizeof(m_material));   offset += sizeof(m_material);
+	m_lightingData.updateData(m_lights, offset, sizeof(m_lights));     offset += sizeof(m_lights);
+	m_lightingData.updateData(&m_lightModel, offset, sizeof(m_lightModel)); offset += sizeof(m_lightModel);
 
 	glm::mat4 mvp;
 	glm::mat4 projView = projPersp * view;
@@ -540,13 +572,12 @@ void LightingTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 		lightModel = glm::translate(lightModel, glm::vec3(m_lights[i].position));
 		lightModel = glm::rotate(lightModel, glm::radians(orientation[i].y), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightModel = glm::rotate(lightModel, glm::radians(orientation[i].x), glm::vec3(1.0f, 0.0f, 0.0f));
-		m_lights[i].spotDirection = lightModel * glm::vec4(0, -1, 0, 0) - m_lights[i].position;
+		m_lights[i].spotDirection = lightModel * glm::vec4(0, -1, 0, 0);
 
 		mvp = projView * lightModel;
 		modelView = view * lightModel;
 		glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
 		glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, &modelView[0][0]);
-		// GL_TRUE for third argument means to transpose the matrix
 		glUniformMatrix3fv(normalMatrixLocation, 1, GL_TRUE, glm::value_ptr(glm::inverse(glm::mat3(modelView))));
 
 		Material lightMaterial =
@@ -563,6 +594,11 @@ void LightingTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 
 	mvp = projPersp * glm::mat4(glm::mat3(view));
 	drawSky(mvp);
+
+	offset = 0;
+	m_lightingData.updateData(&m_material, offset, sizeof(m_material));   offset += sizeof(m_material);
+	m_lightingData.updateData(m_lights, offset, sizeof(m_lights));     offset += sizeof(m_lights);
+	m_lightingData.updateData(&m_lightModel, offset, sizeof(m_lightModel)); offset += sizeof(m_lightModel);
 }
 
 void LightingTestScene::drawMenu() {
@@ -578,6 +614,7 @@ void LightingTestScene::drawMenu() {
 	ImGui::ColorEdit3("Diffuse##m", &m_material.diffuse[0]);
 	ImGui::ColorEdit3("Specular##m", &m_material.specular[0]);
 	ImGui::DragFloat("Shininess##m", &m_material.shininess, 1.0f, 0.0f, 1000.0f);
+
 	ImGui::SeparatorText("Light Model");
 	ImGui::Combo("Shading", &m_currentShading, shadingList, sizeof(shadingList) / sizeof(shadingList[0]));
 	ImGui::ColorEdit3("Global ambient", &m_lightModel.lightModelAmbient[0]);
