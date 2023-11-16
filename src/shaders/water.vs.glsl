@@ -57,11 +57,9 @@ void main() {
 	attribOut.normal = normalMatrix * vec3(0,1,0);
 
 	vec4 viewPos = modelView * modelPos;
-	attribOut.lightDir[0] = ( view * vec4(lights[0].position, 1.0f) ).xyz - viewPos.xyz;
-	attribOut.lightDir[1] = ( view * vec4(lights[1].position, 1.0f) ).xyz - viewPos.xyz;
-	attribOut.lightDir[2] = ( view * vec4(lights[2].position, 1.0f) ).xyz - viewPos.xyz;
-	attribOut.spotDir[0] = mat3(view) * -lights[0].spotDirection;
-	attribOut.spotDir[1] = mat3(view) * -lights[1].spotDirection;
-	attribOut.spotDir[2] = mat3(view) * -lights[2].spotDirection;
+	for (int i = 0; i < 3; ++i) {
+		attribOut.lightDir[i] = (view * vec4(lights[i].position, 1.0f)).xyz - viewPos.xyz;
+		attribOut.spotDir[i] = mat3(view) * -lights[i].spotDirection;
+	}
 	attribOut.obsPos = -viewPos.xyz;
 }
