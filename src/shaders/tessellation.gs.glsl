@@ -18,5 +18,19 @@ out ATTRIB_GS_OUT {
 } attribOut;
 
 void main() {
-	// TODO
+
+	const vec3 bary[3] = {
+		vec3(1.0f, 0.0f, 0.0f),
+		vec3(0.0f, 1.0f, 0.0f),
+		vec3(0.0f, 0.0f, 1.0f)
+	};
+	for (int i = 0; i < gl_in.length(); ++i) {
+		gl_Position = gl_in[i].gl_Position;
+		attribOut.height = attribIn[i].height;
+		attribOut.texCoords = attribIn[i].texCoords;
+		attribOut.patchDistance = attribIn[i].patchDistance;
+		attribOut.barycentricCoords = bary[i];
+		EmitVertex();
+	}
+	EndPrimitive();
 }

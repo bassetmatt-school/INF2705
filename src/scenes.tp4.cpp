@@ -14,7 +14,7 @@
 TesselationScene::TesselationScene(Resources& resources)
 	: Scene(resources)
 	, m_viewWireframe(0) {
-	// TODO
+	glPatchParameteri(GL_PATCH_VERTICES, 4);
 }
 
 TesselationScene::~TesselationScene() {
@@ -45,7 +45,7 @@ void TesselationScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//GL_FILL
 
 	// TODO
-	//m_res.tesselationPlane.draw(, m_res.tesselationPlaneCount);
+	m_res.tesselationPlane.draw(GL_PATCHES, m_res.tesselationPlaneCount);
 
 	mvp = projPersp * glm::mat4(glm::mat3(view));
 	drawSky(mvp);

@@ -33,5 +33,5 @@ const float WIREFRAME_WIDTH = 0.5f;
 const float PATCH_EDGE_WIDTH = 0.5f;
 
 void main() {
-	// TODO
+	FragColor = texture(groundSampler, attribIn.texCoords);
 }
