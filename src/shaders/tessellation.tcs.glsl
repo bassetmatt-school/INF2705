@@ -5,10 +5,10 @@ layout(vertices = 4) out;
 uniform mat4 modelView;
 
 
-const float MIN_TESS = 4;
-const float MAX_TESS = 64;
+const float MIN_TESS = 1;
+const float MAX_TESS = 256;
 
-const float MIN_DIST = 30.0f;
+const float MIN_DIST = 10.0f;
 const float MAX_DIST = 100.0f;
 
 void main() {
@@ -26,8 +26,8 @@ void main() {
 			centers[i] = (centers[i] + gl_in[(i+3) % 4].gl_Position) / 2.0f;
 			float dist = length((modelView * centers[i]).xyz);
 			float f = (dist - MIN_DIST) / (MAX_DIST - MIN_DIST);
-
-			gl_TessLevelOuter[i] = mix(MAX_TESS, MIN_TESS, f);
+			f = clamp(f, 0.0f, 1.0f);
+			gl_TessLevelOuter[i] = mix(MIN_TESS, MAX_TESS, 1-f);
 		}
 
 		gl_TessLevelInner[0] = max(gl_TessLevelOuter[1], gl_TessLevelOuter[3]);

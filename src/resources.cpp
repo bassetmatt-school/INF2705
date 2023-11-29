@@ -87,7 +87,7 @@ Resources::Resources()
 	grass.enableAttribute(1, 2, 5, 3);
 	grassData.clear(); grassData.resize(0); // desalloc array
 
-	const int N_DIVISIONS = 9;
+	const int N_DIVISIONS = 16;
 	const int N_PRIMITIVES = N_DIVISIONS + 1;
 	const int N_COMPONENTS = 3;
 	const int N_PER_PRIMITIVE = 4;
