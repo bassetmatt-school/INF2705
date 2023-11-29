@@ -52,6 +52,8 @@ void main() {
 
 	if (viewWireframe) {
 		float edge = edgeFactor(attribIn.barycentricCoords, WIREFRAME_WIDTH);
+		float patchEdge = edgeFactor(attribIn.patchDistance, PATCH_EDGE_WIDTH);
 		FragColor.rgb = mix(FragColor.rgb, WIREFRAME_COLOR, 1 - edge);
+		FragColor.rgb = mix(FragColor.rgb, PATCH_EDGE_COLOR, 1 - patchEdge);
 	}
 }
