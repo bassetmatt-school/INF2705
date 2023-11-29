@@ -27,7 +27,7 @@ void main() {
 			float dist = length((modelView * centers[i]).xyz);
 			float f = (dist - MIN_DIST) / (MAX_DIST - MIN_DIST);
 
-			gl_TessLevelOuter[i] = mix(MAX_DIST, MIN_TESS, f);
+			gl_TessLevelOuter[i] = mix(MAX_TESS, MIN_TESS, f);
 		}
 
 		gl_TessLevelInner[0] = max(gl_TessLevelOuter[1], gl_TessLevelOuter[3]);

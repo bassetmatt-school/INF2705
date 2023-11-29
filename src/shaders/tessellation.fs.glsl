@@ -49,4 +49,9 @@ void main() {
 	} else {
 		FragColor = texture(snowSampler, attribIn.texCoords);
 	}
+
+	if (viewWireframe) {
+		float edge = edgeFactor(attribIn.barycentricCoords, WIREFRAME_WIDTH);
+		FragColor.rgb = mix(FragColor.rgb, WIREFRAME_COLOR, 1 - edge);
+	}
 }
