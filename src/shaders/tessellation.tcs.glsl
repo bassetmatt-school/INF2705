@@ -11,12 +11,6 @@ const float MAX_TESS = 64;
 const float MIN_DIST = 30.0f;
 const float MAX_DIST = 100.0f;
 
-float getTessLevel(float dist) {
-	float f = (dist - MIN_DIST) / (MAX_DIST - MIN_DIST);
-	// The closer, the higher the tesselation
-	return mix(MAX_DIST, MIN_TESS, f);
-}
-
 void main() {
 	// Setting output position
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
@@ -31,7 +25,9 @@ void main() {
 		for (int i = 0; i < 4; ++i) {
 			centers[i] = (centers[i] + gl_in[(i+3) % 4].gl_Position) / 2.0f;
 			float dist = length((modelView * centers[i]).xyz);
-			gl_TessLevelOuter[i] = getTessLevel(dist);
+			float f = (dist - MIN_DIST) / (MAX_DIST - MIN_DIST);
+
+			gl_TessLevelOuter[i] = mix(MAX_DIST, MIN_TESS, f);
 		}
 
 		gl_TessLevelInner[0] = max(gl_TessLevelOuter[1], gl_TessLevelOuter[3]);

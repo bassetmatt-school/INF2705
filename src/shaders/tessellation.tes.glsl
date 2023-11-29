@@ -30,7 +30,7 @@ const float PLANE_SIZE = 256.0f;
 
 void main() {
 	// Position of the vertex
-	vec4 position = mvp * interpole(
+	vec4 position = interpole(
 		gl_in[0].gl_Position,
 		gl_in[1].gl_Position,
 		gl_in[2].gl_Position,
@@ -40,8 +40,9 @@ void main() {
 	vec2 heightTexCoords = position.xz / PLANE_SIZE + 0.5;
 	float height = texture(heighmapSampler, heightTexCoords / 4.0).r;
 	attribOut.height = height;
+	gl_Position = mvp * (position + vec4(0, height * 64 - 32, 0, 0));
 	// Texture coordinates, multiplied by 2 to have a better texture resolution
-	attribOut.texCoords = vec2(gl_TessCoord.x, gl_TessCoord.y) * 2.0;
+	attribOut.texCoords = gl_TessCoord.xy * 2.0;
 	// ??????????????????
 	attribOut.patchDistance = vec4(
 		gl_TessCoord.x,
