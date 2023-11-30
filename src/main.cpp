@@ -127,11 +127,11 @@ int main(int argc, char** argv) {
 		glm::mat4 view = isFirstPersonCam ? c.getFirstPersonViewMatrix() : c.getThirdPersonViewMatrix(scrollLevel);
 
 		switch (sceneChoice) {
-			case AvailableScene::WORLD:         worldScene.render(view, projPersp);    break;
-			case AvailableScene::STENCIL_TEST:  stencilScene.render(view, projPersp); break;
-			case AvailableScene::LIGHTING_TEST: lightingScene.render(view, projPersp); break;
-			case AvailableScene::TESSELATION: tesselationScene.render(view, projPersp); break;
-			case AvailableScene::PARTICLE: particuleScene.render(view, projPersp); break;
+			case AvailableScene::WORLD:         worldScene.render(view, projPersp);       break;
+			case AvailableScene::STENCIL_TEST:  stencilScene.render(view, projPersp);     break;
+			case AvailableScene::LIGHTING_TEST: lightingScene.render(view, projPersp);    break;
+			case AvailableScene::TESSELATION:   tesselationScene.render(view, projPersp); break;
+			case AvailableScene::PARTICLE:      particuleScene.render(view, projPersp);   break;
 		}
 
 		w.swap();

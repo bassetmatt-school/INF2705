@@ -17,28 +17,18 @@ out ATTRIB_GS_OUT {
 uniform mat4 projection;
 
 void main() {
-	// TODO: Check if loop useful ?
-	for (int i = 0 ; i < gl_in.length(); ++i) {
-		gl_Position = projection * (gl_in[i].gl_Position + vec4(-attribIn[i].size.x / 2, -attribIn[i].size.y / 2, 0.0, 0.0));
-		attribOut.color = attribIn[i].color;
-		attribOut.texCoords = vec2(0.0, 0.0);
-		EmitVertex();
+	vec2 offsets[4] ={
+		vec2(-0.5, -0.5),
+		vec2( 0.5, -0.5),
+		vec2(-0.5,  0.5),
+		vec2( 0.5,  0.5)
+	};
 
-		gl_Position = projection * (gl_in[i].gl_Position + vec4(attribIn[i].size.x / 2, -attribIn[i].size.y / 2, 0.0, 0.0));
-		attribOut.color = attribIn[i].color;
-		attribOut.texCoords = vec2(1.0, 0.0);
+	for (int i = 0; i < 4; i++) {
+		gl_Position = projection * (gl_in[0].gl_Position + vec4(offsets[i] * attribIn[0].size, 0.0, 0.0));
+		attribOut.color = attribIn[0].color;
+		attribOut.texCoords = offsets[i] + 0.5;
 		EmitVertex();
-
-		gl_Position = projection * (gl_in[i].gl_Position + vec4(-attribIn[i].size.x / 2, attribIn[i].size.y / 2, 0.0, 0.0));
-		attribOut.color = attribIn[i].color;
-		attribOut.texCoords = vec2(0.0, 1.0);
-		EmitVertex();
-
-		gl_Position = projection * (gl_in[i].gl_Position + vec4(attribIn[i].size.x / 2, attribIn[i].size.y / 2, 0.0, 0.0));
-		attribOut.color = attribIn[i].color;
-		attribOut.texCoords = vec2(1.0, 1.0);
-		EmitVertex();
-
-		EndPrimitive();
 	}
+	EndPrimitive();
 }

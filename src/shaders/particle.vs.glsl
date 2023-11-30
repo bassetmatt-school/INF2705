@@ -15,6 +15,10 @@ out ATTRIB_VS_OUT {
 
 void main() {
 	gl_Position = modelView * vec4(position, 1.0);
+	// TODO: Remove this hack
+	if (timeToLive < 0.0) {
+		gl_Position += vec4(velocity * timeToLive, 1.0);
+	}
 	attribOut.color = color;
 	attribOut.size = size;
 }

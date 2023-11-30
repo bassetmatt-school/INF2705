@@ -136,11 +136,11 @@ class TesselationScene : public Scene {
 
 
 struct Particle {
-	glm::vec3 position;
-	glm::vec3 velocity;
-	glm::vec4 color;
-	glm::vec2 size;
-	GLfloat timeToLive;
+	glm::vec3 position; // 0
+	glm::vec3 velocity; // 4 * 3 = 12
+	glm::vec4 color; // 12 + 4 * 3 = 24
+	glm::vec2 size; // 24 + 4 * 4 = 40
+	GLfloat timeToLive; // 40 + 4 * 2 = 48
 };
 
 

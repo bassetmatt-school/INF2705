@@ -60,9 +60,33 @@ void TesselationScene::drawMenu() {
 }
 
 
-static const unsigned int MAX_N_PARTICULES = 10000;
 // TODO: Reset
-static Particle particles[MAX_N_PARTICULES] ={ {{0,1,0},{0,0,0},{1,1,0,0}, {5,5},0} };
+static const unsigned int MAX_N_PARTICULES = 1;
+// TODO: Reset
+static Particle particles[MAX_N_PARTICULES] ={ {{0,0,0},{0,0,0},{0,0,0,0}, {0,0}, 0} };
+
+// TODO: Docs & Check & bool param for enable
+void enableAttribs(GLuint vao, GLuint vbo, ShaderProgram& shader) {
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	GLint locs[5] ={
+		shader.getAttribLoc("position"),
+		shader.getAttribLoc("velocity"),
+		shader.getAttribLoc("color"),
+		shader.getAttribLoc("size"),
+		shader.getAttribLoc("timeToLive"),
+	};
+	glEnableVertexAttribArray(locs[0]);
+	glVertexAttribPointer(locs[0], 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*) 0);
+	glEnableVertexAttribArray(locs[1]);
+	glVertexAttribPointer(locs[1], 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*) 12);
+	glEnableVertexAttribArray(locs[2]);
+	glVertexAttribPointer(locs[2], 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*) 24);
+	glEnableVertexAttribArray(locs[3]);
+	glVertexAttribPointer(locs[3], 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*) 40);
+	glEnableVertexAttribArray(locs[4]);
+	glVertexAttribPointer(locs[4], 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*) 48);
+}
 
 ParticleScene::ParticleScene(Resources& resources, Window& w)
 	: Scene(resources)
@@ -70,45 +94,43 @@ ParticleScene::ParticleScene(Resources& resources, Window& w)
 	, m_oldTime(m_w.getTick() / 1000.0f)
 	, m_cumulativeTime(0.0f)
 	, m_nParticles(1)
-	, m_nMaxParticles(1000) {
+	, m_nMaxParticles(MAX_N_PARTICULES) {
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
 	// TODO: Check
 	glGenVertexArrays(1, &m_vao);
-	glGenBuffers(1, &m_tfo);
-	glGenBuffers(2, m_vbo);
-
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_tfo);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(particles), NULL, GL_STREAM_READ);
+	// TODO: Get that back after
+	// glGenBuffers(1, &m_tfo);
+	// TODO: Replace by 2 when other vbo
+	glGenBuffers(1, m_vbo);
+	particles[0].position = glm::vec3(0.0f, 1.0f, -2.0f);
+	particles[0].velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+	particles[0].color = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
+	particles[0].size = glm::vec2(5.0f, 5.0f);
+	particles[0].timeToLive = 1.4f;
+	//// glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_tfo);GL_CHECK_ERROR;
+	// glBindBuffer(GL_ARRAY_BUFFER, m_vbo[1]);
+	// glBufferData(GL_ARRAY_BUFFER, sizeof(particles), NULL, GL_STREAM_READ);
 
 	glBindVertexArray(m_vao);
-
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STREAM_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, position)));
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, velocity)));
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, color)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, size)));
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, timeToLive)));
-	glEnableVertexAttribArray(4);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
+	m_res.particule.use();
+	enableAttribs(m_vao, m_vbo[0], m_res.particule);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STREAM_READ);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, position)));
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, velocity)));
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, color)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, size)));
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, timeToLive)));
-	glEnableVertexAttribArray(4);
+	// TODO: That
+	// glBindBuffer(GL_ARRAY_BUFFER, m_vbo[1]);
+	// glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STREAM_READ);
+	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, position)));
+	// glEnableVertexAttribArray(0);
+	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, velocity)));
+	// glEnableVertexAttribArray(1);
+	// glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, color)));
+	// glEnableVertexAttribArray(2);
+	// glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, size)));
+	// glEnableVertexAttribArray(3);
+	// glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, timeToLive)));
+	// glEnableVertexAttribArray(4);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -142,27 +164,28 @@ void ParticleScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	glUniform1f(m_res.timeLocationTransformFeedback, time);
 	glUniform1f(m_res.dtLocationTransformFeedback, dt);
 
-	// glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_tfo);
-	glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, m_vbo[1]);
-	glBindVertexArray(m_vao);
+	// TODO: That
+	//// glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_tfo);
+	// glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, m_vbo[1]);
+	// glBindVertexArray(m_vao);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[0]);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, position)));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, velocity)));
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, color)));
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, size)));
-	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, timeToLive)));
+	// glBindBuffer(GL_ARRAY_BUFFER, m_vbo[0]);
+	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, position)));
+	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, velocity)));
+	// glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, color)));
+	// glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, size)));
+	// glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, timeToLive)));
 
-	glEnable(GL_RASTERIZER_DISCARD);
-	glBeginTransformFeedback(GL_TRIANGLES);
-	glDrawArrays(GL_QUADS, 0, sizeof(particles)/sizeof(Particle));
-	glEndTransformFeedback();
-	glDisable(GL_RASTERIZER_DISCARD);
+	// glEnable(GL_RASTERIZER_DISCARD);
+	// glBeginTransformFeedback(GL_TRIANGLES);
+	// glDrawArrays(GL_TRIANGLES, 0, m_nParticles * 3);
+	// glEndTransformFeedback();
+	// glDisable(GL_RASTERIZER_DISCARD);
 
 
 	glBindVertexArray(0);
-
-	std::swap(m_vbo[0], m_vbo[1]);
+	// TODO: Re enable
+	// std::swap(m_vbo[0], m_vbo[1]);
 
 
 	// Draw skybox first, without the function to change some parameter on the depth test.
@@ -186,17 +209,20 @@ void ParticleScene::render(glm::mat4& view, glm::mat4& projPersp) {
 
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[0]);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, position)));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, velocity)));
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, color)));
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, size)));
-	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, timeToLive)));
+	enableAttribs(m_vao, m_vbo[0], m_res.particule);
+	// TODO: Check
+	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, position)));
+	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, velocity)));
+	// glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, color)));
+	// glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, size)));
+	// glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), reinterpret_cast<void*>(offsetof(Particle, timeToLive)));
 
 	// TODO: Draw particles without depth write and with blending
 	// glDrawTransformFeedback(GL_TRIANGLES, m_tfo);
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	glDrawArrays(GL_TRIANGLES, 0, sizeof(particles)/sizeof(Particle));
+	// GL_POINTS because we specifiy the input of the shaders
+	glDrawArrays(GL_POINTS, 0, m_nParticles);
 	glBindVertexArray(0);
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
