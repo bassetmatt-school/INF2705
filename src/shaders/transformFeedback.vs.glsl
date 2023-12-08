@@ -21,6 +21,7 @@ uint randhash() {// entre  0 et UINT_MAX
 	i ^= (i<<6u)^(i>>26u); i *= 2654435769u; i += (i<<5u)^(i>>12u);
 	return i;
 }
+
 float random() { // entre  0 et 1
 	const float UINT_MAX = 4294967295.0;
 	return float(randhash()) / UINT_MAX;
@@ -45,6 +46,8 @@ const float INITIAL_SPEED_MAX = 0.6f;
 
 const float INITIAL_TIME_TO_LIVE_RATIO = 0.85f;
 
+const vec2 PARTICLE_SIZE = vec2(0.04f);
+
 const float INITIAL_ALPHA = 0.0f;
 const float ALPHA = 0.1f;
 const vec3 YELLOW_COLOR = vec3(1.0f, 0.9f, 0.0f);
@@ -53,11 +56,42 @@ const vec3 DARK_RED_COLOR = vec3(0.1, 0.0, 0.0);
 
 const vec3 ACCELERATION = vec3(0.0f, 0.1f, 0.0f);
 
+void init_particle() {
+	positionMod = randomInCircle(INITIAL_RADIUS, INITIAL_HEIGHT);
+
+	vec3 vel = normalize(randomInCircle(FINAL_RADIUS, FINAL_HEIGHT));
+	float f = INITIAL_SPEED_MIN + (INITIAL_SPEED_MAX - INITIAL_SPEED_MIN) * random();
+	velocityMod = vel * f;
+	colorMod = vec4(YELLOW_COLOR, INITIAL_ALPHA);
+	sizeMod = PARTICLE_SIZE;
+
+	// Gets value in [ratio, 1]
+	timeToLiveMod = mix(random(), 1.0, INITIAL_TIME_TO_LIVE_RATIO);
+	timeToLiveMod *= MAX_TIME_TO_LIVE;
+}
+
+void update_particle() {
+	positionMod = position + velocity * dt;
+	velocityMod = velocity + ACCELERATION * dt;
+	float timeNormalised = 1 - timeToLiveMod / MAX_TIME_TO_LIVE;
+	if (timeNormalised < 0.5) {
+		// If less than 0.25, full yellow, if more than 0.3, full orange
+		float f = smoothstep(0.25f, 0.3f, timeNormalised);
+		colorMod.rgb = mix(YELLOW_COLOR, ORANGE_COLOR, f);
+	} else {
+		float f = smoothstep(0.5, 1.0f, timeNormalised);
+		colorMod.rgb = mix(ORANGE_COLOR, DARK_RED_COLOR, f);
+	}
+	colorMod.a = ALPHA * smoothstep(0.0f, 0.2f, timeNormalised) * (1 - smoothstep(0.8f, 1.0f, timeNormalised));
+	sizeMod = PARTICLE_SIZE;
+	sizeMod *= 1 + 0.5 * smoothstep(0.5f, 1.0f, timeNormalised);
+}
+
 void main() {
-	// TODO
-	positionMod = position;
-	velocityMod = velocity;
-	colorMod = color;
-	sizeMod = size;
-	timeToLiveMod = timeToLive + time * dt;
+	timeToLiveMod = timeToLive - dt;
+	if ( timeToLiveMod < 0.0f) {
+		init_particle();
+	} else {
+		update_particle();
+	}
 }

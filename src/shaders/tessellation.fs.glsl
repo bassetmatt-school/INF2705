@@ -33,21 +33,16 @@ const float WIREFRAME_WIDTH = 0.5f;
 const float PATCH_EDGE_WIDTH = 0.5f;
 
 void main() {
-	vec4 sandTex, groundTex, snowTex;
-	if (attribIn.height < 0.3f) {
-		FragColor = texture(sandSampler, attribIn.texCoords);
-	} else if (attribIn.height < 0.35f) {
-		sandTex = texture(sandSampler, attribIn.texCoords);
-		groundTex = texture(groundSampler, attribIn.texCoords);
-		FragColor = mix(sandTex, groundTex, (attribIn.height - 0.3) / 0.05f);
-	} else if (attribIn.height < 0.6f) {
-		FragColor = texture(groundSampler, attribIn.texCoords);
-	} else if (attribIn.height < 0.65f) {
-		groundTex = texture(groundSampler, attribIn.texCoords);
-		snowTex = texture(snowSampler, attribIn.texCoords);
-		FragColor = mix(groundTex, snowTex, (attribIn.height - 0.6) / 0.05f);
-	} else {
-		FragColor = texture(snowSampler, attribIn.texCoords);
+	vec4 sandTex = texture(sandSampler, attribIn.texCoords);
+	vec4 groundTex = texture(groundSampler, attribIn.texCoords);
+	vec4 snowTex = texture(snowSampler, attribIn.texCoords);
+
+	if (attribIn.height < 0.6f) { // Sand under 0.3, ground above 0.35
+		float f = smoothstep(0.3f, 0.35f, attribIn.height);
+		FragColor = mix(sandTex, groundTex, f);
+	} else { // Snow above 0.65
+		float f = smoothstep(0.6f, 0.65f, attribIn.height);
+		FragColor = mix(groundTex, snowTex, f);
 	}
 
 	if (viewWireframe) {

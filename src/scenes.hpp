@@ -118,8 +118,12 @@ class LightingTestScene : public Scene {
 	int m_currentShading;
 };
 
-
-
+struct TessellationParams {
+	GLfloat minTess;
+	GLfloat maxTess;
+	GLfloat minDist;
+	GLfloat maxDist;
+};
 class TesselationScene : public Scene {
 	public:
 	TesselationScene(Resources& resources);
@@ -130,6 +134,8 @@ class TesselationScene : public Scene {
 	void drawMenu();
 
 	private:
+	TessellationParams m_tessParams;
+	UniformBuffer m_tessData;
 	// IMGUI VARIABLE
 	bool m_viewWireframe;
 };
@@ -150,6 +156,8 @@ class ParticleScene : public Scene {
 	virtual ~ParticleScene();
 
 	virtual void render(glm::mat4& view, glm::mat4& projPersp);
+
+	void drawMenu();
 
 	private:
 	Window& m_w;

@@ -13,7 +13,7 @@
 
 void printGLInfo();
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
 	Window w;
 	if (!w.init())
 		return -1;

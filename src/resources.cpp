@@ -233,7 +233,7 @@ Resources::Resources()
 
 	// Tessellation shader
 	if (SHADER_LOAD_PRINT) printf("[Shader] Loading tessellation shader\n");
-	{ // TODO: Do better here
+	{
 		std::string vertexCode = readFile("shaders/tessellation.vs.glsl");
 		std::string tessCtrlCode = readFile("shaders/tessellation.tcs.glsl");
 		std::string tessEvalCode = readFile("shaders/tessellation.tes.glsl");
@@ -290,7 +290,6 @@ Resources::Resources()
 		Shader vertex(GL_VERTEX_SHADER, vertexCode.c_str());
 		transformFeedback.attachShader(vertex);
 
-		// TODO
 		const GLchar* vars[] ={
 			"positionMod",
 			"velocityMod",
