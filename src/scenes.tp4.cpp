@@ -103,9 +103,32 @@ ParticleScene::ParticleScene(Resources& resources, Window& w)
 	, m_oldTime(m_w.getTick() / 1000.0f)
 	, m_cumulativeTime(0.0f)
 	, m_nParticles(1)
-	, m_nMaxParticles(MAX_N_PARTICULES) {
+	, m_nMaxParticles(MAX_N_PARTICULES),
+	m_partData(nullptr, sizeof(ParticleParams)) {
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
+	// Initial parameters as defined in the shader initially
+	m_partParams ={
+		.maxTTL = 2.0f,
+		.initTTLRatio = 0.85f,
+		.initRadius = 0.2f,
+		.initHeight = 0.0f,
+		.finalRadius = 0.5f,
+		.finalHeight = 5.0f,
+		.initVelocityMin = 0.5f,
+		.initVelocityMax = 0.6f,
+		.particleSize = glm::vec2(0.04f),
+		.initAlpha = 0.0f,
+		.alpha = 0.1f,
+		.yellow = glm::vec4(1.0f, 0.9f, 0.0f, 0.0f),
+		.orange = glm::vec4(1.0f, 0.4f, 0.2f, 0.0f),
+		.red = glm::vec4(0.1f, 0.0f, 0.0f, 0.0f),
+		.acceleration = glm::vec4(0.0f, 0.1f, 0.0f, 0.0f)
+	};
+
+	m_res.particule.setUniformBlockBinding("ParticleParams", 2);
+	m_partData.setBindingIndex(2);
+	m_partData.updateData(&m_partParams, 0, sizeof(m_partParams));
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(2, m_vbo);
 
@@ -136,8 +159,11 @@ ParticleScene::~ParticleScene() {
 }
 
 void ParticleScene::render(glm::mat4& view, glm::mat4& projPersp) {
+	drawMenu();
+	m_partData.updateData(&m_partParams, 0, sizeof(m_partParams));
+
 	glm::mat4 mvp;
-	glm::mat4 projView = projPersp * view;
+	// glm::mat4 projView = projPersp * view;
 	glm::mat4 modelView;
 
 	float time = m_w.getTick() / 1000.0;
@@ -208,4 +234,32 @@ void ParticleScene::render(glm::mat4& view, glm::mat4& projPersp) {
 		if ((m_nParticles += 5) > m_nMaxParticles)
 			m_nParticles = m_nMaxParticles;
 	}
+}
+
+void ParticleScene::drawMenu() {
+	ImGui::Begin("Particles & Retroaction Parameters");
+
+	ImGui::SeparatorText("Lifetime");
+	ImGui::DragFloat("Max Lifetime##m", &m_partParams.maxTTL, 0.1f, 0.0f, 4.0f);
+	ImGui::DragFloat("Lifetime Ratio##m", &m_partParams.initTTLRatio, 0.01f, 0.0f, 1.0f);
+
+	ImGui::SeparatorText("Spawn Parameters");
+	ImGui::DragFloat("Init Radius##s", &m_partParams.initRadius, 0.1f, 0.0f, 4.0f);
+	ImGui::DragFloat("Init Height##s", &m_partParams.initHeight, 0.1f, -2.0f, 2.0f);
+	ImGui::DragFloat("Final Radius##s", &m_partParams.finalRadius, 0.1f, 0.0f, 3.0f);
+	ImGui::DragFloat("Final Height##s", &m_partParams.finalHeight, 0.1f, 0.0f, 10.0f);
+
+	ImGui::SeparatorText("Kinematics");
+	ImGui::DragFloat2("V min/max##s", &m_partParams.initVelocityMin, 0.1f, -3.0f, 5.0f);
+	ImGui::DragFloat("Acceleration##s", &m_partParams.acceleration.y, 0.1f, -2.0f, 2.0f);
+
+	ImGui::SeparatorText("Size");
+	ImGui::DragFloat2("Particle Size", &m_partParams.particleSize.x, 0.01f, 0.0f, 1.0f);
+
+	ImGui::SeparatorText("Colors");
+	ImGui::ColorEdit3("Yellow", &m_partParams.yellow.x);
+	ImGui::ColorEdit3("Orange", &m_partParams.orange.x);
+	ImGui::ColorEdit3("Red", &m_partParams.red.x);
+
+	ImGui::End();
 }

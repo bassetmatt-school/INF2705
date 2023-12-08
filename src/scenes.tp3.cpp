@@ -197,7 +197,7 @@ void WorldScene::render(glm::mat4& view, glm::mat4& projPersp) {
 			glm::mat4 preInverseNormalMatrix = mvp;
 
 			float scaleX = glm::length(glm::vec3(mvp[0]));
-			float scaleY = glm::length(glm::vec3(mvp[1]));
+			// float scaleY = glm::length(glm::vec3(mvp[1]));
 			float scaleZ = glm::length(glm::vec3(mvp[2]));
 
 			mvp[0][0] = scaleX; /*mvp[1][0] = 0;*/      mvp[2][0] = 0;
@@ -299,7 +299,6 @@ StencilTestScene::~StencilTestScene() {
 void StencilTestScene::render(glm::mat4& view, glm::mat4& projPersp) {
 	glm::mat4 mvp;
 	glm::mat4 projView = projPersp * view;
-
 	// DRAW CHARACTER
 
 	m_res.model.use();

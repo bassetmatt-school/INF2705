@@ -34,8 +34,37 @@ vec3 randomInCircle(in float radius, in float height) {
 	return vec3(r * cos(theta), height, r * sin(theta));
 }
 
+#define U_BUFFER
+#ifdef U_BUFFER
+layout (std140, binding = 2) uniform ParticleData {
+	float MAX_TIME_TO_LIVE;
+	float INITIAL_TIME_TO_LIVE_RATIO ;
+
+	float INITIAL_RADIUS;
+	float INITIAL_HEIGHT;
+	float FINAL_RADIUS;
+	float FINAL_HEIGHT;
+
+	float INITIAL_SPEED_MIN;
+	float INITIAL_SPEED_MAX;
+
+
+	vec2 PARTICLE_SIZE;
+
+	float INITIAL_ALPHA;
+	float ALPHA;
+	vec3 YELLOW_COLOR;
+	vec3 ORANGE_COLOR;
+	vec3 DARK_RED_COLOR;
+
+	vec3 ACCELERATION;
+};
+
+#else
 
 const float MAX_TIME_TO_LIVE = 2.0f;
+const float INITIAL_TIME_TO_LIVE_RATIO = 0.85f;
+
 const float INITIAL_RADIUS = 0.2f;
 const float INITIAL_HEIGHT = 0.0f;
 const float FINAL_RADIUS = 0.5f;
@@ -44,7 +73,6 @@ const float FINAL_HEIGHT = 5.0f;
 const float INITIAL_SPEED_MIN = 0.5f;
 const float INITIAL_SPEED_MAX = 0.6f;
 
-const float INITIAL_TIME_TO_LIVE_RATIO = 0.85f;
 
 const vec2 PARTICLE_SIZE = vec2(0.04f);
 
@@ -55,6 +83,7 @@ const vec3 ORANGE_COLOR = vec3(1.0f, 0.4f, 0.2f);
 const vec3 DARK_RED_COLOR = vec3(0.1, 0.0, 0.0);
 
 const vec3 ACCELERATION = vec3(0.0f, 0.1f, 0.0f);
+#endif
 
 void init_particle() {
 	positionMod = randomInCircle(INITIAL_RADIUS, INITIAL_HEIGHT);
