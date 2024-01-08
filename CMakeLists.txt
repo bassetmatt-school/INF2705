@@ -26,12 +26,16 @@ target_link_libraries(tp4
 	${OPENGL_LIBRARIES}
 )
 
-add_compile_options(
-	-Wall
-	-Wextra
-	-pedantic
-	-O2
-	-std=c++17
+target_compile_options(
+	tp4
+	PUBLIC
+		-Wall
+		-Wextra
+		-Wno-unused-parameter
+		-Wvla
+		-pedantic
+		-O2
+		-std=c++20
 )
 
 set_target_properties(tp4

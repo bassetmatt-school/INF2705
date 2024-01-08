@@ -16,9 +16,9 @@ Resources::Resources()
 	: ground(groundVertices, sizeof(groundVertices), groundIndexes, sizeof(groundIndexes))
 	, river(riverVertices, sizeof(riverVertices), groundIndexes, sizeof(groundIndexes))
 	, quad(quad2dVertices, sizeof(quad2dVertices), quad2dIndexes, sizeof(quad2dIndexes))
-	, skybox(skyboxVertices, sizeof(skyboxVertices))
 	, grassCount(0)
 	, tesselationPlaneCount(0)
+	, skybox(skyboxVertices, sizeof(skyboxVertices))
 	, rock("../models/rock_smooth.obj")
 	, shroom("../models/mushroom_smooth.obj")
 	, tree("../models/tree_smooth.obj")
@@ -233,7 +233,7 @@ Resources::Resources()
 
 	// Tessellation shader
 	if (SHADER_LOAD_PRINT) printf("[Shader] Loading tessellation shader\n");
-	{ // TODO: Do better here
+	{
 		std::string vertexCode = readFile("shaders/tessellation.vs.glsl");
 		std::string tessCtrlCode = readFile("shaders/tessellation.tcs.glsl");
 		std::string tessEvalCode = readFile("shaders/tessellation.tes.glsl");
@@ -290,7 +290,6 @@ Resources::Resources()
 		Shader vertex(GL_VERTEX_SHADER, vertexCode.c_str());
 		transformFeedback.attachShader(vertex);
 
-		// TODO
 		const GLchar* vars[] ={
 			"positionMod",
 			"velocityMod",

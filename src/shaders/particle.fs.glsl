@@ -11,11 +11,10 @@ in ATTRIB_GS_OUT {
 } attribIn;
 
 void main() {
-	// Discards fragments with alpha < 0.05
-	if (attribIn.color.a < 0.05) discard;
-
-	// vec4 texel = texture(textureSampler, attribIn.texCoords);
-	// TODO Change
-	// FragColor = mix(texel, attribIn.color, 0.5);
 	FragColor = attribIn.color;
+	vec4 texel = texture(textureSampler, attribIn.texCoords);
+	// Only mixing alpha looks better I think
+	FragColor.a = mix(texel.a, attribIn.color.a, 0.5);
+	// Discards fragments with alpha < 0.05
+	if (FragColor.a <= 0.05) discard;
 }

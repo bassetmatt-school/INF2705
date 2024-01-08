@@ -78,9 +78,9 @@ void ShaderProgram::link() {
 	checkError();
 }
 
-GLint ShaderProgram::getAttribLoc(const char* name) {
+GLint ShaderProgram::getAttribLoc(const char* name, bool verbose) {
 	GLint attrib = glGetAttribLocation(m_id, name);
-	if (attrib == -1)
+	if (verbose && attrib == -1)
 		std::cerr << "Could not find attribute " << name << std::endl;
 	return attrib;
 }

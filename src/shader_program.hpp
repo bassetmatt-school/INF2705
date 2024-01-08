@@ -29,7 +29,7 @@ class ShaderProgram {
 	void attachShader(Shader& s);
 	void link();
 
-	GLint getAttribLoc(const char* name);
+	GLint getAttribLoc(const char* name, bool verbose = true);
 	GLint getUniformLoc(const char* name);
 	void setUniformBlockBinding(const char* name, GLuint bindingIndex);
 

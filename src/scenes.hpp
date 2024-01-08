@@ -61,8 +61,8 @@ class StencilTestScene : public Scene {
 	glm::vec2& m_orientation;
 
 	// MATRICES
-	static const size_t N_ALLY_MONKEE = 1;
-	static const size_t N_ENEMY_MONKEE = 2;
+	static const int N_ALLY_MONKEE = 1;
+	static const int N_ENEMY_MONKEE = 2;
 	glm::mat4 allyTransform[N_ALLY_MONKEE];
 	glm::mat4 enemyTransform[N_ENEMY_MONKEE];
 };
@@ -118,7 +118,12 @@ class LightingTestScene : public Scene {
 	int m_currentShading;
 };
 
-
+struct TessellationParams {
+	GLfloat minTess;
+	GLfloat maxTess;
+	GLfloat minDist;
+	GLfloat maxDist;
+};
 
 class TesselationScene : public Scene {
 	public:
@@ -132,6 +137,9 @@ class TesselationScene : public Scene {
 	private:
 	// IMGUI VARIABLE
 	bool m_viewWireframe;
+	// Uniform buffer variables
+	UniformBuffer m_tessData;
+	TessellationParams m_tessParams;
 };
 
 
@@ -143,6 +151,32 @@ struct Particle {
 	GLfloat timeToLive; // 40 + 4 * 2 = 48
 };
 
+struct ParticleParams {
+	// Particles lifetimes
+	GLfloat maxTTL;
+	GLfloat initTTLRatio;
+
+	// Spawn parameters
+	GLfloat initRadius;
+	GLfloat initHeight;
+	GLfloat finalRadius;
+	GLfloat finalHeight;
+	GLfloat initVelocityMin;
+	GLfloat initVelocityMax;
+
+	glm::vec2 particleSize;
+
+	GLfloat initAlpha;
+	GLfloat alpha;
+
+	// Colors of the 3 stages of the flames
+	glm::vec4 yellow; // padded vec3
+	glm::vec4 orange; // padded vec3
+	glm::vec4 red;    // padded vec3
+
+	// Additional upward acceleration
+	glm::vec4 acceleration; // padded vec3
+};
 
 class ParticleScene : public Scene {
 	public:
@@ -150,6 +184,8 @@ class ParticleScene : public Scene {
 	virtual ~ParticleScene();
 
 	virtual void render(glm::mat4& view, glm::mat4& projPersp);
+
+	void drawMenu();
 
 	private:
 	Window& m_w;
@@ -160,6 +196,10 @@ class ParticleScene : public Scene {
 	GLuint m_tfo, m_vao, m_vbo[2];
 	unsigned int m_nParticles;
 	unsigned int m_nMaxParticles;
+
+	UniformBuffer m_partData;
+	ParticleParams m_partParams;
+
 };
 
 

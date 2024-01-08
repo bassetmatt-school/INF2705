@@ -43,7 +43,6 @@ void main() {
 	gl_Position = mvp * (position + vec4(0, height * 64 - 32, 0, 0));
 	// Texture coordinates, multiplied by 2 to have a better texture resolution
 	attribOut.texCoords = gl_TessCoord.xy * 2.0;
-	// ??????????????????
 	attribOut.patchDistance = vec4(
 		gl_TessCoord.x,
 		gl_TessCoord.y,
